@@ -1,7 +1,5 @@
 <template>
   <div>
-    <h1>{{ msg }}</h1>
-
     <div v-if="authenticated">
       <h3>Lets show some stuff from Auth0!</h3>
 
@@ -56,7 +54,6 @@ export default {
           },
           "id": "rec0CSbkZBm1wWluF"
         },
-
       ]
     }
   },

@@ -1,31 +1,34 @@
 <template>
   <div id="app">
-      <article class="">
-        <div class="vh-100 dt w-100 tc bg-dark-gray white cover">
+        <div class="vh-100 dt w-100 bg-dark-gray white cover">
 
-          <div class="dtc v-mid">
+          <div class="dtc v-mid" v-if="!authenticated">
             <h1 class="f1 f-headline-l fw1 i white-60">Constellate</h1>
             <button
               class=""
-              v-if="!authenticated"
               @click="login()">
               Log In
             </button>
+          </div>
 
-            <button
-              class="link dim black b f6 f5-ns dib mr3"
-              v-if="authenticated"
-              @click="logout()">
-              Log Out
-            </button>
+          <nav class="pa3 bg-grey bb cf">
+              <a class="link white-60 no-underline pa3 fl w-10" href="#">Constellate</a>
+              <div class="fr w-3">
+                <button
+                  class=""
+                  @click="logout()">
+                  Logout
+                </button>
+              </div>
 
-            <router-view
-              :auth="auth"
-              :authenticated="authenticated">
-            </router-view>
+          </nav>
+
+          <router-view
+            :auth="auth"
+            :authenticated="authenticated">
+          </router-view>
           </div>
         </div>
-    </article>
   </div>
 
 </template>

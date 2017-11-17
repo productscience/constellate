@@ -60,15 +60,20 @@ describe('SearchViewComponent', () => {
       propsData: { items: sampleData }
     })
     expect(wrapper.findAll('li.peep').length).toBe(3)
+    expect(wrapper.html()).toContain("Homer Simpson")
+    expect(wrapper.html()).toContain("Barney Gumble")
+    expect(wrapper.html()).toContain("Abu")
   })
 })
 
 describe('SearchViewComponent tag filtering', () => {
-  it('shows a filtered view when we have one active tags', () => {
+  it('shows a filtered view when we have one active tag', () => {
     const wrapper = mount(SearchViewComponent, {
       propsData: { items: sampleData, terms : [ 'taverns'] }
     })
     expect(wrapper.findAll('li.peep').length).toBe(2)
+    expect(wrapper.html()).toContain("Homer Simpson")
+    expect(wrapper.html()).toContain("Barney Gumble")
   })
 
   it('shows a filtered view when we have multiple active tags', () => {
@@ -76,6 +81,7 @@ describe('SearchViewComponent tag filtering', () => {
       propsData: { items: sampleData, terms : [ 'taverns', 'donuts'] }
     })
     expect(wrapper.findAll('li.peep').length).toBe(1)
-    // expect only Homer Simpson to be in the list
+    expect(wrapper.html()).toContain("Homer Simpson")
+
   })
 })

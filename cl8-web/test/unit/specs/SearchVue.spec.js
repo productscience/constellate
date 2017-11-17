@@ -56,7 +56,7 @@ let sampleData = [
 
 describe('SearchViewComponent', () => {
   it('renders the corresponding number of Peeps', () => {
-    const wrapper = mount(SearchViewComponent, {
+    let wrapper = mount(SearchViewComponent, {
       propsData: { items: sampleData }
     })
     expect(wrapper.findAll('li.peep').length).toBe(3)
@@ -68,8 +68,8 @@ describe('SearchViewComponent', () => {
 
 describe('SearchViewComponent tag filtering', () => {
   it('shows a filtered view when we have one active tag', () => {
-    const wrapper = mount(SearchViewComponent, {
-      propsData: { items: sampleData, terms : [ 'taverns'] }
+    let wrapper = mount(SearchViewComponent, {
+      propsData: { items: sampleData, terms: [ 'taverns'] }
     })
     expect(wrapper.findAll('li.peep').length).toBe(2)
     expect(wrapper.html()).toContain("Homer Simpson")
@@ -77,11 +77,21 @@ describe('SearchViewComponent tag filtering', () => {
   })
 
   it('shows a filtered view when we have multiple active tags', () => {
-    const wrapper = mount(SearchViewComponent, {
-      propsData: { items: sampleData, terms : [ 'taverns', 'donuts'] }
+    let wrapper = mount(SearchViewComponent, {
+      propsData: { items: sampleData, terms: [ 'taverns', 'donuts'] }
     })
     expect(wrapper.findAll('li.peep').length).toBe(1)
     expect(wrapper.html()).toContain("Homer Simpson")
 
+  })
+})
+
+describe('SearchViewComponent searching', () => {
+  it('searches a filtered view', () => {
+    let wrapper = mount(SearchViewComponent, {
+      propsData: { items: sampleData, terms: ['taverns'], searchTerm: "barn"}
+    })
+    expect(wrapper.findAll('li.peep').length).toBe(2)
+    // expect(wrapper.html()).toContain("Barney")
   })
 })

@@ -14,8 +14,7 @@
 </template>
 
 <script>
-  import { remove, includes } from 'lodash'
-
+  import { includes } from 'lodash'
 
   export default {
     props: ['items', 'terms'],
@@ -27,23 +26,22 @@
         }
 
         let matchingPeeps = this.items
-
         // clear out peeps with NO tags
-        remove(matchingPeeps, function (peep) {
-          return typeof peep.fields.Tags === 'undefined'
+        let peepsWithTags = matchingPeeps.filter(function (peep) {
+          return typeof peep.fields.Tags !== 'undefined'
         })
 
         // now reduce the list till we only have people matching all tags
         terms.forEach(function (term) {
-          remove(matchingPeeps, function (peep) {
+          peepsWithTags = peepsWithTags.filter(function (peep) {
+
             let peepTerms = peep.fields.Tags.map(function (tag) {
                 return tag.Name
             })
-            // TODO this smells funny :|
-            if (includes(peepTerms, term)) { return false } else { return true}
+            return includes(peepTerms, term)
           })
         })
-        return matchingPeeps
+        return peepsWithTags
       }
     },
     methods: {}

@@ -63,11 +63,19 @@ describe('SearchViewComponent', () => {
   })
 })
 
-describe('SearchViewComponent', () => {
-  it('shows a filtered view when we have active tags', () => {
+describe('SearchViewComponent tag filtering', () => {
+  it('shows a filtered view when we have one active tags', () => {
     const wrapper = mount(SearchViewComponent, {
       propsData: { items: sampleData, terms : [ 'taverns'] }
     })
     expect(wrapper.findAll('li.peep').length).toBe(2)
+  })
+
+  it('shows a filtered view when we have multiple active tags', () => {
+    const wrapper = mount(SearchViewComponent, {
+      propsData: { items: sampleData, terms : [ 'taverns', 'donuts'] }
+    })
+    expect(wrapper.findAll('li.peep').length).toBe(1)
+    // expect only Homer Simpson to be in the list
   })
 })

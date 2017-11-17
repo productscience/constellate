@@ -16,6 +16,7 @@
   "dependencies": {
     "EventEmitter": "^1.0.0",
     "auth0-js": "^8.11.3",
+    "axios": "^0.17.1",
     "tachyons": "^4.9.0",
     "vue": "^2.5.2",
     "vue-fuse": "^1.2.1",

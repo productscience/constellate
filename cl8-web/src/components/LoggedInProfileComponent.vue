@@ -12,17 +12,24 @@
     </div>
 
       <div class="fl w-third pa2">
-        <span v-for="tag in activetags">
-            {{ tag }}
-        </span>
+        <div class="tag-list">
+          <p>Active tags
+          <span v-for="tag in activetags">
+              {{ tag }}
+          </span>
+          </p>
+          <input v-model="term">
+        </div>
 
-          <search-view-component
-            v-for="(item, index) in matchingTags"
-            v-bind:item="item"
-            v-bind:index="index"
-            v-bind:key="item.id"
-            v-on:profileChosen="showProfile">
-          </search-view-component>
+        <p>{{ methodResults.length}} matching results</p>
+
+        <search-view-component
+          v-for="(item, index) in methodResults"
+          v-bind:item="item"
+          v-bind:index="index"
+          v-bind:key="item.id"
+          v-on:profileChosen="showProfile">
+        </search-view-component>
       </ul>
 
       </div>
@@ -42,7 +49,14 @@ export default {
   data () {
 
     return {
-
+      term: "",
+      options: {
+        keys: ['id', "fields.Name", "fields.email"],
+        defaultAll: true
+      },
+      keys: ['id', "fields.Name", "fields.email"],
+      componentResults: [],
+      methodResults: [],
       profile: {
         "createdTime": "2017-11-11T12:40:59.000Z",
         "fields": {
@@ -84,15 +98,11 @@ export default {
     },
     fetchPeeps: debounce(
       function() {
-        console.log("fetching")
         let vm = this
 
         axios.get('/static/airtable.response.json')
           .then(function(response) {
             vm.$emit('fetchedPeeps', response.data)
-            console.log(response.data)
-            localStorage.setItem('airtableData', JSON.stringify(response.data))
-            window.items = response.data
             vm.fetchedItems = response.data
             vm.items = response.data
           })
@@ -105,17 +115,34 @@ export default {
         750
     ),
     updateActiveTags: function (triggeredEvent, childInstance) {
-      // console.log(triggeredEvent)
-      // console.log(childInstance)
       let triggeredTerm = triggeredEvent.target.textContent.trim()
-
       if (this.activetags.indexOf(triggeredTerm) !== -1) {
         let index = this.activetags.indexOf(triggeredTerm)
         this.activetags.splice(index, 1)
       } else {
         this.activetags.push(triggeredTerm)
       }
-
+    }
+  },
+  watch: {
+    term () {
+      let vm = this
+      if (this.term === ""){
+        this.methodResults = this.matchingTags
+      } else {
+      this.$search(this.term, this.matchingTags, this.options).then(results => {
+        this.methodResults = results
+      })
+      }
+    },
+    activetags () {
+      if (this.term === ""){
+        this.methodResults = this.matchingTags
+      } else {
+      this.$search(this.term, this.matchingTags, this.options).then(results => {
+        this.methodResults = results
+      })
+      }
     }
   },
   computed: {
@@ -140,6 +167,15 @@ export default {
       })
       return peepsWithTags
     }
+  },
+  created () {
+    this.fetchPeeps()
+    // because fetching the data is asynchronous, we need to update it when
+    // the data has been returned
+    this.$on('fetchedPeeps', function(listOPeeps) {
+        this.items = listOPeeps
+        this.methodResults = this.items
+    })
   }
 }
 </script>

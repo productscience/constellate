@@ -3,8 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import VueFuse from 'vue-fuse'
 
 Vue.config.productionTip = false
+
+Vue.use(VueFuse)
 
 /* eslint-disable no-new */
 new Vue({

@@ -169,12 +169,18 @@ export default {
     }
   },
   created () {
+
     this.fetchPeeps()
     // because fetching the data is asynchronous, we need to update it when
     // the data has been returned
     this.$on('fetchedPeeps', function(listOPeeps) {
         this.items = listOPeeps
         this.methodResults = this.items
+        let vm = this
+        let newProfile = this.items.filter(function (peep) {
+          return peep.fields.email === vm.user.email
+        })
+        this.profile = newProfile[0]
     })
   }
 }

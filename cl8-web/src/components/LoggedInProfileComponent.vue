@@ -11,15 +11,15 @@
 
     </div>
 
-      <div class="fl w-third pa2">
-        <div class="tag-list">
-          <p>Active tags
-          <span v-for="tag in activetags">
+  <div v-if="authenticated"  class="fl w-third pa2">
+    <div class="tag-list">
+      <p>Active tags
+        <span v-for="tag in activetags">
               {{ tag }}
-          </span>
-          </p>
-          <input v-model="term">
-        </div>
+        </span>
+      </p>
+      <input v-model="term">
+    </div>
 
         <p>{{ methodResults.length}} matching results</p>
 

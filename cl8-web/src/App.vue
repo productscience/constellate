@@ -11,7 +11,7 @@
             </button>
           </div>
 
-          <nav class="pa3 bg-grey bb cf">
+          <nav class="pa3 bg-grey bb cf" v-if="authenticated" >
               <a class="link white-60 no-underline pa3 fl w-10" href="#">Constellate</a>
               <div class="fr w-3">
                 <button

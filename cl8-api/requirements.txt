@@ -1,0 +1,9 @@
+flask
+python-dotenv
+requests
+flask-oauthlib
+python-jose
+airtable-python-wrapper
+
+pytest
+pytest-watch

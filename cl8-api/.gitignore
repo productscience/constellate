@@ -1,0 +1,8 @@
+.env
+.pyc
+*.iml
+.directory
+.idea
+__pycache__
+.cache
+.DS_Store

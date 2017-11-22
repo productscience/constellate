@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import LoggedInProfileComponent from '@/components/LoggedInProfileComponent'
+import EditProfileComponent from '@/components/EditProfileComponent'
 import Callback from '@/components/Callback'
 
 Vue.use(Router)
@@ -12,6 +13,11 @@ export default new Router({
       path: '/home',
       name: 'LoggedInProfileComponent',
       component: LoggedInProfileComponent
+    },
+    {
+      path: '/edit',
+      name: 'EditProfileComponent',
+      component: EditProfileComponent
     },
     {
       path: '/callback',

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="ownProfile">
-      <a href="#">Edit</a>
+      <router-link to="/edit">Edit</router-link>
     </div>
 
     <v-gravatar :email="profile.fields.email"  />

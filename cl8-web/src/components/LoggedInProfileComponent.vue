@@ -52,7 +52,8 @@ export default {
       term: "",
       options: {
         keys: ['id', "fields.Name", "fields.email"],
-        defaultAll: true
+        defaultAll: true,
+        threshold: 0.2
       },
       keys: ['id', "fields.Name", "fields.email"],
       componentResults: [],

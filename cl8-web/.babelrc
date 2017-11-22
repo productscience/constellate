@@ -1,13 +1,16 @@
 {
   "presets": [
     ["env", {
-      "modules": false
+      "modules": false,
     }],
     "stage-2"
   ],
   "plugins": ["transform-runtime"],
   "env": {
     "test": {
-      "presets": ["env", "stage-2"]    }
+      "presets": ["env", "stage-2"]},
+    "production": {
+      "presets": ["env", "stage-2"]
+    }
   }
 }

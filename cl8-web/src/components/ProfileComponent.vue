@@ -4,7 +4,9 @@
       <a href="#">Edit</a>
     </div>
 
+    <v-gravatar :email="profile.fields.email"  />
     <ul>
+      <li></li>
       <li class="list name">{{ profile.fields.Name }}</li>
       <li class="list email">{{ profile.fields.email }}</li>
     </ul>
@@ -24,6 +26,10 @@
 
 <script>
 /* eslint-disable */
+import Vue from 'vue'
+import Gravatar from 'vue-gravatar'
+
+Vue.component('v-gravatar', Gravatar)
 
 export default {
   name: 'ProfileComponent',
@@ -33,7 +39,9 @@ export default {
       ownProfile : true
     }
   },
-  components: {},
+  components: {
+    Gravatar
+  },
   methods: {
     toggleTag: function (triggeredEvent) {
       this.$emit('toggleTag', triggeredEvent, this)

@@ -4,7 +4,9 @@
 
       <p v-on:click="fetchPeeps">load data</p>
 
-      <profile-component
+
+
+      <profile-component class="debug"
         v-bind:profile="profile"
         v-on:toggleTag="updateActiveTags">
       </profile-component>
@@ -12,9 +14,10 @@
     </div>
 
   <div v-if="authenticated"  class="fl w-third pa2">
-    <div class="tag-list">
-      <p>Active tags
-        <span v-for="tag in activetags">
+    <div class="tag-list h4 debug">
+      <p>Active tags</p>
+      <p>
+        <span v-for="tag in activetags" class="list bg-blue pa1 ma1">
               {{ tag }}
         </span>
       </p>
@@ -75,7 +78,8 @@ export default {
               "id": "recvyDsYcNdJx91is"
             }
           ],
-          "email": "homer.simpson@yahoo.com"
+          "email": "homer.simpson@yahoo.com",
+          "visible": 'yes'
         },
         "id": "rec0CSbkZBm1wWluF"
       },
@@ -186,3 +190,11 @@ export default {
   }
 }
 </script>
+
+
+<style media="screen">
+p span.list{
+  display: inline-block;
+}
+
+</style>

@@ -102,6 +102,7 @@ export default {
     onSubmit: function (item) {
       console.log(item, this.profile)
       this.$emit('profileUpdate', item, this.profile)
+      this.$router.push('/home')
     },
     showProfile: function (someThing, childInstance) {
       // console.log('registered click', childInstance)

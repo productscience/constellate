@@ -1,8 +1,16 @@
 <template>
-  <li class="list peep" :data-atid="item.id" @click="profileChosen">
-    <v-gravatar :email="item.fields.email"  />
-    <p class="name">{{ item.fields.Name }}</p>
-    <p>{{ item.fields.email }}</p>
+  <li class="list peep cf ma2" :data-atid="item.id" @click="profileChosen">
+
+    <v-gravatar :email="item.fields.email" class="fl w-20 b--light-silver ba" />
+
+    <div class="fl w60">
+      <ul class="list pt0 mt0">
+        <li class="name b">{{ item.fields.Name }}</li>
+        <li class="email">{{ item.fields.email }}</li>
+        <li class="phone">{{ item.fields.phone }}</li>
+        <li class="website">{{ item.fields.website }}</li>
+      </ul>
+    </div>
   </li>
 </template>
 

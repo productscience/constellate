@@ -6,7 +6,7 @@
           <v-gravatar
             :email="profile.fields.email"
             :size="200"
-            class="gravatar" />
+            class="gravatar b--light-silver ba" />
 
       </div>
 

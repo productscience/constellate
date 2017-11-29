@@ -1,12 +1,8 @@
 <template>
-  <div>
+  <div class="cf">
     <div v-if="authenticated" class="fl w-two-thirds pa2">
 
-      <p v-on:click="fetchPeeps">load data</p>
-
-
-
-      <profile-component class="debug"
+      <profile-component class=""
         v-bind:profile="profile"
         v-on:toggleTag="updateActiveTags">
       </profile-component>
@@ -14,26 +10,39 @@
     </div>
 
   <div v-if="authenticated"  class="fl w-third pa2">
-    <div class="tag-list h4 debug">
-      <p>Active tags</p>
+    <div class="tag-list">
+      <h3>Active Tags</h3>
       <p>
-        <span v-for="tag in activetags" class="list bg-blue pa1 ma1">
+        <span v-for="tag in activetags" class="list pa2 ma1 ph3 b--light-silver ba br2">
               {{ tag }}
         </span>
       </p>
-      <input v-model="term">
+      <form class="pl0 pt2 pb2 black-80">
+        <div class="measure">
+          <label for="search-term" class="f6 b db mb2">
+            Search
+          </label>
+          <input
+            v-model="term" placeholder="search across everything"
+            class="input-reset ba b--black-20 pa2 mb2 db w-80"
+            name="search-term"
+             />
+        </div>
+        </form>
+
     </div>
 
         <p>{{ methodResults.length}} matching results</p>
 
-        <search-view-component
-          v-for="(item, index) in methodResults"
-          v-bind:item="item"
-          v-bind:index="index"
-          v-bind:key="item.id"
-          v-on:profileChosen="showProfile">
-        </search-view-component>
-      </ul>
+        <ul class="list ml0 pl0">
+          <search-view-component
+            v-for="(item, index) in methodResults"
+            v-bind:item="item"
+            v-bind:index="index"
+            v-bind:key="item.id"
+            v-on:profileChosen="showProfile">
+          </search-view-component>
+        </ul>
 
       </div>
   </div>
@@ -54,11 +63,11 @@ export default {
     return {
       term: "",
       options: {
-        keys: ['id', "fields.Name", "fields.email"],
+        keys: ['id', "fields.Name", "fields.email", "fields.Tags"],
         defaultAll: true,
         threshold: 0.2
       },
-      keys: ['id', "fields.Name", "fields.email"],
+      keys: ['id', "fields.Name", "fields.email", "fields.Tags"],
       componentResults: [],
       methodResults: [],
       profile: {

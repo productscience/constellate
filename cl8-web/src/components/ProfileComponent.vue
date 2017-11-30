@@ -1,13 +1,12 @@
 <template>
   <div class="pa3 center w-80 cf">
 
-    <div class="cf">
+    <div class="cf" style="min-height:11em;">
       <div class="fl w-20">
           <v-gravatar
             :email="profile.fields.email"
             :size="200"
             class="gravatar b--light-silver ba" />
-
       </div>
 
       <div class="fl w-50 mt0 pt0">
@@ -35,33 +34,29 @@
             </li>
         </ul>
 
-        </ul>
-
       </div>
-
-
-
-
     </div>
 
-    <ul class='list tags ml0 pl0'>
-      <li
-        v-for="tag in profile.fields.Tags"
-        class="list bg-white pa2 ma1 ph3 b--light-silver ba br2"
-        v-bind:class="{ active: isActive }"
-        @click="toggleTag">
-        {{ tag.Name }}
-      </li>
-    </ul>
+    <div class="cf pt2">
+      <ul class='list tags ml0 pl0'>
+        <li
+          v-for="tag in profile.fields.Tags"
+          class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-washed-red"
+          v-bind:class="{ 'bg-dark-red white': isActive(tag.Name) }"
+          @click="toggleTag">
+          {{ tag.Name }}
+        </li>
+      </ul>
+    </div>
 
     <div v-if="ownProfile">
       <hr>
-      <p>Is this correct? <router-link to="/edit" class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">Change this info</router-link></p>
-
-
+        <router-link to="/edit"
+          class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
+          Change this info
+        </router-link>
+      </p>
     </div>
-
-
 
     </div>
 </div>
@@ -82,18 +77,37 @@ export default {
       ownProfile : true
     }
   },
+  computed: {
+    // isActive: function (ev) {
+    //   console.log("a thing")
+    //   console.log(ev)
+    //   // console.log(this)
+    // }
+  },
   components: {
     Gravatar
   },
   methods: {
     toggleTag: function (triggeredEvent) {
-      this.$emit('toggleTag', triggeredEvent, this)
+      let triggeredTerm = triggeredEvent.target.textContent.trim()
+      console.log(this)
+      this.$emit('toggleTag', triggeredTerm)
       // update appearance by toggling a class
     },
-    isActive: function (ev) {
-      console.log(ev)
-      // console.log(this)
+    isActive: function (term) {
+      // console.log("rendered on building the dom?")
+      console.log(term)
+      // console.log(this.profile.fields.Name)
+      console.log(this.activetags)
+      if (typeof this.activetags !== 'undefined') {
+          let matchesActiveTag = this.activetags.indexOf(term) !== -1
+          // debugger
+          return matchesActiveTag
+        }
+
+
     }
+
 
   }
 }

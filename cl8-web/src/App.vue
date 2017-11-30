@@ -1,42 +1,27 @@
 <template>
   <div id="app" class="cf">
-    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10">
-      <a class="dtc v-mid mid-gray link dim w-25" href="#" title="Home">
-        <img src="./assets/rocket.gif" class="dib w2 h2 br-100" alt="Constellate">
-      </a>
-      <div class="dtc v-mid w-75 tr">
-        <a v-if="authenticated" class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" title="Profile">Profile</a>
-        <a v-if="authenticated" class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="logout()" title="Log out">Logout</a>
-      </div>
-    </nav>
 
-    <div class="w-100 border-box pa3 ph5-ns" v-if="!authenticated">
-      <div class="dtc v-mid" >
-        <p class="f2 grey-10 tc">
-          Welcome to Constellate, an experiment in people-scale networks.
-        </p>
-        <p>Please follow the link to sign in with your email address.</p>
-        <a class="f6 br-pill bg-dark-red no-underline white ba b--dark-red grow pv2 ph3 dib mr3"
+    <div class="w-100 border-box pa3 ph5-ns bg-white" v-if="!authenticated" >
+      <div class="v-mid sign-in-prompt relative">
+
+        <h2 class="absolute" style="top: 120px; left: 145px;">Constellation</h2>
+
+        <a class="f6 br-pill bg-dark-red no-underline white ba grow pv2 ph3 dib absolute "
           @click="login()"
           href="#">
             Log in with email
         </a>
+
+
       </div>
     </div>
 
-
     <router-view
         :auth="auth"
-        :authenticated="authenticated">
+        :authenticated="authenticated"
+        :logout="logout"
+        >
     </router-view>
-
-
-
-    <footer class="w-100 pa3 pa5-ns bt b--black-10 black-70 bg-light-gray">
-      Insert link to terms and copyright here
-
-
-    </footer>
 
   </div>
 
@@ -56,16 +41,35 @@ export default {
 
     return {
       auth,
-      authenticated
+      authenticated,
+      logout
     }
   },
   methods: {
-    login,
-    logout
+    login
   }
 }
 </script>
 
 <style>
   @import '../node_modules/tachyons/css/tachyons.css';
+
+  .sign-in-prompt{
+    width: 500px;
+    height: 500px;
+    margin-left:auto;
+    margin-right:auto;
+    background-image: url(assets/earth-transparent.png);
+    background-repeat: no-repeat;
+  }
+  .sign-in-prompt a{
+
+    top: 175px;
+    left: 145px;
+  }
+
+
+  .bg-network{
+
+  }
 </style>

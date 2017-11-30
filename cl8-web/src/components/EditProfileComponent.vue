@@ -1,32 +1,64 @@
 <template>
-  <div>
+  <div class="cf bg-white">
+    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10 bg-white" v-if="authenticated" >
+
+      <div class="dtc v-mid w-75 tr">
+        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" title="my profile">my profile</a>
+        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="logout()" title="log out">log out</a>
+      </div>
+    </nav>
     <div v-if="authenticated" class="fl w-two-thirds pa2">
-
-      <form class="" >
-        <v-gravatar :email="profile.fields.email"  />
-        <ul>
-          <li></li>
-          <li class="list name">{{ profile.fields.Name }}</li>
-          <li class="list email">{{ profile.fields.email }}</li>
-        </ul>
+      <div class="pa3 center w-80 cf">
         <div>
-          <label class="typo__label">Tagging</label>
-          <multiselect v-model="profile.fields.Tags"
-            tag-placeholder="Add this as new tag"
-            placeholder="Search or add a tag"
-            label="Name" track-by="id"
-            :options="profileTags"
-            :multiple="true" :taggable="true"
-            @tag="addTag"></multiselect>
+          <form class="">
+            <div class="cf" style="min-height:11em;">
+              <div class="fl w-20 ">
+                <v-gravatar
+                :email="profile.fields.email"
+                :size="200"
+                class="gravatar b--light-silver ba"
+                />
+
+
+              </div>
+
+              <div class="fl w-50 mt0 pt0">
+                <ul class="list mt0 pt0">
+                  <li class="list f3 name">{{ profile.fields.Name }}</li>
+                  <li class="list f3 email">{{ profile.fields.email }}</li>
+                  <li class="list f3 phone">{{ profile.fields.phone }}</li>
+                </ul>
+              </div>
+
+            </div>
+
+            <div class="cf pt2">
+              <label class="typo__label">Skills and interests</label>
+              <multiselect v-model="profile.fields.Tags"
+                class="pt3 pb3"
+                tag-placeholder="Add this as new tag"
+                placeholder="Search or add a tag"
+                label="Name" track-by="id"
+                :options="profileTags"
+                :multiple="true" :taggable="true"
+                @tag="addTag"></multiselect>
+            </div>
+
+            <hr>
+
+            <router-link to="/home"
+              v-on:submit.prevent="onSubmit" @click="onSubmit"
+              class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
+              Save these changes
+            </router-link>
+
+            <a class="f6 red ml3" href="#">Delete my account</a>
+
+          </form>
+
+
         </div>
-
-        <button type="button" name="Update" v-on:submit.prevent="onSubmit" @click="onSubmit">
-          Update Profile
-        </button>
-
-      </form>
-
-
+      </div>
     </div>
   </div>
 </template>
@@ -46,21 +78,21 @@ export default {
       profile: {
         "createdTime": "2017-11-11T12:40:59.000Z",
         "fields": {
-          "Name": "Homer Simpson",
+          "Name": "--",
           "Tags": [{
-              "Name": "donuts",
-              "id": "rec7BPWAthDqPSOeY"
+              "Name": "--",
+              "id": "--"
             },
             {
-              "Name": "Duff Beer",
+              "Name": "--",
               "id": "recoHNloW0Nk9M9JK"
             },
             {
-              "Name": "taverns",
+              "Name": "--",
               "id": "recvyDsYcNdJx91is"
             }
           ],
-          "email": "homer.simpson@yahoo.com",
+          "email": "--",
           "visible": 'yes'
         },
         "id": "rec0CSbkZBm1wWluF"

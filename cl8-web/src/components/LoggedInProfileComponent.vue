@@ -1,38 +1,46 @@
 <template>
-  <div class="cf">
-    <div v-if="authenticated" class="fl w-two-thirds pa2">
+  <div class="cf bg-white bg-network">
+    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10 bg-white" v-if="authenticated" >
+
+      <div class="dtc v-mid w-75 tr">
+            <input
+              v-model="term" placeholder="search across everything"
+              class="input-reset b--black-20 pa2 mr1 w-20"
+              name="search-term"
+               />
+        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" title="my profile">my profile</a>
+        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="logout()" title="log out">log out</a>
+      </div>
+    </nav>
+
+
+    <div v-if="authenticated" class="fl w-two-thirds pa br b--light-silver profile-holder">
 
       <profile-component class=""
         v-bind:profile="profile"
+        v-bind:activetags="activetags"
         v-on:toggleTag="updateActiveTags">
       </profile-component>
 
     </div>
 
-  <div v-if="authenticated"  class="fl w-third pa2">
-    <div class="tag-list">
-      <h3>Active Tags</h3>
-      <p>
-        <span v-for="tag in activetags" class="list pa2 ma1 ph3 b--light-silver ba br2">
-              {{ tag }}
-        </span>
-      </p>
-      <form class="pl0 pt2 pb2 black-80">
-        <div class="measure">
-          <label for="search-term" class="f6 b db mb2">
-            Search
-          </label>
-          <input
-            v-model="term" placeholder="search across everything"
-            class="input-reset ba b--black-20 pa2 mb2 db w-80"
-            name="search-term"
-             />
-        </div>
-        </form>
+    <div v-if="authenticated" class="fl w-third pa2">
+      <div class="tag-list">
+        <p>
+          <span v-for="tag in activetags"
 
-    </div>
+                class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative"
+                >
+                {{ tag }}
+                <i class="remove_icon bg-animate hover-bg-light-red"
+                  @click="toggleTag"></i>
 
-        <p>{{ methodResults.length}} matching results</p>
+          </span>
+        </p>
+
+      </div>
+
+        <p class="ml2">{{ methodResults.length}} matching results</p>
 
         <ul class="list ml0 pl0">
           <search-view-component
@@ -44,7 +52,7 @@
           </search-view-component>
         </ul>
 
-      </div>
+    </div>
   </div>
 </template>
 
@@ -55,42 +63,33 @@ import SearchViewComponent from './SearchViewComponent.vue'
 import axios from 'axios'
 import { debounce, includes, remove } from 'lodash'
 
+const searchkeys = ["fields.Name", "fields.email", "fields.Tags.Name"]
+
 export default {
   name: 'LoggedInProfile',
-  props: ['auth', 'authenticated'],
+  props: ['auth', 'authenticated', 'logout'],
   data () {
 
     return {
       term: "",
       options: {
-        keys: ['id', "fields.Name", "fields.email", "fields.Tags"],
+        keys: searchkeys,
         defaultAll: true,
         threshold: 0.2
       },
-      keys: ['id', "fields.Name", "fields.email", "fields.Tags"],
+      keys: searchkeys,
       componentResults: [],
       methodResults: [],
       profile: {
-        "createdTime": "2017-11-11T12:40:59.000Z",
+        "createdTime": "--",
         "fields": {
-          "Name": "Homer Simpson",
-          "Tags": [{
-              "Name": "donuts",
-              "id": "rec7BPWAthDqPSOeY"
-            },
-            {
-              "Name": "Duff Beer",
-              "id": "recoHNloW0Nk9M9JK"
-            },
-            {
-              "Name": "taverns",
-              "id": "recvyDsYcNdJx91is"
-            }
+          "Name": "--",
+          "Tags": [
           ],
-          "email": "homer.simpson@yahoo.com",
+          "email": "--",
           "visible": 'yes'
         },
-        "id": "rec0CSbkZBm1wWluF"
+        "id": "--"
       },
       user: JSON.parse(localStorage.getItem('user')),
       activetags: [],
@@ -128,15 +127,19 @@ export default {
         // change this to update the debounce figure
         750
     ),
-    updateActiveTags: function (triggeredEvent, childInstance) {
-      let triggeredTerm = triggeredEvent.target.textContent.trim()
+    updateActiveTags: function (triggeredTerm) {
       if (this.activetags.indexOf(triggeredTerm) !== -1) {
         let index = this.activetags.indexOf(triggeredTerm)
         this.activetags.splice(index, 1)
       } else {
         this.activetags.push(triggeredTerm)
       }
-    }
+    },
+    // this is the same function as in profilecomponent - reuse instead?
+    toggleTag: function (triggeredEvent) {
+      let tagToToggle = triggeredEvent.target.parentElement.textContent.trim()
+      this.updateActiveTags(tagToToggle)
+    },
   },
   watch: {
     term () {
@@ -184,10 +187,25 @@ export default {
   },
   created () {
 
-    this.fetchPeeps()
+
+    // debugger
+    if (!this.authenticated) {
+      console.log('not authed')
+      return false
+    }
+
+    let localStoragePeeps = localStorage.getItem('fetchedPeeps')
+
+    console.log(localStoragePeeps)
+
+    if (this.fetchedItems.length === 0) {
+        this.fetchPeeps()
+    }
+
     // because fetching the data is asynchronous, we need to update it when
     // the data has been returned
     this.$on('fetchedPeeps', function(listOPeeps) {
+        localStorage.setItem('fetchedPeeps', JSON.stringify(listOPeeps))
         this.items = listOPeeps
         this.methodResults = this.items
         let vm = this
@@ -204,6 +222,26 @@ export default {
 <style media="screen">
 p span.list{
   display: inline-block;
+}
+.tag-list i.remove_icon:after{
+  content: "\D7";
+  color: white;
+}
+.tag-list i.remove_icon{
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1em;
+  font-style:normal;
+}
+.bg-network{
+  background-image: url(../assets/network-watermark.png);
+  background-repeat: no-repeat;
+}
+.profile-holder{
+  box-shadow: 5px 0px 20px #ddd;
 }
 
 </style>

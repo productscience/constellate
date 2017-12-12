@@ -19,7 +19,11 @@
     <router-view
         :auth="auth"
         :authenticated="authenticated"
+        :authNotifier="authNotifier"
         :logout="logout"
+        v-on:profileChosen="showProfile"
+        :profile="profile"
+        :fbase="fbase"
         >
     </router-view>
 
@@ -29,8 +33,11 @@
 
 <script>
 import AuthService from './auth/AuthService'
+import FirebaseService from './persistence/FirebaseService'
+
 const auth = new AuthService()
 const { login, logout, authenticated, authNotifier } = auth
+const fbase = new FirebaseService()
 
 export default {
   name: 'app',
@@ -38,15 +45,32 @@ export default {
     authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
     })
-
     return {
+      // profile: {},
+      profile: {
+        'createdTime': '--',
+        'fields': {
+          'name': '--',
+          'tags': [
+          ],
+          'email': '--',
+          'visible': 'yes'
+        },
+        'id': '--'
+      },
       auth,
       authenticated,
-      logout
+      authNotifier,
+      logout,
+      fbase
     }
   },
   methods: {
-    login
+    login,
+    showProfile: function (profile) {
+      // console.log(profile)
+      this.profile = profile
+    }
   }
 }
 </script>

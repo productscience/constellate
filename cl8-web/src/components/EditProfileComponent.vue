@@ -18,27 +18,53 @@
                 :size="200"
                 class="gravatar b--light-silver ba"
                 />
-
-
               </div>
 
               <div class="fl w-50 mt0 pt0">
                 <ul class="list mt0 pt0">
-                  <li class="list f3 name">{{ profile.fields.Name }}</li>
-                  <li class="list f3 email">{{ profile.fields.email }}</li>
-                  <li class="list f3 phone">{{ profile.fields.phone }}</li>
+                  <li class="list f3 name">
+                    <label for="">name: </label>
+                    <input v-model="profile.fields.name" />
+                  </li>
+                  <li class="list f3 email">
+                    {{ profile.fields.email }}
+                  </li>
+                  <li class="list f3 phone">
+                    <label for="">phone: </label>
+                    <input v-model="profile.fields.phone" />
+                  </li>
+                  <li class="list f3 website">
+                    <label for="">website</label>
+                    <input v-model="profile.fields.website" />
+                  </li>
                 </ul>
+
+                <ul class="list mt0 pt0">
+                  <li class="list f3 twitter">
+                    <label for="">twitter: </label>
+                    <input v-model="profile.fields.twitter" />
+                  </li>
+                  <li class="list f3 facebook">
+                    <label for="">facebook: </label>
+                    <input v-model="profile.fields.facebook" />
+                  </li>
+                  <li class="list f3 linkedin">
+                    <label for="">linkedin: </label>
+                    <input v-model="profile.fields.linkedin" />
+                  </li>
+                </ul>
+
               </div>
 
             </div>
 
             <div class="cf pt2">
               <label class="typo__label">Skills and interests</label>
-              <multiselect v-model="profile.fields.Tags"
+              <multiselect v-model="profile.fields.tags"
                 class="pt3 pb3"
                 tag-placeholder="Add this as new tag"
                 placeholder="Search or add a tag"
-                label="Name" track-by="id"
+                label="name" track-by="id"
                 :options="profileTags"
                 :multiple="true" :taggable="true"
                 @tag="addTag"></multiselect>
@@ -46,17 +72,13 @@
 
             <hr>
 
-            <router-link to="/home"
+            <a href="#"
               v-on:submit.prevent="onSubmit" @click="onSubmit"
               class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
               Save these changes
-            </router-link>
-
-            <a class="f6 red ml3" href="#">Delete my account</a>
+            </a>
 
           </form>
-
-
         </div>
       </div>
     </div>
@@ -65,79 +87,58 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
-/* eslint-disable */
-
-import axios from 'axios'
-import { includes, remove, debounce } from 'lodash'
+import { includes } from 'lodash'
 
 export default {
   name: 'EditProfileComponent',
-  props: ['auth', 'authenticated'],
+  props: ['auth', 'authenticated', 'tags', 'profile', 'fbase'],
+  firebase: function () {
+    return {
+      fbpeeps: this.fbase.db().ref('userlist')
+    }
+  },
   data () {
     return {
-      profile: {
-        "createdTime": "2017-11-11T12:40:59.000Z",
-        "fields": {
-          "Name": "--",
-          "Tags": [{
-              "Name": "--",
-              "id": "--"
-            },
-            {
-              "Name": "--",
-              "id": "recoHNloW0Nk9M9JK"
-            },
-            {
-              "Name": "--",
-              "id": "recvyDsYcNdJx91is"
-            }
-          ],
-          "email": "--",
-          "visible": 'yes'
-        },
-        "id": "rec0CSbkZBm1wWluF"
-      },
-      items: [],
-      user: JSON.parse(localStorage.getItem('user')),
+      items: [], // this needs to be the list from firebase
+      tagList: [],
+      unsyncedTags: [],
+      user: JSON.parse(localStorage.getItem('user'))
     }
   },
   components: {
     Multiselect
   },
   methods: {
-    fetchPeeps: debounce(
-      function() {
-        let vm = this
-
-        axios.get('/static/airtable.response.json')
-          .then(function(response) {
-            vm.$emit('fetchedPeeps', response.data)
-            vm.fetchedItems = response.data
-            vm.items = response.data
-          })
-          .catch(function (error) {
-            console.log("HTTP repsonse failed")
-            console.log(error)
-          })
-        },
-        // change this to update the debounce figure
-        750
-    ),
     addTag (newTag) {
+      let tempVal = newTag.substring(0, 2) + Math.floor(
+        (Math.random() * 10000000)
+      )
       const tag = {
         name: newTag,
-        code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+        code: tempVal,
+        id: 'tempval' + tempVal
       }
-      this.options.push(tag)
-      this.value.push(tag)
+      this.profile.fields.tags.push(tag)
+      this.unsyncedTags.push(tag)
+    },
+    myProfile: function () {
+      let vm = this
+      let newProfile = this.items.filter(function (peep) {
+        return peep.id === vm.user['https://cl8.io/firebaseId']
+      })
+      this.currentUser = newProfile[0].id === this.user['https://cl8.io/firebaseId']
+      this.$emit('profileChosen', newProfile[0])
     },
     onSubmit: function (item) {
-      console.log(item, this.profile)
-      this.$emit('profileUpdate', item, this.profile)
+      let newProfile = JSON.parse(JSON.stringify(this.profile))
+      delete newProfile['.key']
+      this.$firebaseRefs.fbpeeps.child(this.profile['.key']).set(newProfile)
+
+      this.$emit('profileUpdate', this.profile)
+      this.$emit('profileChosen', this.profile)
       this.$router.push('/home')
     },
     showProfile: function (someThing, childInstance) {
-      // console.log('registered click', childInstance)
       let newProfile = this.items.filter(function (peep) {
         return peep.id === childInstance.item.id
       })
@@ -150,40 +151,32 @@ export default {
       let tagList = []
       if (this.items.length > 0) {
         this.items.forEach(function (peep) {
-          // console.log("Tag:", peep.fields.Tags)
-          if (typeof peep.fields.Tags !== 'undefined') {
-            peep.fields.Tags.forEach(function (t) {
-              let tagListNames = tagList.map(function (tt){
-                return tt.Name
+          if (typeof peep.fields.tags !== 'undefined') {
+            peep.fields.tags.forEach(function (t) {
+              let tagListNames = tagList.map(function (tt) {
+                return tt.name
               })
-              if (!includes(tagListNames, t.Name)) {
+              if (!includes(tagListNames, t.name)) {
                 tagList.push(t)
               }
             })
           }
         })
       }
+      if (this.unsyncedTags.length > 0) {
+        this.unsyncedTags.forEach(function (t) {
+          tagList.push(t)
+        })
+      }
       return tagList
-    },
+    }
   },
   created () {
-    this.fetchPeeps()
-    // because fetching the data is asynchronous, we need to update it when
-    // the data has been returned
-    this.$on('fetchedPeeps', function(listOPeeps) {
-        this.items = listOPeeps
-        let vm = this
-        console.log(vm.user)
-        let newProfile = this.items.filter(function (peep) {
-          return peep.fields.email === vm.user.email
-        })
-        this.profile = newProfile[0]
-    })
-
+    this.fbase.authToFireBase(this.user)
+    this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
   }
 }
 </script>
-
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 

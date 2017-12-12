@@ -30,7 +30,7 @@ export default class AuthService {
   handleAuthentication (authResult) {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult)
+        let vm = this
         this.auth0.client.userInfo(authResult.accessToken, function (err, user) {
           // Now you have the user's information
           if (user && user.email) {
@@ -38,8 +38,8 @@ export default class AuthService {
           } else if (err) {
             console.log(err)
           }
-          console.log(user)
           localStorage.setItem('user', JSON.stringify(user))
+          vm.setSession(authResult)
         })
         router.replace('home')
       } else if (err) {

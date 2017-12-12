@@ -11,7 +11,7 @@
 
       <div class="fl w-50 mt0 pt0">
         <ul class="list mt0 pt0">
-          <li class="list f3 name">{{ profile.fields.Name }}</li>
+          <li class="list f3 name">{{ profile.fields.name }}</li>
           <li class="list f3 email">{{ profile.fields.email }}</li>
           <li class="list f3 phone">{{ profile.fields.phone }}</li>
         </ul>
@@ -33,23 +33,22 @@
             <a :href="profile.fields.facebook">Facebook</a>
             </li>
         </ul>
-
       </div>
     </div>
 
     <div class="cf pt2">
       <ul class='list tags ml0 pl0'>
         <li
-          v-for="tag in profile.fields.Tags"
+          v-for="tag in profile.fields.tags"
           class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-washed-red"
-          v-bind:class="{ 'bg-dark-red white': isActive(tag.Name) }"
+          v-bind:class="{ 'bg-dark-red white': isActive(tag.name) }"
           @click="toggleTag">
-          {{ tag.Name }}
+          {{ tag.name }}
         </li>
       </ul>
     </div>
 
-    <div v-if="ownProfile">
+    <div v-if="currentUser">
       <hr>
         <router-link to="/edit"
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
@@ -66,49 +65,35 @@
 /* eslint-disable */
 import Vue from 'vue'
 import Gravatar from 'vue-gravatar'
+import marked from 'marked'
 
 Vue.component('v-gravatar', Gravatar)
 
 export default {
   name: 'ProfileComponent',
-  props: ['auth', 'authenticated', 'profile', 'activetags'],
+  props: ['auth', 'authenticated', 'profile', 'activetags', 'currentUser', 'fbtagList'],
   data() {
-    return {
-      ownProfile : true
-    }
+    return {}
   },
-  computed: {
-    // isActive: function (ev) {
-    //   console.log("a thing")
-    //   console.log(ev)
-    //   // console.log(this)
-    // }
-  },
+  computed: {},
   components: {
     Gravatar
   },
   methods: {
     toggleTag: function (triggeredEvent) {
       let triggeredTerm = triggeredEvent.target.textContent.trim()
-      console.log(this)
       this.$emit('toggleTag', triggeredTerm)
       // update appearance by toggling a class
     },
     isActive: function (term) {
-      // console.log("rendered on building the dom?")
-      console.log(term)
-      // console.log(this.profile.fields.Name)
-      console.log(this.activetags)
       if (typeof this.activetags !== 'undefined') {
           let matchesActiveTag = this.activetags.indexOf(term) !== -1
-          // debugger
           return matchesActiveTag
         }
-
-
     }
-
-
+  },
+  filters: {
+    marked: marked
   }
 }
 </script>

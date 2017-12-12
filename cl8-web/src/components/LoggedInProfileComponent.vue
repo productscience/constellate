@@ -8,16 +8,17 @@
               class="input-reset b--black-20 pa2 mr1 w-20"
               name="search-term"
                />
-        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" title="my profile">my profile</a>
+        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="myProfile" title="my profile">my profile</a>
         <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="logout()" title="log out">log out</a>
       </div>
     </nav>
-
 
     <div v-if="authenticated" class="fl w-two-thirds pa br b--light-silver profile-holder">
 
       <profile-component class=""
         v-bind:profile="profile"
+        v-bind:fbtagList="fbtagList"
+        v-bind:currentUser="currentUser"
         v-bind:activetags="activetags"
         v-on:toggleTag="updateActiveTags">
       </profile-component>
@@ -28,25 +29,20 @@
       <div class="tag-list">
         <p>
           <span v-for="tag in activetags"
-
                 class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative"
                 >
                 {{ tag }}
                 <i class="remove_icon bg-animate hover-bg-light-red"
                   @click="toggleTag"></i>
-
           </span>
         </p>
 
       </div>
 
-        <p class="ml2">{{ methodResults.length}} matching results</p>
-
         <ul class="list ml0 pl0">
           <search-view-component
-            v-for="(item, index) in methodResults"
+            v-for="item in methodResults"
             v-bind:item="item"
-            v-bind:index="index"
             v-bind:key="item.id"
             v-on:profileChosen="showProfile">
           </search-view-component>
@@ -61,15 +57,22 @@
 import ProfileComponent from './ProfileComponent.vue'
 import SearchViewComponent from './SearchViewComponent.vue'
 import axios from 'axios'
-import { debounce, includes, remove } from 'lodash'
+import { includes } from 'lodash'
 
-const searchkeys = ["fields.Name", "fields.email", "fields.Tags.Name"]
+// import FirebaseService from '../persistence/FirebaseService'
+// const fbase = new FirebaseService()
+
+const searchkeys = ["fields.name", "fields.email", "fields.tags.name"]
 
 export default {
   name: 'LoggedInProfile',
-  props: ['auth', 'authenticated', 'logout'],
+  props: ['auth', 'authenticated', 'logout', 'profile', 'fbase'],
+  firebase: function () {
+    return {
+      fbpeeps: this.fbase.db().ref('userlist'),
+    }
+  },
   data () {
-
     return {
       term: "",
       options: {
@@ -80,21 +83,12 @@ export default {
       keys: searchkeys,
       componentResults: [],
       methodResults: [],
-      profile: {
-        "createdTime": "--",
-        "fields": {
-          "Name": "--",
-          "Tags": [
-          ],
-          "email": "--",
-          "visible": 'yes'
-        },
-        "id": "--"
-      },
       user: JSON.parse(localStorage.getItem('user')),
       activetags: [],
       items: [],
-      fetchedItems: []
+      fetchedItems: [],
+      fbtagList: [],
+      currentUser: false
     }
   },
   components: {
@@ -102,31 +96,25 @@ export default {
       ProfileComponent
   },
   methods: {
+    // fbase,
     showProfile: function (someThing, childInstance) {
       // console.log('registered click', childInstance)
       let newProfile = this.items.filter(function (peep) {
         return peep.id === childInstance.item.id
       })
-      this.profile = newProfile[0]
+      console.log(newProfile)
+      // this.profile = newProfile[0]
+      this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
+      this.$emit('profileChosen', newProfile[0])
     },
-    fetchPeeps: debounce(
-      function() {
-        let vm = this
-
-        axios.get('/static/airtable.response.json')
-          .then(function(response) {
-            vm.$emit('fetchedPeeps', response.data)
-            vm.fetchedItems = response.data
-            vm.items = response.data
-          })
-          .catch(function (error) {
-            console.log("HTTP repsonse failed")
-            console.log(error)
-          })
-        },
-        // change this to update the debounce figure
-        750
-    ),
+    myProfile: function () {
+      let vm = this
+      let newProfile = this.items.filter(function (peep) {
+        return peep.id === vm.user['https://cl8.io/firebaseId']
+      })
+      this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
+      this.$emit('profileChosen', newProfile[0])
+    },
     updateActiveTags: function (triggeredTerm) {
       if (this.activetags.indexOf(triggeredTerm) !== -1) {
         let index = this.activetags.indexOf(triggeredTerm)
@@ -171,13 +159,13 @@ export default {
       let matchingPeeps = this.items
       // clear out peeps with NO tags
       let peepsWithTags = matchingPeeps.filter(function (peep) {
-        return typeof peep.fields.Tags !== 'undefined'
+        return typeof peep.fields.tags !== 'undefined'
       })
       // now reduce the list till we only have people matching all tags
       terms.forEach(function (term) {
         peepsWithTags = peepsWithTags.filter(function (peep) {
-          let peepTerms = peep.fields.Tags.map(function (tag) {
-            return tag.Name
+          let peepTerms = peep.fields.tags.map(function (tag) {
+            return tag.name
           })
           return includes(peepTerms, term)
         })
@@ -186,34 +174,17 @@ export default {
     }
   },
   created () {
-
-
-    // debugger
     if (!this.authenticated) {
       console.log('not authed')
       return false
     }
 
-    let localStoragePeeps = localStorage.getItem('fetchedPeeps')
+    console.log("we're authed then")
+    this.fbase.authToFireBase(this.user)
+    this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
+    this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
 
-    console.log(localStoragePeeps)
-
-    if (this.fetchedItems.length === 0) {
-        this.fetchPeeps()
-    }
-
-    // because fetching the data is asynchronous, we need to update it when
-    // the data has been returned
-    this.$on('fetchedPeeps', function(listOPeeps) {
-        localStorage.setItem('fetchedPeeps', JSON.stringify(listOPeeps))
-        this.items = listOPeeps
-        this.methodResults = this.items
-        let vm = this
-        let newProfile = this.items.filter(function (peep) {
-          return peep.fields.email === vm.user.email
-        })
-        this.profile = newProfile[0]
-    })
+    this.currentUser = this.profile.id == this.user['https://cl8.io/firebaseId']
   }
 }
 </script>

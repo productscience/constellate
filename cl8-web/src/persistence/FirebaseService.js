@@ -1,11 +1,13 @@
 // import firebase from 'firebase'
 import { FIREBASE_CONFIG } from './firebase-variables'
+import EventEmitter from 'EventEmitter'
 import Firebase from 'firebase'
 import 'firebase/firestore'
 import axios from 'axios'
 
 export default class FirebaseService {
   firebaseApp = Firebase.initializeApp(FIREBASE_CONFIG)
+  fbauthNotifier = new EventEmitter()
 
   constructor () {
     this.db = this.db.bind(this)
@@ -17,6 +19,7 @@ export default class FirebaseService {
     console.log('db in firebase service', dbase)
     return dbase
   }
+
   authToFireBase (user) {
     axios({
       method: 'post',
@@ -30,8 +33,11 @@ export default class FirebaseService {
       // }
     })
     .then(response => {
-      console.log(response)
-      this.firebaseApp.auth().signInWithCustomToken(response.data).catch(function (error) {
+      return this.firebaseApp.auth().signInWithCustomToken(response.data)
+      .then(userRecord => {
+        this.fbauthNotifier.emit('authChange', { authedUser: userRecord.email })
+        return userRecord
+      }).catch(function (error) {
         console.log(error)
       })
     })

@@ -59,9 +59,6 @@ import SearchViewComponent from './SearchViewComponent.vue'
 import axios from 'axios'
 import { includes } from 'lodash'
 
-// import FirebaseService from '../persistence/FirebaseService'
-// const fbase = new FirebaseService()
-
 const searchkeys = ["fields.name", "fields.email", "fields.tags.name"]
 
 export default {
@@ -102,7 +99,7 @@ export default {
       let newProfile = this.items.filter(function (peep) {
         return peep.id === childInstance.item.id
       })
-      console.log(newProfile)
+      // console.log(newProfile)
       // this.profile = newProfile[0]
       this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
       this.$emit('profileChosen', newProfile[0])
@@ -148,6 +145,17 @@ export default {
         this.methodResults = results
       })
       }
+    },
+    items () {
+      if (!this.currentUser && this.authenticated){
+        this.myProfile()
+      }
+    },
+    authenticated () {
+      if (this.authenticated){
+        console.log('authenticated')
+        this.fbase.authToFireBase(this.user)
+      }
     }
   },
   computed: {
@@ -174,17 +182,14 @@ export default {
     }
   },
   created () {
-    if (!this.authenticated) {
-      console.log('not authed')
-      return false
-    }
-
-    console.log("we're authed then")
-    this.fbase.authToFireBase(this.user)
+    let vm = this
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
     this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
 
-    this.currentUser = this.profile.id == this.user['https://cl8.io/firebaseId']
+    // when the token is returned update the auth bits
+    this.fbase.fbauthNotifier.on('authChange', authedUser => {
+      console.log('FB AUTHED WOO: ', authedUser)
+    })
   }
 }
 </script>

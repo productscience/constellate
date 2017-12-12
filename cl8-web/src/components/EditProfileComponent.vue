@@ -18,7 +18,28 @@
                 :size="200"
                 class="gravatar b--light-silver ba"
                 />
+
+                <div class="">
+                    <input type="radio" id="yes" value="yes" v-model="profile.fields.visible">
+                    <label for="yes">Visible</label>
+                    <br>
+                    <input type="radio" id="no" value="no" v-model="profile.fields.visible">
+                    <label for="no">Invisible</label>
+
+                    <div v-if="this.profile.fields.visible == 'yes'"
+                    class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green">
+                        Visible
+                    </div>
+                    <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red">
+                      Invisible
+                    </div>
+                </div>
               </div>
+
+
+
+
+
 
               <div class="fl w-50 mt0 pt0">
                 <ul class="list mt0 pt0">

@@ -16,7 +16,7 @@ export default class FirebaseService {
 
   db () {
     let dbase = this.firebaseApp.database()
-    console.log('db in firebase service', dbase)
+    // console.log('db in firebase service', dbase)
     return dbase
   }
 

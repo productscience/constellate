@@ -93,14 +93,10 @@ export default {
       ProfileComponent
   },
   methods: {
-    // fbase,
     showProfile: function (someThing, childInstance) {
-      // console.log('registered click', childInstance)
       let newProfile = this.items.filter(function (peep) {
         return peep.id === childInstance.item.id
       })
-      // console.log(newProfile)
-      // this.profile = newProfile[0]
       this.currentUser = this.canEditUser(newProfile[0])
       this.$emit('profileChosen', newProfile[0])
     },
@@ -159,7 +155,7 @@ export default {
     },
     authenticated () {
       if (this.authenticated){
-        console.log('authenticated')
+        // console.log('authenticated')
         this.fbase.authToFireBase(this.user)
       }
     }
@@ -191,11 +187,6 @@ export default {
     let vm = this
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
     this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
-
-    // when the token is returned update the auth bits
-    this.fbase.fbauthNotifier.on('authChange', authedUser => {
-      console.log('FB AUTHED WOO: ', authedUser)
-    })
   }
 }
 </script>

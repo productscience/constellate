@@ -35,12 +35,7 @@
                     </div>
                 </div>
               </div>
-
-
-
-
-
-
+              
               <div class="fl w-50 mt0 pt0">
                 <ul class="list mt0 pt0">
                   <li class="list f3 name">

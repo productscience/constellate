@@ -102,7 +102,6 @@ export default {
         }
     },
     isVisible: function () {
-      console.log(this.profile.fields.visible)
       return this.profile.fields.visible === 'yes'
     }
   },

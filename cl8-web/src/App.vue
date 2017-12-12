@@ -12,7 +12,6 @@
             Log in with email
         </a>
 
-
       </div>
     </div>
 
@@ -46,7 +45,6 @@ export default {
       this.authenticated = authState.authenticated
     })
     return {
-      // profile: {},
       profile: {
         'createdTime': '--',
         'fields': {
@@ -68,7 +66,6 @@ export default {
   methods: {
     login,
     showProfile: function (profile) {
-      // console.log(profile)
       this.profile = profile
     }
   }

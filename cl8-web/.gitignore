@@ -15,3 +15,11 @@ selenium-debug.log
 *.ntvs*
 *.njsproj
 *.sln
+
+
+# keep credentials out of source code
+.env
+
+# for google cloud functions
+.runtimeconfig.json
+service-account.json

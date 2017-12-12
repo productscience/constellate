@@ -101,7 +101,7 @@ export default {
       })
       // console.log(newProfile)
       // this.profile = newProfile[0]
-      this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
+      this.currentUser = this.canEditUser(newProfile[0])
       this.$emit('profileChosen', newProfile[0])
     },
     myProfile: function () {
@@ -111,6 +111,12 @@ export default {
       })
       this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
       this.$emit('profileChosen', newProfile[0])
+    },
+    canEditUser: function (newProfile) {
+      if (this.user['https://cl8.io/admin'] === true) {
+        return true
+      }
+      return newProfile.id == this.user['https://cl8.io/firebaseId']
     },
     updateActiveTags: function (triggeredTerm) {
       if (this.activetags.indexOf(triggeredTerm) !== -1) {

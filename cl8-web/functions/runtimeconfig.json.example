@@ -1,0 +1,6 @@
+{
+  "auth0": {
+    "domain": "some_url_to_go_here.auth0.com",
+    "clientID": "thirty_two_char_long_hash"
+  }
+}

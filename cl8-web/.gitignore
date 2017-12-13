@@ -23,3 +23,9 @@ selenium-debug.log
 # for google cloud functions
 .runtimeconfig.json
 service-account.json
+
+*.log
+.cache
+
+
+*.DS_Store

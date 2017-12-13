@@ -2,7 +2,6 @@
 import { FIREBASE_CONFIG } from './firebase-variables'
 import EventEmitter from 'EventEmitter'
 import Firebase from 'firebase'
-import 'firebase/firestore'
 import axios from 'axios'
 
 export default class FirebaseService {

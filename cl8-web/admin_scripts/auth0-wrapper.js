@@ -70,6 +70,18 @@ exports.makeAdminUserByEmail = function(emailAddress, auth0) {
     })
 }
 
+exports.addAirtableAPIToUserByEmail = function(emailAddress, params, auth0) {
+  return auth0.getUsersByEmail(emailAddress)
+    .then(function (users) {
+      console.log(users)
+      return (users)
+    })
+    .then(function (users) {
+      let uid = users[0].user_id      
+      return updateUser(uid, params, auth0)
+    })
+}
+
 function updateUser(uid, params, auth0) {
   return auth0.updateAppMetadata({id: uid}, params)
     .then(function (user) {

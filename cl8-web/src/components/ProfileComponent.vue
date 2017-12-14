@@ -3,7 +3,13 @@
 
     <div class="cf" style="min-height:11em;">
       <div class="fl w-20">
-          <v-gravatar
+
+
+          <img v-if="profile.fields.photo.length > 0"
+            :src="profile.fields.photo[0].thumbnails.large.url"
+            class="supplied-photo b--light-silver ba" />
+
+          <v-gravatar v-else
             :email="profile.fields.email"
             :size="200"
             class="gravatar b--light-silver ba" />

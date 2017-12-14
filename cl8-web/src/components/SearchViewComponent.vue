@@ -36,15 +36,14 @@ export default {
       this.$emit('profileChosen', someEvent, this)
     },
     hasPhoto () {
-      if (typeof this.item.fields.photo === 'undefined'){
+      if (typeof this.item.fields.photo === 'undefined') {
         return false
       }
-      if ( this.item.fields.photo.length > 0 ) {
+      if (this.item.fields.photo.length > 0) {
         return true
       }
-      // otherwise
+      // otherwise jjust return false
       return false
-
     }
   },
   components: {

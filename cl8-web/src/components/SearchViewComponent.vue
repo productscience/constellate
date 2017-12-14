@@ -1,5 +1,6 @@
 <template>
-  <li class="list peep cf ma2" :data-atid="item.id" @click="profileChosen">
+  <li class="list peep cf ma2" :data-atid="item.id" @click="profileChosen"
+  v-if="hasfields()">
 
     <img v-if="hasPhoto()"
       :src="item.fields.photo[0].thumbnails.small.url"
@@ -35,7 +36,16 @@ export default {
     profileChosen (someEvent) {
       this.$emit('profileChosen', someEvent, this)
     },
+    hasfields () {
+      if (typeof this.item.fields === 'undefined') {
+        return false
+      }
+      return true
+    },
     hasPhoto () {
+      if (typeof this.item.fields === 'undefined') {
+        return false
+      }
       if (typeof this.item.fields.photo === 'undefined') {
         return false
       }

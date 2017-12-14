@@ -168,7 +168,10 @@ export default {
       }
       let matchingPeeps = this.items
       // clear out peeps with NO tags
-      let peepsWithTags = matchingPeeps.filter(function (peep) {
+      let peepsWithFields = matchingPeeps.filter(function (peep) {
+        return typeof peep.fields !== 'undefined'
+      })
+      let peepsWithTags = peepsWithFields.filter(function (peep) {
         return typeof peep.fields.tags !== 'undefined'
       })
       // now reduce the list till we only have people matching all tags

@@ -1,8 +1,13 @@
 <template>
-  <li class="list peep cf ma2" :data-atid="item.id" @click="profileChosen"
-    v-if="typeof item.fields !== 'undefined'">
+  <li class="list peep cf ma2" :data-atid="item.id" @click="profileChosen">
 
-    <v-gravatar :email="item.fields.email" :size="50" class="fl b--light-silver ba" />
+    <img v-if="hasPhoto()"
+      :src="item.fields.photo[0].thumbnails.small.url"
+      class="supplied-photo fl b--light-silver ba" />
+
+    <v-gravatar v-else
+      :email="item.fields.email" :size="36"
+      class="gravatar fl b--light-silver ba" />
 
     <div class="fl w60">
       <ul class="list pt0 mt0 ml0 pl1">
@@ -29,6 +34,17 @@ export default {
   methods: {
     profileChosen (someEvent) {
       this.$emit('profileChosen', someEvent, this)
+    },
+    hasPhoto () {
+      if (typeof this.item.fields.photo === 'undefined'){
+        return false
+      }
+      if ( this.item.fields.photo.length > 0 ) {
+        return true
+      }
+      // otherwise
+      return false
+
     }
   },
   components: {

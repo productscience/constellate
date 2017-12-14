@@ -97,16 +97,21 @@ export default {
       let newProfile = this.items.filter(function (peep) {
         return peep.id === childInstance.item.id
       })
-      this.currentUser = this.canEditUser(newProfile[0])
-      this.$emit('profileChosen', newProfile[0])
+      if (newProfile.length > 0) {
+        this.currentUser = this.canEditUser(newProfile[0])
+        this.$emit('profileChosen', newProfile[0])
+      }
+
     },
     myProfile: function () {
       let vm = this
       let newProfile = this.items.filter(function (peep) {
         return peep.id === vm.user['https://cl8.io/firebaseId']
       })
-      this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
-      this.$emit('profileChosen', newProfile[0])
+      if (newProfile.length > 0) {
+        this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
+        this.$emit('profileChosen', newProfile[0])
+      }
     },
     canEditUser: function (newProfile) {
       if (this.user['https://cl8.io/admin'] === true) {

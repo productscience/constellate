@@ -27,7 +27,7 @@ exports.getOrCreateUser = function (user, admin) {
     .then(function (newUser) { return newUser })
     .catch(function(error) {
       // console.log(error)
-      console.log(user)
+      console.log(user, error)
       if (error.errorInfo.code == 'auth/user-not-found') {
         let u = {
           uid: user.uid,
@@ -46,11 +46,41 @@ exports.getOrCreateUser = function (user, admin) {
     });
 }
 
-exports.updateUserInUserList = function (user, admin) {
-  // replace this with code running an actual promise
-  return new Promise(function (resolve, reject) {
-    let u = { uid: false,  email: 'false@domain.com'}
-    return resolve(u)
+exports.fetchUserList = function (admin) {
+  return admin.database().ref('userlist').once('value')
+    .then(function (dataSnapshot) {
+      return dataSnapshot
+    })
+}
+
+exports.addUserToUserList = function (user, admin) {
+  // adds a user to the userlist data structure in firebase
+  return exports.fetchUserList(admin)
+    .then(function(dataSnapshot) {
+      // console.log(dataSnapshot.val())
+      let filteredUsers = userlist.filter(function(returnedUser) {
+        return returnedUser.id == user.id
+      })
+    if (filteredUsers.length === 0) {
+
+      return admin.database().ref('userlist').push(user.id)
+        .then(function (key) {
+          return admin.database().ref('userlist').child(key).set(user)
+        })
+    }
+    else {
+      return
+    }
   })
-    .then(function (user) { return user })
+}
+
+exports.updateUserInUserList = function (user, admin) {
+    return exports.fetchUserList(admin)
+      .then(function(userlist) {
+        let filteredUsers = userlist.val().filter(function(returnedUser) {
+          return returnedUser.id == user.id
+        })
+        // return early - we don't want to change this one
+        return filteredUsers[0]
+      })
 }

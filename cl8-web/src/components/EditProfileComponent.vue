@@ -13,60 +13,63 @@
           <form class="">
             <div class="cf" style="min-height:11em;">
               <div class="fl w-20 ">
-                <v-gravatar
-                :email="profile.fields.email"
-                :size="200"
-                class="gravatar b--light-silver ba"
-                />
+                <img v-if="hasPhoto()"
+                  :src="profile.fields.photo[0].thumbnails.large.url"
+                  class="supplied-photo b--light-silver ba" />
 
-                <div class="">
-                    <input type="radio" id="yes" value="yes" v-model="profile.fields.visible">
+                <v-gravatar v-else
+                  :email="profile.fields.email"
+                  :size="200"
+                  class="gravatar b--light-silver ba" />
+
+                <div class="ma">
+                    <input class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
                     <label for="yes">Visible</label>
                     <br>
-                    <input type="radio" id="no" value="no" v-model="profile.fields.visible">
+                    <input class="ma2" type="radio" id="no" value="no" v-model="profile.fields.visible">
                     <label for="no">Invisible</label>
 
                     <div v-if="this.profile.fields.visible == 'yes'"
-                    class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green">
+                    class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green ma2 w-80" >
                         Visible
                     </div>
-                    <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red">
+                    <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red w-80 ma2">
                       Invisible
                     </div>
                 </div>
               </div>
-              
+
               <div class="fl w-50 mt0 pt0">
                 <ul class="list mt0 pt0">
-                  <li class="list f3 name">
-                    <label for="">name: </label>
-                    <input v-model="profile.fields.name" />
+                  <li class="list f3 name mt2">
+                    <label class="f4" for="">name: </label>
+                    <input class="w-100 pa2"  v-model="profile.fields.name" />
                   </li>
-                  <li class="list f3 email">
+                  <li class="list f3 email mt2">
                     {{ profile.fields.email }}
                   </li>
-                  <li class="list f3 phone">
-                    <label for="">phone: </label>
-                    <input v-model="profile.fields.phone" />
+                  <li class="list f3 phone mt2">
+                    <label class="f4" for="">phone: </label>
+                    <input class="w-100 pa2"  v-model="profile.fields.phone" />
                   </li>
-                  <li class="list f3 website">
-                    <label for="">website</label>
-                    <input v-model="profile.fields.website" />
+                  <li class="list f3 website mt2">
+                    <label class="f4" for="">website</label>
+                    <input class="w-100 pa2"  v-model="profile.fields.website" />
                   </li>
                 </ul>
 
                 <ul class="list mt0 pt0">
                   <li class="list f3 twitter">
-                    <label for="">twitter: </label>
-                    <input v-model="profile.fields.twitter" />
+                    <label class="f4" for="">twitter: </label>
+                    <input class="w-100 pa2"  v-model="profile.fields.twitter" />
                   </li>
-                  <li class="list f3 facebook">
-                    <label for="">facebook: </label>
-                    <input v-model="profile.fields.facebook" />
+                  <li class="list f3 facebook mt2">
+                    <label class="f4 " for="">facebook: </label>
+                    <input class="w-100 pa2" v-model="profile.fields.facebook" />
                   </li>
-                  <li class="list f3 linkedin">
-                    <label for="">linkedin: </label>
-                    <input v-model="profile.fields.linkedin" />
+                  <li class="list f3 linkedin mt2">
+                    <label class="f4" for="">linkedin: </label>
+                    <input class="w-100 pa2"  v-model="profile.fields.linkedin" />
                   </li>
                 </ul>
 
@@ -142,8 +145,9 @@ export default {
       let newProfile = this.items.filter(function (peep) {
         return peep.id === vm.user['https://cl8.io/firebaseId']
       })
-      this.currentUser = newProfile[0].id === this.user['https://cl8.io/firebaseId']
-      this.$emit('profileChosen', newProfile[0])
+      if (newProfile.length > 0) {
+        this.$emit('profileChosen', newProfile[0])
+      }
     },
     onSubmit: function (item) {
       let newProfile = JSON.parse(JSON.stringify(this.profile))
@@ -159,23 +163,39 @@ export default {
         return peep.id === childInstance.item.id
       })
       this.profile = newProfile[0]
+    },
+    hasPhoto () {
+      if (typeof this.profile.fields === 'undefined') {
+        return false
+      }
+      if (typeof this.profile.fields.photo === 'undefined') {
+        return false
+      }
+      if (this.profile.fields.photo.length > 0) {
+        return true
+      }
+      // otherwise jjust return false
+      return false
     }
   },
   watch: {},
   computed: {
     profileTags: function () {
       let tagList = []
+
       if (this.items.length > 0) {
         this.items.forEach(function (peep) {
-          if (typeof peep.fields.tags !== 'undefined') {
-            peep.fields.tags.forEach(function (t) {
-              let tagListNames = tagList.map(function (tt) {
-                return tt.name
+          if (typeof peep.fields !== 'undefined') {
+            if (typeof peep.fields.tags !== 'undefined') {
+              peep.fields.tags.forEach(function (t) {
+                let tagListNames = tagList.map(function (tt) {
+                  return tt.name
+                })
+                if (!includes(tagListNames, t.name)) {
+                  tagList.push(t)
+                }
               })
-              if (!includes(tagListNames, t.name)) {
-                tagList.push(t)
-              }
-            })
+            }
           }
         })
       }

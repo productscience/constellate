@@ -188,7 +188,10 @@ export default {
           return includes(peepTerms, term)
         })
       })
-      return peepsWithTags
+      let visiblePeeps = peepsWithTags.filter(function(peep) {
+        return peep.fields.visible == 'yes'
+      })
+      return visiblePeeps
     }
   },
   created () {

@@ -22,7 +22,7 @@
                   :size="200"
                   class="gravatar b--light-silver ba" />
 
-                <div class="ma">
+                <div class="ma2">
                     <input class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
                     <label for="yes">Visible</label>
                     <br>
@@ -46,10 +46,15 @@
                     <input class="w-100 pa2"  v-model="profile.fields.name" />
                   </li>
                   <li class="list f3 email mt2">
-                    {{ profile.fields.email }}
+                    <label class="f4" for="">website</label>
+                    <input class="w-100 pa2"  v-model="profile.fields.phone" />
+                  </li>
+                  <li class="list f3 email mt2">
+                    <label class="f4" for="">email</label>
+                    <input class="w-100 pa2 bg-light-gray light-silver" :value="profile.fields.email" readonly />
                   </li>
                   <li class="list f3 phone mt2">
-                    <label class="f4" for="">phone: </label>
+                    <label class="f4" for="">phone </label>
                     <input class="w-100 pa2"  v-model="profile.fields.phone" />
                   </li>
                   <li class="list f3 website mt2">

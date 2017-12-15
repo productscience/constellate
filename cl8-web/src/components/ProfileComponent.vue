@@ -5,7 +5,7 @@
       <div class="fl w-20">
 
 
-          <img v-if="profile.fields.photo.length > 0"
+          <img v-if="hasPhoto()"
             :src="profile.fields.photo[0].thumbnails.large.url"
             class="supplied-photo b--light-silver ba" />
 
@@ -109,6 +109,19 @@ export default {
     },
     isVisible: function () {
       return this.profile.fields.visible === 'yes'
+    },
+    hasPhoto () {
+      if (typeof this.profile.fields === 'undefined') {
+        return false
+      }
+      if (typeof this.profile.fields.photo === 'undefined') {
+        return false
+      }
+      if (this.profile.fields.photo.length > 0) {
+        return true
+      }
+      // otherwise jjust return false
+      return false
     }
   },
   filters: {

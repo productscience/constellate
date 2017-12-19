@@ -27,7 +27,6 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
 
   function checkForUser (user) {
     return admin.auth().getUserByEmail(user.fields.email)
-    // return admin.auth().getUserByEmail(user.email)
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
         console.log("Successfully fetched user data:", userRecord.uid, userRecord.email);
@@ -45,14 +44,10 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
         return newUser
       })
       .catch(function(error) {
-        // console.log(error)
-        // console.log(user, error)
         if (error.errorInfo.code == 'auth/user-not-found') {
           let u = {
             uid: user.id,
             email: user.fields.email
-            // uid: user.uid,
-            // email: user.email
           }
           return admin.auth().createUser(u)
             .then(function(newUser) {
@@ -105,7 +100,6 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
           let filteredUsers = usersArray.filter(function(returnedUser) {
             return returnedUser.id == user.id
           })
-          // console.log(filteredUsers)
           // return early - we don't want to change this one
           return filteredUsers[0]
         })

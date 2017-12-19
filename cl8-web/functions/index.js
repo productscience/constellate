@@ -9,7 +9,7 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 })
 
 const admin = require('firebase-admin')
-const serviceAccount = require('./service-account.json')
+const serviceAccount = require('./constellation-dgen.service-account.json')
 
 const auth0 = require('auth0-js')
 

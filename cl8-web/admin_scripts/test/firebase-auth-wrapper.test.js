@@ -1,4 +1,4 @@
-const serviceAccount = require('../../' + process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+const serviceAccount = require('../' + process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
 const databaseURL = process.env.FIREBASE_DATABASE_URL
 
 const wrapper = require('../../functions/src/firebase-auth-wrapper.js')(serviceAccount, databaseURL)
@@ -9,12 +9,10 @@ test('can create a user in one go', () => {
       fields: {
         email: "mail@chrisadams.me.uk"
       }
-      // uid: "someRandom",
-      // email: "mail@chrisadams.me.uk"
   }
   expect.assertions(1)
   return wrapper.getOrCreateUser(testUser).then(newUser => {
-    expect(newUser.email).toBe(testUser.email)
+    expect(newUser.email).toBe(testUser.fields.email)
   })
 })
 

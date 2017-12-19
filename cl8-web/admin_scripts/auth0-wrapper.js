@@ -6,8 +6,9 @@ const AuthenticationClient = require('auth0').AuthenticationClient;
 
 module.exports = Auth0Wrapper
 
-function Auth0Wrapper ( auth0Token, auth0domain ) {
-
+function Auth0Wrapper ( auth0Token, auth0Domain ) {
+  // console.log(auth0Token)
+  // console.log(auth0Domain)
   // var auth0 = function () {
 
     // TODO this is such a pain
@@ -38,9 +39,10 @@ function Auth0Wrapper ( auth0Token, auth0domain ) {
     //   console.log(error)
     // })
     // .then(response =>{
+
   var auth0 = new ManagementClient({
         token: auth0Token,
-        domain: auth0domain
+        domain: auth0Domain
       })
     // })
 

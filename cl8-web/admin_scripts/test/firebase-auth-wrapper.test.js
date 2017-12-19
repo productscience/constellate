@@ -5,8 +5,12 @@ const wrapper = require('../firebase-auth-wrapper.js')(serviceAccount, databaseU
 
 test('can create a user in one go', () => {
   let testUser = {
-      uid: "someRandom",
-      email: "mail@chrisadams.me.uk"
+      id: "someRandom",
+      fields: {
+        email: "mail@chrisadams.me.uk"
+      }
+      // uid: "someRandom",
+      // email: "mail@chrisadams.me.uk"
   }
   expect.assertions(1)
   return wrapper.getOrCreateUser(testUser).then(newUser => {

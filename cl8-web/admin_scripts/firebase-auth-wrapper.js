@@ -26,7 +26,8 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
   }
 
   function checkForUser (user) {
-    return admin.auth().getUserByEmail(user.email)
+    return admin.auth().getUserByEmail(user.fields.email)
+    // return admin.auth().getUserByEmail(user.email)
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
         console.log("Successfully fetched user data:", userRecord.uid, userRecord.email);
@@ -38,7 +39,7 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
   }
 
   function getOrCreateUser (user) {
-    return checkForUser(user, admin)
+    return checkForUser(user)
       .then(function (newUser) {
         console.log('found user:', newUser)
         return newUser
@@ -48,8 +49,10 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
         // console.log(user, error)
         if (error.errorInfo.code == 'auth/user-not-found') {
           let u = {
-            uid: user.uid,
-            email: user.email
+            uid: user.id,
+            email: user.fields.email
+            // uid: user.uid,
+            // email: user.email
           }
           return admin.auth().createUser(u)
             .then(function(newUser) {

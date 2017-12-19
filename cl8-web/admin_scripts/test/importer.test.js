@@ -21,48 +21,54 @@ const importer = Cl8Importer(importerCredentials)
 
 describe('helper functions', () => {
 
-  let testUsers = [{
-      id: 'recXXXXXXXXXXXXXX',
-      fields: {
-        email: 'totallynew@domain.com',
-        website: "newsite.com",
-        tags: ['rec8AoQ0MPMJQxYKK', 'rec0E1cKWxINp13lg']
+  let testUsers, testTags
+
+  beforeEach(() => {
+
+    testUsers = [{
+        id: 'recXXXXXXXXXXXXXX',
+        fields: {
+          email: 'totallynew@domain.com',
+          website: "newsite.com",
+          tags: ['rec8AoQ0MPMJQxYKK', 'rec0E1cKWxINp13lg']
+        },
       },
-    },
-    {
-      id: 'recXXXXXXXXXXXXXY',
-      fields: {
-        email: 'bloke@anothersite.com',
-        website: "anothersite.com",
-        tags: ['reclirD17BHglQHns']
+      {
+        id: 'recXXXXXXXXXXXXXY',
+        fields: {
+          email: 'bloke@anothersite.com',
+          website: "anothersite.com",
+          tags: ['reclirD17BHglQHns']
+        }
       }
-    }
-  ]
+    ]
 
-  let testTags = [{
-      "id": "rec8AoQ0MPMJQxYKK",
-      "fields": {
-        "name": "Open Data"
-      }
-    },
-    {
-      "id": "rec0E1cKWxINp13lg",
-      "fields": {
-        "name": "Air Quality"
-      }
+    testTags = [{
+        "id": "rec8AoQ0MPMJQxYKK",
+        "fields": {
+          "name": "Open Data"
+        }
+      },
+      {
+        "id": "rec0E1cKWxINp13lg",
+        "fields": {
+          "name": "Air Quality"
+        }
 
-    },
-    {
-      "id": "reclirD17BHglQHns",
-      "fields": {
-        "name": "Astrophysics"
+      },
+      {
+        "id": "reclirD17BHglQHns",
+        "fields": {
+          "name": "Astrophysics"
+        }
       }
-    }
-  ]
+    ]
+
+  })
 
   test('enrichPeep', () => {
-    let testUser = JSON.parse(JSON.stringify(testUsers[0]))
 
+    let testUser = testUsers[0]
     expect.assertions(5);
     let enrichedPeep = importer.enrichPeep(testUser, testTags)
     let firstTag = enrichedPeep.fields.tags[0]

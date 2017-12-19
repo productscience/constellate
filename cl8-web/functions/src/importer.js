@@ -1,15 +1,14 @@
-const AirtableWrapper = require('airtable-wrapper')
-const FireBaseWrapper = require('firebase-auth-wrapper')
-const Auth0Wrapper = require('auth0-wrapper')
-
-// declare our instances of these wrappers
-const atbl = AirTableWrapper()
-const fbase = FireBaseWrapper()
-const auth0 = Auth0Wrapper()
+const AirTableWrapper = require('./airtable-wrapper')
+const FireBaseWrapper = require('./firebase-auth-wrapper')
+const Auth0Wrapper = require('./auth0-wrapper')
+const _ = require('lodash')
 
 module.exports = Cl8Importer
 
-function Cl8Importer ({airtable: atbl, fbase: fbase, auth0: auth0 }) {
+function Cl8Importer (importerCredentials) {
+  const atbl = AirTableWrapper(importerCredentials.airTableCreds)
+  const fbase = FireBaseWrapper(importerCredentials.fbaseCreds[0], importerCredentials.fbaseCreds[1] )
+  const auth0 = Auth0Wrapper(importerCredentials.auth0Creds[0], importerCredentials.auth0Creds[1])
 
   function importUsersAndTags () {
     // once we have all the bits
@@ -112,12 +111,11 @@ function Cl8Importer ({airtable: atbl, fbase: fbase, auth0: auth0 }) {
       listOfPromises.push(createdauth0User)
       listOfPromises.push(createdfbaseUser)
       listOfPromises.push(userAddedtofbList)
-
-    }
+    })
     return executeSequentally(listOfPromises)
 
   }
-
+  // How would you test this? Is it worth it?
   function executeSequentally(promises) {
     // accepts a list of promises, and executes them in order, appending
     // each promise to the chain until it's done
@@ -134,7 +132,7 @@ function Cl8Importer ({airtable: atbl, fbase: fbase, auth0: auth0 }) {
     // then fetch the tags
     .then(atblUsers =>{
       return atbl.getTags()
-      .then(tags =>{
+      .then(tags => {
         return { peeps: peeps, tags: tags}
       })
     })
@@ -172,16 +170,22 @@ function Cl8Importer ({airtable: atbl, fbase: fbase, auth0: auth0 }) {
 
   }
 
-  // TODO TESTS
   function buildEnrichedPeeps (peepsList, fullTagList) {
-    enrichedPeeps = peepsList.map(function(peep) {
-      return enrichPeep(peep, fullTagList)
-    }
+    // console.log(peepsList)
+    // console.log(fullTagList)
+    let enrichedPeeps = []
+    peepsList.forEach(function(peep) {
+      // console.log("peep", peep)
+      let newPeep =  enrichPeep(peep, fullTagList)
+      // console.log("newpeep", newPeep)
+      enrichedPeeps.push(newPeep)
+    })
     return enrichedPeeps
   }
 
   function enrichPeep (peep, tagsList) {
-    enrichedTags = []
+    // console.log(peep)
+    let enrichedTags = []
     function enrichTag (tagname) {
       return tagsList.filter(function(tag) {
         return tag.id === tagname
@@ -190,6 +194,7 @@ function Cl8Importer ({airtable: atbl, fbase: fbase, auth0: auth0 }) {
     if (typeof peep.fields.tags !== 'undefined'){
       peep.fields.tags = peep.fields.tags.map(function(peepTag) {
         let etag = enrichTag(peepTag)[0]
+        // console.log(etag)
         return {
           'id': etag.id,
           'name': etag.fields.name
@@ -201,11 +206,11 @@ function Cl8Importer ({airtable: atbl, fbase: fbase, auth0: auth0 }) {
 
 
   return {
-    importUsersandTags: importUsersandTags,
-    importUsersAcrossServices: importUsersAcrossServices,
-    filterOutPeepsToImport: filterOutPeepsToImport
-    fetchAllDataforSyncing: fetchAllDataforSyncing,
     enrichPeep: enrichPeep,
     buildEnrichedPeeps: buildEnrichedPeeps,
+    importUsersAndTags: importUsersAndTags,
+    fetchAllDataforSyncing: fetchAllDataforSyncing,
+    filterOutPeepsToImport: filterOutPeepsToImport,
+    importUsersAcrossServices: importUsersAcrossServices,
   }
 }

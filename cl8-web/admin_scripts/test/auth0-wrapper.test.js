@@ -2,7 +2,7 @@
 // test that running the importer will only create
 // new users if they aren't in the list already
 
-const wrapper = require('../auth0-wrapper.js')(process.env.AUTH0_TOKEN, process.env.AUTH0_DOMAIN)
+const wrapper = require('../../functions/src/auth0-wrapper.js')(process.env.AUTH0_TOKEN, process.env.AUTH0_DOMAIN)
 
 let user = {
     email: 'mail+testing@chrisadams.me.uk',

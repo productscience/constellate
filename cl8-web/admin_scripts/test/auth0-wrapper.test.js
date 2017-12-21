@@ -32,3 +32,17 @@ test("it can add a user's id from airable for firebase", () => {
     expect(newUser.app_metadata.firebaseId).toBe(user.firebaseId)
   });
 })
+
+describe('fetching user records', () => {
+  test('getUsers', () => {
+    wrapper.getUsers().then(users => {
+      users.forEach(u => {
+        expect(u).toHaveProperty('email')
+        expect(u).toHaveProperty('email_verified', true)
+        // not every record has this, but should
+        // expect(u).toHaveProperty('name')
+        // expect(u).toHaveProperty('app_metadata.firebaseId')
+      })
+    })
+  })
+})

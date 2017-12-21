@@ -1,46 +1,50 @@
 const fbadmin = require('firebase-admin')
 const _ = require('lodash')
-
+const debug = require('debug')('firebase-auth-wrapper')
 
 module.exports = FireBaseAuthWrapper
 
-function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
+function FireBaseAuthWrapper(serviceAccount, dbUrl) {
 
   var admin = fbadmin.initializeApp({
     credential: fbadmin.credential.cert(serviceAccount),
     databaseURL: dbUrl
   })
 
-  function deleteUser (user) {
+  function getUsers() {
+    return admin.auth().listUsers()
+  }
+
+  function deleteUser(user) {
     // We can't control the ids these use, so we're better off:
     // fetching by email, then
     // fetch the id
     return admin.auth().getUserByEmail(user.fields.email)
-    .then(returnedUser => {
+      .then(returnedUser => {
         // console.log(returnedUser.uid)
         return admin.auth().deleteUser(returnedUser.uid)
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         console.log(err)
-    })
+      })
   }
 
-  function checkForUser (user) {
+  function checkForUser(user) {
     return admin.auth().getUserByEmail(user.fields.email)
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
         console.log("Successfully fetched user data:", userRecord.uid, userRecord.email);
         return userRecord
-      }).catch(err =>{
+      }).catch(err => {
         console.log(err)
         return false
       })
   }
 
-  function getOrCreateUser (user) {
+  function getOrCreateUser(user) {
     return checkForUser(user)
-      .then(function (newUser) {
-        console.log('found user:', newUser)
+      .then(function(newUser) {
+        // console.log('found user:', newUser)
         return newUser
       })
       .catch(function(error) {
@@ -56,61 +60,68 @@ function FireBaseAuthWrapper ( serviceAccount, dbUrl ) {
             })
         }
         if (error.errorInfo.code == 'auth/email-already-exists') {
-            console.log(error.errorInfo.message, user.email)
-            return user
+          console.log(error.errorInfo.message, user.email)
+          return user
         }
       });
   }
 
-  function fetchUserList () {
+  function getUserList() {
     return admin.database().ref('userlist').once('value')
-      .then(function (dataSnapshot) {
+      .then(function(dataSnapshot) {
         return dataSnapshot
       })
   }
 
-  function addUserToUserList (user) {
+  function addUserToUserList(user) {
     // adds a user to the userlist data structure in firebase
-    return fetchUserList(admin)
+    return getUserList(admin)
       .then(function(dataSnapshot) {
         let userlist = dataSnapshot.val()
         let usersArray = _.values(userlist)
 
-        function matchesUserId (returnedUser) { return returnedUser.id == user.id}
-
+        function matchesUserId(returnedUser) {
+          return returnedUser.id == user.id
+        }
+        // console.log(user)
         let filteredUsers = _.filter(usersArray, matchesUserId)
         if (filteredUsers.length === 0) {
-          return admin.database().ref('userlist').push(user.id)
-            .then(function (key) {
-              return key.set(user)
+          return admin.database().ref('userlist').push(user._rawJson)
+            .then(reference => {
+              return console.log(reference.key)
+            }).catch(err => {
+              return console.log(err)
             })
-        }
-        else {
+            // .then(function() {
+              // return key.set(user)
+            // })
+        } else {
           // console.log("returning the original", filteredUsers)
           return filteredUsers[0]
-      }
-    })
+        }
+      })
   }
 
-  function updateUserInUserList (user) {
-      return fetchUserList(admin)
-        .then(function(userlist) {
-          let usersArray = _.values(userlist.val())
-          // console.log(usersArray[1])
-          let filteredUsers = usersArray.filter(function(returnedUser) {
-            return returnedUser.id == user.id
-          })
-          // return early - we don't want to change this one
-          return filteredUsers[0]
+  function updateUserInUserList(user) {
+    return getUserList(admin)
+      .then(function(userlist) {
+        let usersArray = _.values(userlist.val())
+        // console.log(usersArray[1])
+        let filteredUsers = usersArray.filter(function(returnedUser) {
+          return returnedUser.id == user.id
         })
+        // return early - we don't want to change this one
+        return filteredUsers[0]
+      })
   }
 
   return {
-        deleteUser: deleteUser,
-        checkForUser: deleteUser,
-        getOrCreateUser: getOrCreateUser,
-        fetchUserList: fetchUserList,
-        addUserToUserList: addUserToUserList,
-        updateUserInUserList: updateUserInUserList
+    getUsers: getUsers,
+    deleteUser: deleteUser,
+    checkForUser: deleteUser,
+    getOrCreateUser: getOrCreateUser,
+    getUserList: getUserList,
+    addUserToUserList: addUserToUserList,
+    updateUserInUserList: updateUserInUserList
   }
 }

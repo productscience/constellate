@@ -2,11 +2,13 @@ const AirTableWrapper = require('./airtable-wrapper')
 const FireBaseWrapper = require('./firebase-auth-wrapper')
 const Auth0Wrapper = require('./auth0-wrapper')
 const _ = require('lodash')
+const debug = require('debug')('importer')
+
 
 module.exports = Cl8Importer
 
 function Cl8Importer (importerCredentials) {
-  const atbl = AirTableWrapper(importerCredentials.airTableCreds)
+  const atbl = AirTableWrapper(importerCredentials.airTableCreds[0], importerCredentials.airTableCreds[1])
   const fbase = FireBaseWrapper(importerCredentials.fbaseCreds[0], importerCredentials.fbaseCreds[1] )
   const auth0 = Auth0Wrapper(importerCredentials.auth0Creds[0], importerCredentials.auth0Creds[1])
 
@@ -36,18 +38,18 @@ function Cl8Importer (importerCredentials) {
 
     // base(process.env.AIRTABLE_TAG_NAME_DEV).select().all()
     //   .then(tags => {
-    //     console.log('tags', tags.length)
+    //     debug('tags', tags.length)
     //     return addRecordtoList(tags, fullTagList)
     //   })
     //   .then(() => {
     //     base(process.env.AIRTABLE_PERSON_NAME_DEV).select().all()
     //   .then(peeps => {
-    //     console.log('peeps', peeps.length)
+    //     debug('peeps', peeps.length)
     //     addRecordtoList(peeps, peepsList)
     //     return peepsList, fullTagList
     //   })
     //   .then(() => {
-    //     console.log(peepsList.length, fullTagList.length)
+    //     debug(peepsList.length, fullTagList.length)
     //     enrichedPeeps = peepsList.map(function(peep) {
     //       return enrichPeep(peep, fullTagList)
     //     })
@@ -56,12 +58,12 @@ function Cl8Importer (importerCredentials) {
     //   // THIS CURRENTLY WIPES FIREBASE's DATA
     //   // WE WANT TO ONLY ADD NEW USERS
     //   .then(enrichedPeeps => {
-    //     console.log("time to write to firebase", enrichedPeeps.length)
+    //     debug("time to write to firebase", enrichedPeeps.length)
     //     return fbAdmin.database().ref('userlist').set(enrichedPeeps)
     //   })
     //   .then(() => {
-    //     console.log('Synchronization to Firebase succeeded')
-    //     console.log(enrichedPeeps.length)
+    //     debug('Synchronization to Firebase succeeded')
+    //     debug(enrichedPeeps.length)
     //     return enrichedPeeps
     //   })
     //   .then(enrichedPeeps => {
@@ -69,7 +71,7 @@ function Cl8Importer (importerCredentials) {
     //     return executeSequentally(firebaseAuthReqs)
     //   })
     //   .then(() => {
-    //     console.log(enrichedPeeps.length)
+    //     debug(enrichedPeeps.length)
     //     let auth0Reqs = generateAuth0Promises(enrichedPeeps)
     //     return executeSequentally(auth0Reqs)
     //   })
@@ -80,10 +82,10 @@ function Cl8Importer (importerCredentials) {
     //   })
     //   //
     //   .then(() => {
-    //     console.log('all finished')
+    //     debug('all finished')
     //     process.exit()
     //   }).catch(err => {
-    //     console.log(err)
+    //     debug(err)
     //     process.exit()
     //   })
     // })
@@ -128,63 +130,114 @@ function Cl8Importer (importerCredentials) {
 
   function fetchAllDataforSyncing () {
     // fetch all the airtable records to save all the round generatFireBaseAirTableIdPromises
-    atbl.getUsers()
+    return atbl.getUsers()
     // then fetch the tags
-    .then(atblUsers =>{
+    .then(peeps => {
       return atbl.getTags()
       .then(tags => {
         return { peeps: peeps, tags: tags}
       })
     })
     // then fetch the user list from Firebase RTB so we can make comparisons about them being in the system
-    .then(peepsAndTags => {
+    .then(payload => {
       return fbase.getUserList()
       .then(fbUserList => {
-        return { peeps: peeps, tags: tags, fbUserList: fbUserList }
+        let newPayload = _.cloneDeep(payload)
+        newPayload.fbUserList = fbUserList
+        return newPayload
       })
     })
     // then then fetch the user list from Firebase Auth
     .then(payload => {
-      return fbase.getUserList()
-      .then(fbUserList => {
-        return { peeps: peeps, tags: tags, fbUserList: fbUserList, fbUsers: fbUsers }
+      return fbase.getUsers()
+      .then(fbUsers => {
+        let newPayload = _.cloneDeep(payload)
+        newPayload.fbUsers = fbUsers
+        return newPayload
       })
     })
-    // and fetch all the users from Auth0
+    // // and fetch all the users from Auth0
     .then(payload => {
-      return auth0.getUsersList()
+      return auth0.getUsers()
       .then(auth0Users => {
-        // TODO look into using _.clone here instead from lodash repeating the object creation
-        return { peeps: peeps, tags: tags,  fbUserList: fbUserList, fbUsers: fbUsers, auth0user: auth0Users }
+        let newPayload = _.cloneDeep(payload)
+        newPayload.auth0users = auth0Users
+        return newPayload
       })
+    }).catch(err => {
+      debug(err)
+      debugger
     })
   }
 
-  // TODO implement this
+
   function filterOutPeepsToImport (enrichedPeeps, firebaseUserList) {
-    // get list of keys from enrichedpeeps
 
-    // get list of keys from firebaseUserList
+    function pulloutIds (list) {
+      return _.map(_.values(list), (rec) => { return rec.id })
+    }
 
-    // return users with keys that are only in enrichedPeeps
+    function pulloutEmails (list) {
+      return _.map(_.values(list), (rec) => {
+        if (typeof rec.id !== 'undefined') {
+          debug(rec.id)
+          debug(rec.fields)
+          return rec.fields.email
+        }
+      })
+    }
 
+    let enrichedKeys = pulloutEmails(enrichedPeeps)
+    let fbUserKeys = pulloutEmails(firebaseUserList.val())
+    // debugger
+
+    debug(fbUserKeys.length)
+    debug(enrichedKeys.length)
+
+    // let newKeys = _.difference(enrichedKeys, fbUserKeys)
+
+    let keysToImport = _.cloneDeep(enrichedKeys)
+
+
+
+    fbUserKeys.forEach(key => {
+      _.pull(keysToImport, key)
+      // if (keysToImport.indexOf(key) !== -1) {
+      //   keysToImport.splice(key, 1)
+      // }
+    })
+
+    let usersToImport = []
+    // once we have the list of ids pull out the
+    // debugger
+    keysToImport.forEach((key) => {
+      let userToImport = enrichedPeeps.filter(peep => {
+
+        return peep.fields.email === key
+      })
+      // debug(userToImport)
+      usersToImport.push(userToImport)
+    })
+
+    // debug(usersToImport)
+    return usersToImport
   }
 
   function buildEnrichedPeeps (peepsList, fullTagList) {
-    // console.log(peepsList)
-    // console.log(fullTagList)
+    // debug(peepsList)
+    // debug(fullTagList)
     let enrichedPeeps = []
     peepsList.forEach(function(peep) {
-      // console.log("peep", peep)
+      // debug("peep", peep)
       let newPeep =  enrichPeep(peep, fullTagList)
-      // console.log("newpeep", newPeep)
+      // debug("newpeep", newPeep)
       enrichedPeeps.push(newPeep)
     })
     return enrichedPeeps
   }
 
   function enrichPeep (peep, tagsList) {
-    // console.log(peep)
+    // debug(peep)
     let enrichedTags = []
     function enrichTag (tagname) {
       return tagsList.filter(function(tag) {
@@ -194,7 +247,7 @@ function Cl8Importer (importerCredentials) {
     if (typeof peep.fields.tags !== 'undefined'){
       peep.fields.tags = peep.fields.tags.map(function(peepTag) {
         let etag = enrichTag(peepTag)[0]
-        // console.log(etag)
+        // debug(etag)
         return {
           'id': etag.id,
           'name': etag.fields.name
@@ -206,6 +259,9 @@ function Cl8Importer (importerCredentials) {
 
 
   return {
+    atbl: atbl,
+    fbase: fbase,
+    auth0: auth0,
     enrichPeep: enrichPeep,
     buildEnrichedPeeps: buildEnrichedPeeps,
     importUsersAndTags: importUsersAndTags,

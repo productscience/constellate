@@ -67,3 +67,31 @@ test("won't overwrite a user already imported from airtable", () => {
   // })
 
 })
+
+describe('fetching actual user records', () => {
+
+  test('getUsers', () => {
+    return  wrapper.getUsers().then(records =>{
+      // let record = records.users[0]
+      records.users.forEach(record => {
+        expect(record).toHaveProperty('uid')
+        expect(record).toHaveProperty('email')
+        expect(record).toHaveProperty('emailVerified')
+      })
+    })
+  })
+
+  test.only('getUserList', () => {
+    return wrapper.getUserList().then(records => {
+      // check if we can pull out the key
+      records.forEach(user => {
+        expect(user.val()).toHaveProperty('id')
+        expect(user.val()).toHaveProperty('fields')
+        expect(user.val()).toHaveProperty('fields.email')
+        expect(user.val()).toHaveProperty('fields.name')
+        // not every user has tags now
+        // expect(user.val()).toHaveProperty('fields.tags')
+      })
+    })
+  })
+})

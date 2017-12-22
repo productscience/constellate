@@ -152,7 +152,7 @@ describe('finding new users to import', () => {
       let promiseList = payload.peeps.map(peep => {
         return importer.fbase.addUserToUserList(peep)
       })
-
+      // now make sure our promise is resolved
       return executeSequentally(promiseList)
         .then(() => {
           return payload
@@ -168,56 +168,62 @@ describe('finding new users to import', () => {
           payload.fbUserList = fbUserList
           return payload
         })
-        return payload
-    })
-    .then(payload => {
-      return importer.atbl.airtable(peepTable).create({
-          "name": "Person to import",
-          "tags": [],
-          "email": "importme@example.com",
-          "visible": "yes",
-          "admin": "false"
-        })
-        .then(peep => {
-          debug('created user: ', peep.id)
-          tempPeep = peep
-          payload.peepToImport = peep
-          return payload
-        })
-    })
-    .then(payload => {
-      return importer.atbl.getTags()
-        .then(tags => {
-          return importer.atbl.getUsers()
-            .then(peeps => {
-              debug(peeps.length)
-              debug(tags.length)
-              payload.tags = tags
-              payload.peeps = peeps
-              return payload
-            })
-        })
     })
   })
 
-  test.only('filterOutPeepsToImport', () => {
-    expect.assertions(4);
+  test('filterOutPeepsToImport - none to import', () => {
+    expect.assertions(1);
     let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
     let usersToImport = importer.filterOutPeepsToImport(enrichedPeeps, payload.fbUserList)
 
-    expect(usersToImport.length).toBe(1)
-    expect(usersToImport[0]).toHaveProperty('id')
-    expect(usersToImport[0]).toHaveProperty('fields.email')
-    expect(usersToImport[0]).toHaveProperty('fields.name')
+    expect(usersToImport.length).toBe(0)
+  }, 10000)
+
+  test('filterOutPeepsToImport - one to import', () => {
+    return importer.atbl.airtable(peepTable).create({
+        "name": "Person to import",
+        "tags": [],
+        "email": "importme@example.com",
+        "visible": "yes",
+        "admin": "false"
+      })
+      .then(peep => {
+        debug('created user: ', peep.id)
+        tempPeep = peep
+        payload.peepToImport = peep
+        return payload
+      })
+      .then(payload => {
+        return importer.atbl.getTags()
+          .then(tags => {
+            return importer.atbl.getUsers()
+              .then(peeps => {
+                debug(peeps.length)
+                debug(tags.length)
+                payload.tags = tags
+                payload.peeps = peeps
+                return payload
+              })
+              expect.assertions(4);
+              let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
+              let usersToImport = importer.filterOutPeepsToImport(enrichedPeeps, payload.fbUserList)
+
+              expect(usersToImport.length).toBe(1)
+              expect(usersToImport[0]).toHaveProperty('id')
+              expect(usersToImport[0]).toHaveProperty('fields.email')
+              expect(usersToImport[0]).toHaveProperty('fields.name')
+              return importer.atbl.airtable(peepTable).destroy(tempPeep.id)
+                .then(peep => {
+                  console.log("destroyed: ", peep.id)
+                }).catch(err => {
+                  console.log(err)
+                })
+          })
+      })
   }, 16000)
 
+
   afterEach(() => {
-    return importer.atbl.airtable(peepTable).destroy(tempPeep.id)
-      .then(peep => {
-        console.log("destroyed: ", peep.id)
-      }).catch(err => {
-        console.log(err)
-      })
   })
 
 })

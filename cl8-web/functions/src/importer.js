@@ -93,9 +93,11 @@ function Cl8Importer (importerCredentials) {
 
   // TODO CHECK IT WORKS
   function importUsersAcrossServices (peepsToImport) {
+    console.log(peepsToImport)
     let listOfPromises = []
     _.each(peepsToImport, peep => {
 
+        console.log(peep.fields)
       // create list of promises here, to then pass into the resolving function
       let userAddedtofbList = () => {
         return fbase.addUserToList(peep)
@@ -166,16 +168,13 @@ function Cl8Importer (importerCredentials) {
       })
     }).catch(err => {
       debug(err)
-      debugger
     })
   }
 
 
   function filterOutPeepsToImport (enrichedPeeps, firebaseUserList) {
-
-    function pulloutIds (list) {
-      return _.map(_.values(list), (rec) => { return rec.id })
-    }
+    // accepts a list of airtable user objects, and a firebase database
+    // reference, then returns the list of users
 
     function pulloutEmails (list) {
       return _.map(_.values(list), (rec) => {
@@ -186,37 +185,34 @@ function Cl8Importer (importerCredentials) {
         }
       })
     }
+    // we call val() to fetch the data, not the function with
+    let fbaseUserListData = firebaseUserList.val()
+    let fbUserEmails = pulloutEmails(fbaseUserListData)
 
-    let enrichedKeys = pulloutEmails(enrichedPeeps)
-    let fbUserKeys = pulloutEmails(firebaseUserList.val())
-    // debugger
+    // making a clone to avoid changing the original
+    let enrichedEmails = pulloutEmails(enrichedPeeps)
+    let airtableUserEmails = _.cloneDeep(enrichedEmails)
 
-    debug(fbUserKeys.length)
-    debug(enrichedKeys.length)
-
-    // let newKeys = _.difference(enrichedKeys, fbUserKeys)
-
-    let keysToImport = _.cloneDeep(enrichedKeys)
-
-
-
-    fbUserKeys.forEach(key => {
-      _.pull(keysToImport, key)
-      // if (keysToImport.indexOf(key) !== -1) {
-      //   keysToImport.splice(key, 1)
-      // }
+    // make a lisr of emails that only exist in the airtable list of users
+    fbUserEmails.forEach(key => {
+      _.pull(airtableUserEmails, key)
     })
 
+    // build the list of users to import based on the email address list
+    // we just created
+    console.log('fbUserEmails', fbUserEmails)
+    console.log('enrichedEmails', enrichedEmails)
+    console.log('airtableUserEmails', airtableUserEmails)
     let usersToImport = []
-    // once we have the list of ids pull out the
-    // debugger
-    keysToImport.forEach((key) => {
+    // once we have the list of ids pull out
+    airtableUserEmails.forEach((key) => {
       let userToImport = enrichedPeeps.filter(peep => {
-
         return peep.fields.email === key
       })
-      // debug(userToImport)
-      usersToImport.push(userToImport)
+      if (userToImport.length === 1) {
+        // debug(userToImport)
+        usersToImport.push(userToImport[0])
+      }
     })
 
     // debug(usersToImport)

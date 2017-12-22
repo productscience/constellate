@@ -109,7 +109,6 @@ describe('helper functions', () => {
   })
 })
 
-
 describe('3rd party API functions', () => {
   test('fetchAllDataforSyncing', () => {
     // this is a method takes ages as it's doing lots of work. Might
@@ -201,12 +200,15 @@ describe('finding new users to import', () => {
     })
   })
 
-  test('filterOutPeepsToImport', () => {
-    expect.assertions(1);
-    // debugger
+  test.only('filterOutPeepsToImport', () => {
+    expect.assertions(4);
     let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
     let usersToImport = importer.filterOutPeepsToImport(enrichedPeeps, payload.fbUserList)
+
     expect(usersToImport.length).toBe(1)
+    expect(usersToImport[0]).toHaveProperty('id')
+    expect(usersToImport[0]).toHaveProperty('fields.email')
+    expect(usersToImport[0]).toHaveProperty('fields.name')
   }, 16000)
 
   afterEach(() => {

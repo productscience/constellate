@@ -93,30 +93,32 @@ function Cl8Importer (importerCredentials) {
 
   // TODO CHECK IT WORKS
   function importUsersAcrossServices (peepsToImport) {
-    console.log(peepsToImport)
+    console.log(peepsToImport.length)
     let listOfPromises = []
-    _.each(peepsToImport, peep => {
+    // _.each(peepsToImport, peep => {
 
-        console.log(peep.fields)
+        // console.log(peep.fields)
       // create list of promises here, to then pass into the resolving function
-      let userAddedtofbList = () => {
-        return fbase.addUserToList(peep)
-      }
-      let createdfbaseUser = () => {
-        return fbase.getOrCreateUser(peep)
-      }
-      let createdauth0User = () => {
-        let params = {
-          firebaseUrl: peep.id
-        }
-        return auth0.addAirtableAPIToUserByEmail(peep.fields.email, params)
-      }
-
-      listOfPromises.push(createdauth0User)
-      listOfPromises.push(createdfbaseUser)
-      listOfPromises.push(userAddedtofbList)
+      // let userAddedtofbList = () => {
+      //   return fbase.addUserToList(peep)
+      // }
+      // let createdfbaseUser = () => {
+      //   return fbase.getOrCreateUser(peep)
+      // }
+      // // let createdauth0User = () => {
+      // //   let params = {
+      // //     firebaseUrl: peep.id
+      // //   }
+      // //   return auth0.addAirtableAPIToUserByEmail(peep.fields.email, params)
+      // // }
+      //
+      // // listOfPromises.push(createdauth0User)
+      // listOfPromises.push(createdfbaseUser)
+      // listOfPromises.push(userAddedtofbList)
+    // })
+    return executeSequentally(listOfPromises).then(() =>{
+      return peepsToImport
     })
-    return executeSequentally(listOfPromises)
 
   }
   // How would you test this? Is it worth it?

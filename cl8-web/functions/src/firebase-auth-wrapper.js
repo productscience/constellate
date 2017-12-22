@@ -122,6 +122,7 @@ function FireBaseAuthWrapper(serviceAccount, dbUrl) {
     getOrCreateUser: getOrCreateUser,
     getUserList: getUserList,
     addUserToUserList: addUserToUserList,
-    updateUserInUserList: updateUserInUserList
+    updateUserInUserList: updateUserInUserList,
+    admin: admin
   }
 }

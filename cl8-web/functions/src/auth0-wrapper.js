@@ -1,12 +1,12 @@
-const ManagementClient = require('auth0').ManagementClient;
-const AuthenticationClient = require('auth0').AuthenticationClient;
+const ManagementClient = require('auth0').ManagementClient
+const AuthenticationClient = require('auth0').AuthenticationClient
 
  // you get an auth0 token from
  // https://manage.auth0.com/#/apis/management/explorer
 
 module.exports = Auth0Wrapper
 
-function Auth0Wrapper ( auth0Token, auth0Domain ) {
+function Auth0Wrapper (auth0Token, auth0Domain) {
   // console.log(auth0Token)
   // console.log(auth0Domain)
   // var auth0 = function () {
@@ -41,19 +41,19 @@ function Auth0Wrapper ( auth0Token, auth0Domain ) {
     // .then(response =>{
 
   var auth0 = new ManagementClient({
-        token: auth0Token,
-        domain: auth0Domain
-      })
+    token: auth0Token,
+    domain: auth0Domain
+  })
     // })
 
   function getOrCreateUser (userEmail) {
     // this hides the email checking, so we don't spam people
     // with the invite
     let user = {
-      "connection": "email",
-      "email": userEmail,
-      "email_verified": true,
-      "verify_email": false,
+      'connection': 'email',
+      'email': userEmail,
+      'email_verified': true,
+      'verify_email': false
     }
     return auth0.createUser(user)
       .then(newUser => {
@@ -68,7 +68,7 @@ function Auth0Wrapper ( auth0Token, auth0Domain ) {
   function makeAdminUserByEmail (emailAddress) {
     return auth0.getUsersByEmail(emailAddress)
       .then(function (users) {
-        console.log(users)
+        // console.log(users)
         return (users)
       })
       .then(function (users) {
@@ -90,21 +90,37 @@ function Auth0Wrapper ( auth0Token, auth0Domain ) {
       })
   }
 
-  function updateUser(uid, params) {
+  function removeUser (emailAddress) {
+    return auth0.getUsersByEmail(emailAddress)
+      .then(function (users) {
+        if (users.length > 0) {
+          let uid = users[0].user_id
+          return auth0.deleteUser({id: uid})
+        }
+      })
+  }
+
+  function updateUser (uid, params) {
     return auth0.updateAppMetadata({id: uid}, params)
       .then(function (user) {
         console.log('user updated')
-        console.log(user)
+        // console.log(user)
         return user
       })
   }
 
-  return {
-    getOrCreateUser: getOrCreateUser,
-    makeAdminUserByEmail: makeAdminUserByEmail,
-    addAirtableAPIToUserByEmail: addAirtableAPIToUserByEmail,
-    updateUser, updateUser
-
+  function getUsers () {
+    return auth0.getUsers()
   }
 
+  return {
+    auth0: auth0,
+    getOrCreateUser: getOrCreateUser,
+    removeUser: removeUser,
+    makeAdminUserByEmail: makeAdminUserByEmail,
+    addAirtableAPIToUserByEmail: addAirtableAPIToUserByEmail,
+    updateUser, updateUser,
+    getUsers: getUsers
+
+  }
 }

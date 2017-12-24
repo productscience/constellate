@@ -33,8 +33,7 @@
                 class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red"
                 >
                 {{ tag }}
-                <i class="remove_icon"
-                  @click="toggleTag"></i>
+                <i class="remove_icon"></i>
           </span>
         </p>
 

@@ -29,10 +29,11 @@
       <div class="tag-list">
         <p>
           <span v-for="tag in activetags"
-                class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative"
+                @click="toggleTag"
+                class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red"
                 >
                 {{ tag }}
-                <i class="remove_icon bg-animate hover-bg-light-red"
+                <i class="remove_icon"
                   @click="toggleTag"></i>
           </span>
         </p>
@@ -207,12 +208,14 @@ export default {
 p span.list{
   display: inline-block;
 }
+.tag-list{
+  cursor: pointer;
+}
 .tag-list i.remove_icon:after{
   content: "\D7";
   color: white;
 }
 .tag-list i.remove_icon{
-  cursor: pointer;
   position: absolute;
   right: 0;
   top: 0;

@@ -79,7 +79,7 @@
 
             </div>
 
-            <div class="cf pt2">
+            <div class="cf pt2 bg-near-white pa3">
               <label class="typo__label">Skills and interests </label>
               <p class="f6 mb0"><em>(type below to add new tags)</em></p>
               <multiselect v-model="profile.fields.tags"
@@ -92,6 +92,12 @@
                 @tag="addTag"></multiselect>
             </div>
 
+            <p class="f6">
+              <em>
+                Email gavin@dgen.net to remove your account
+              </em>
+            </p>
+
             <hr>
 
             <a href="#"
@@ -99,6 +105,8 @@
               class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
               Save
             </a>
+
+
 
           </form>
         </div>

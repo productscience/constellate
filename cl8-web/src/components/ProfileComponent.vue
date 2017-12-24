@@ -68,7 +68,7 @@
       <hr>
         <router-link to="/edit"
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-          Change this info
+          Edit
         </router-link>
       </p>
     </div>

@@ -39,16 +39,13 @@
                 </div>
               </div>
 
-              <div class="fl w-50 mt0 pt0">
+              <div class="fl w-75 mt0 pt0">
                 <ul class="list mt0 pt0">
                   <li class="list f3 name mt2">
                     <label class="f4" for="">name: </label>
                     <input class="w-100 pa2"  v-model="profile.fields.name" />
                   </li>
-                  <li class="list f3 email mt2">
-                    <label class="f4" for="">website</label>
-                    <input class="w-100 pa2"  v-model="profile.fields.phone" />
-                  </li>
+
                   <li class="list f3 email mt2">
                     <label class="f4" for="">email</label>
                     <input class="w-100 pa2 bg-light-gray light-silver" :value="profile.fields.email" readonly />
@@ -83,7 +80,8 @@
             </div>
 
             <div class="cf pt2">
-              <label class="typo__label">Skills and interests</label>
+              <label class="typo__label">Skills and interests </label>
+              <p class="f6 mb0"><em>(type below to add new tags)</em></p>
               <multiselect v-model="profile.fields.tags"
                 class="pt3 pb3"
                 tag-placeholder="Add this as new tag"
@@ -99,7 +97,7 @@
             <a href="#"
               v-on:submit.prevent="onSubmit" @click="onSubmit"
               class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-              Save these changes
+              Save
             </a>
 
           </form>

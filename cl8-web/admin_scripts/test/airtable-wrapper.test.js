@@ -1,11 +1,9 @@
 const AirtableWrapper = require('../../functions/src/airtable-wrapper.js')
 
-
 const devBase = process.env.AIRTABLE_BASE_TEST
 const devkey = process.env.AIRTABLE_API_KEY_TEST
 const tagTable = process.env.AIRTABLE_TAG_NAME_TEST
 const peepTable = process.env.AIRTABLE_PERSON_NAME_TEST
-
 
 const atbl = AirtableWrapper(devkey, devBase)
 
@@ -19,7 +17,7 @@ describe('fetching records', () => {
         expect(record).toHaveProperty('id')
         expect(record).toHaveProperty('fields.email')
         expect(record).toHaveProperty('fields.name')
-        expect(record).toHaveProperty('fields.tags')
+        // expect(record.).toHaveProperty('fields.tags')
       })
   })
 
@@ -34,26 +32,24 @@ describe('fetching records', () => {
 })
 
 describe('returning correct data', () => {
-
   beforeAll(() => {
-      setupforTest = () => {
-        return atbl.airtable(peepTable).create({
-          "name": "Person with no email",
-          "tags": [],
-          "email": "",
-          "visible": "yes",
-          "admin": "false"
+    setupforTest = () => {
+      return atbl.airtable(peepTable).create({
+        'name': 'Person with no email',
+        'tags': [],
+        'email': '',
+        'visible': 'yes',
+        'admin': 'false'
       })
     }
   })
 
-    test('fetchRecords', () => {
-
+  test('fetchRecords', () => {
       // create a user with no email address
-      return setupforTest()
+    return setupforTest()
         .then(peepId => {
           tempPeep = peepId.id
-          console.log("created peep: ", peepId.id)
+          console.log('created peep: ', peepId.id)
           return atbl.airtable(peepTable).select().all()
             .then(records => {
               atbl.fetchRecords(peepTable, "NOT({email} = '')")
@@ -67,12 +63,12 @@ describe('returning correct data', () => {
                 })
             })
         })
-    }, 10000)
+  }, 10000)
 
   afterAll(() => {
     return atbl.airtable(peepTable).destroy(tempPeep)
       .then(peep => {
-        console.log("destroyed:", peep.id)
+        console.log('destroyed:', peep.id)
       })
   })
 })

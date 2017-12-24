@@ -96,4 +96,16 @@ describe('working with multiple users', () => {
       })
     })
   })
+
+  test.only('getUsersbyEmail', () => {
+    wrapper.getUsersByEmail('mail+testing@chrisadams.me.uk').then(users => {
+      users.forEach(u => {
+        expect(u).toHaveProperty('email')
+        expect(u).toHaveProperty('email_verified', true)
+        // not every record has this, but should
+        // expect(u).toHaveProperty('name')
+        // expect(u).toHaveProperty('app_metadata.firebaseId')
+      })
+    })
+  })
 })

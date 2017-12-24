@@ -1,77 +1,70 @@
-const serviceAccount = require('../' + process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
-const databaseURL = process.env.FIREBASE_DATABASE_URL
+const serviceAccount = require('../' + process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
+const databaseURL = process.env.FIREBASE_DATABASE_URL_TEST
 
 const wrapper = require('../../functions/src/firebase-auth-wrapper.js')(serviceAccount, databaseURL)
+const admin = wrapper.admin
 
-test('can create a user in one go', () => {
-  let testUser = {
-      id: "someRandom",
+const _ = require('lodash')
+let testUser
+
+describe('create or delete a user', () => {
+  beforeEach(() => {
+    testUser = {
+      id: 'someRandom',
       fields: {
-        email: "mail@chrisadams.me.uk"
+        email: 'mail@chrisadams.me.uk'
       }
-  }
-  expect.assertions(1)
-  return wrapper.getOrCreateUser(testUser).then(newUser => {
-    expect(newUser.email).toBe(testUser.fields.email)
+    }
+    return wrapper.deleteUser(testUser)
   })
-})
 
-test('it can fetch a userlist from firebase', () => {
-  return wrapper.fetchUserList().then(userlist => {
-    expect(userlist.length > 200)
-  })
-})
-
-test('can add user to userlist in firebase', () => {
-  let testUser = {
-    id: 'recXXXXXXXXXXXXXX',
-    fields: {
-      email: 'totallynew@domain.com',
-      website: "newsite.com"
-    }
-  }
-  expect.assertions(2)
-  return wrapper.addUserToUserList(testUser).then(newUser => {
-    expect(newUser.id).toBe(testUser.id)
-    expect(newUser.fields.email).toBe(testUser.fields.email)
-  })
-})
-//
-test("won't overwrite a user already imported from airtable", () => {
-  // this user looks  different as it's from airtable
-  let existingUser = {
-    id: 'rec0CSbkZBm1wWluF',
-    fields: {
-      email: 'danny@spesh.com',
-      website: "newsite.com"
-    }
-  }
-  let updatedUser = {
-    id: 'rec0CSbkZBm1wWluF',
-    fields: {
-      email: 'danny@spesh.com',
-      website: "newnewsite.com"
-    }
-  }
-  // expect.assertions(3)
-  // return wrapper.deleteUser(existingUser, admin).then(() => {
-    return wrapper.addUserToUserList(existingUser).then(returnedUser => {
-      return wrapper.updateUserInUserList(updatedUser).then(newUser => {
-        console.log(returnedUser)
-        console.log(newUser)
-        expect(newUser.id).toBe(existingUser.id)
-        expect(newUser.fields.email).toBe(existingUser.fields.email)
-        expect(newUser.fields.website).toBe("newsite.com")
-      })
+  test('getOrCreateUser', () => {
+    expect.assertions(1)
+    return wrapper.getOrCreateUser(testUser).then(newUser => {
+      expect(newUser.email).toBe(testUser.fields.email)
     })
-  // })
+  })
 
+  test('deleteUser', () => {
+    expect.assertions(1)
+
+    // create a user first
+    let u = {
+      uid: testUser.id,
+      email: testUser.fields.email
+    }
+
+    return admin.auth().createUser(u)
+      .then(newUser => {
+      // then call our delete method
+        let airtableUser = {
+          id: newUser.uid,
+          fields: {
+            email: newUser.email
+          }
+        }
+        return wrapper.deleteUser(airtableUser)
+          .then(() => {
+            return admin.auth().listUsers().then(returnedUsers => {
+              expect(returnedUsers.users.length).toBe(0)
+            })
+          })
+      })
+  })
+
+  afterEach(() => {
+    return admin.auth().deleteUser(testUser.uid)
+      .catch(err => {
+        if (err.errorInfo.code == 'auth/user-not-found') {
+          return
+        }
+      })
+  })
 })
 
 describe('fetching actual user records', () => {
-
   test('getUsers', () => {
-    return  wrapper.getUsers().then(records =>{
+    return wrapper.getUsers().then(records => {
       // let record = records.users[0]
       records.users.forEach(record => {
         expect(record).toHaveProperty('uid')
@@ -80,17 +73,64 @@ describe('fetching actual user records', () => {
       })
     })
   })
+})
 
-  test.only('getUserList', () => {
+describe('create or edit users in realtime database', () => {
+  beforeEach(() => {
+    // clear the userlist
+    testUser = {
+      id: 'recXXXXXXXXXXXXXX',
+      fields: {
+        name: 'Dan',
+        email: 'totallynew@domain.com',
+        website: 'oldsite.com'
+      }
+    }
+    return wrapper.admin.database().ref('userlist').set(null)
+  })
+
+  test('getUserList', () => {
+    return wrapper.admin.database().ref('userlist').push(testUser)
+
     return wrapper.getUserList().then(records => {
       // check if we can pull out the key
       records.forEach(user => {
         expect(user.val()).toHaveProperty('id')
-        expect(user.val()).toHaveProperty('fields')
         expect(user.val()).toHaveProperty('fields.email')
         expect(user.val()).toHaveProperty('fields.name')
         // not every user has tags now
-        // expect(user.val()).toHaveProperty('fields.tags')
+        expect(user.val()).toHaveProperty('fields.tags')
+      })
+    })
+  })
+
+  test('addUserToUserList', () => {
+    expect.assertions(2)
+    return wrapper.addUserToUserList(testUser).then(newUser => {
+      expect(newUser.id).toBe(testUser.id)
+      expect(newUser.fields.email).toBe(testUser.fields.email)
+    })
+  })
+})
+
+describe('importing users', () => {
+  beforeEach(() => {
+    // clear the userlist
+    return wrapper.admin.database().ref('userlist').set(null)
+  })
+
+  test('addUserToUserList - user already exists', () => {
+    expect.assertions(3)
+    // this user looks different as it's from airtable
+
+    let updatedUser = _.cloneDeep(testUser)
+    updatedUser.fields.website = 'newsite.com'
+
+    return wrapper.addUserToUserList(testUser).then(returnedUser => {
+      return wrapper.updateUserInUserList(updatedUser).then(newUser => {
+        expect(newUser.id).toBe(testUser.id)
+        expect(newUser.fields.email).toBe(testUser.fields.email)
+        expect(newUser.fields.website).toBe('oldsite.com')
       })
     })
   })

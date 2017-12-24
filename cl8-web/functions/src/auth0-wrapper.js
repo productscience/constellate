@@ -113,6 +113,10 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
     return auth0.getUsers()
   }
 
+  function getUsersByEmail (email) {
+    return auth0.getUsersByEmail(email)
+  }
+
   return {
     auth0: auth0,
     getOrCreateUser: getOrCreateUser,
@@ -120,7 +124,7 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
     makeAdminUserByEmail: makeAdminUserByEmail,
     addAirtableAPIToUserByEmail: addAirtableAPIToUserByEmail,
     updateUser, updateUser,
-    getUsers: getUsers
-
+    getUsers: getUsers,
+    getUsersByEmail: getUsersByEmail
   }
 }

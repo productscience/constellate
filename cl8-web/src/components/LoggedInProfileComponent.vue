@@ -129,7 +129,7 @@ export default {
     },
     // this is the same function as in profilecomponent - reuse instead?
     toggleTag: function (triggeredEvent) {
-      let tagToToggle = triggeredEvent.target.parentElement.textContent.trim()
+      let tagToToggle = triggeredEvent.target.textContent.trim()
       this.updateActiveTags(tagToToggle)
     },
   },

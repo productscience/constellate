@@ -7,6 +7,7 @@
     "auth0": "^2.9.1",
     "auth0-js": "^8.12.0",
     "cors": "^2.8.4",
+    "debug": "^3.1.0",
     "firebase-admin": "^5.5.1",
     "firebase-functions": "^0.7.3"
   },
@@ -16,6 +17,7 @@
   },
   "private": true,
   "devDependencies": {
-    "jest": "^21.2.1"
+    "jest": "^21.2.1",
+    "standard": "^10.0.3"
   }
 }

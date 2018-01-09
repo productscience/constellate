@@ -1,35 +1,42 @@
 const Airtable = require('airtable')
-const base = new Airtable(
-  {apiKey: process.env.AIRTABLE_API_KEY_DEV}).base(process.env.AIRTABLE_BASE_DEV)
+const FireBaseWrapper = require('../functions/src/firebase-auth-wrapper.js')
+const Auth0Wrapper = require('../functions/src/auth0-wrapper.js')
 
-const admin = require('firebase-admin')
-const serviceAccount = require('../functions/service-account.json')
+const tagsName = process.env.AIRTABLE_TAG_NAME_PROD
+const personName = process.env.AIRTABLE_PERSON_NAME_PROD
+const apiKey = process.env.AIRTABLE_API_KEY_PROD
+const baseName = process.env.AIRTABLE_BASE_PROD
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.FIREBASE_DATABASE_URL
-})
 
-let ManagementClient = require('auth0').ManagementClient;
- // you get an auth0 token from
- // https://manage.auth0.com/#/apis/management/explorer
-let auth0 = new ManagementClient({
-  token: process.env.AUTH0_TOKEN,
-  domain: process.env.AUTH0_DOMAIN
-});
+// check when reusing values set for webpack
+// webpack's double quotes mean auth0 complains if you use them without
+// converting them
+const auth0Domain = process.env.AUTH0_DOMAIN
+const auth0Token = process.env.AUTH0_TOKEN
+
+const serviceAccount = require(process.env.FIREBASE_SERVICE_ACCOUNT_PATH_PROD)
+const databaseURL = process.env.FIREBASE_DATABASE_URL
+
+const base = new Airtable({apiKey: apiKey}).base(baseName)
+
+
+const fbase = FireBaseWrapper(serviceAccount, databaseURL)
+const fbAdmin = fbase.admin
+
+const auth0Wrapper = Auth0Wrapper(auth0Token, auth0Domain)
+const auth0 = auth0Wrapper.auth0
 
 let fullTagList = []
 let peepsList = []
 let enrichedPeeps = []
 
-base(process.env.AIRTABLE_TAG_NAME_DEV).select().all()
+base(tagsName).select().all()
   .then(tags => {
     console.log('tags', tags.length)
     return addRecordtoList(tags, fullTagList)
   })
-  .catch(err => { console.log(err) })
   .then(() => {
-    base(process.env.AIRTABLE_PERSON_NAME_DEV).select().all()
+    base(personName).select({filterByFormula: "NOT({email} = '')"}).all()
   .then(peeps => {
     console.log('peeps', peeps.length)
     addRecordtoList(peeps, peepsList)
@@ -41,25 +48,39 @@ base(process.env.AIRTABLE_TAG_NAME_DEV).select().all()
       return enrichPeep(peep, fullTagList)
     })
     return enrichedPeeps
-  }).then(enrichedPeeps => {
+  })
+  // THIS CURRENTLY WIPES FIREBASE's DATA
+  // WE WANT TO ONLY ADD NEW USERS
+  .then(enrichedPeeps => {
+    // console.log(enrichedPeeps)
     console.log("time to write to firebase", enrichedPeeps.length)
-    return admin.database().ref('userlist').set(enrichedPeeps)
+    return fbAdmin.database().ref('userlist').set(enrichedPeeps)
   })
   .then(() => {
     console.log('Synchronization to Firebase succeeded')
     console.log(enrichedPeeps.length)
     return enrichedPeeps
-  }).catch(error => {
-    console.log('Synchronization to FireBase failed')
-    console.log(error)
-    process.exit()
+  }).catch(err => {
+    console.log('problems syncing to firebase')
+    console.log(err)
   })
+
   .then(enrichedPeeps => {
+    let firebaseAuthReqs = generateFireBaseAuthPromises(enrichedPeeps)
+    return executeSequentally(firebaseAuthReqs)
+  })
+  .then(() => {
     console.log(enrichedPeeps.length)
     let auth0Reqs = generateAuth0Promises(enrichedPeeps)
     return executeSequentally(auth0Reqs)
-  }).then(values => {
-    console.log(values)
+  })
+  // we need to add the firebase ids in now
+  .then(() => {
+    let auth0Reqs = generatFireBaseAirTableIdPromises(enrichedPeeps)
+    return executeSequentally(auth0Reqs)
+  })
+  //
+  .then(() => {
     console.log('all finished')
     process.exit()
   }).catch(err => {
@@ -68,28 +89,35 @@ base(process.env.AIRTABLE_TAG_NAME_DEV).select().all()
   })
 })
 
+function generatFireBaseAirTableIdPromises (users) {
+  return users.map(user => {
+    return () => {
+      let email = user.fields.email,
+      params = { firebaseId: user.id }
+      return auth0Wrapper.addAirtableAPIToUserByEmail(user.fields.email, params)
+    }
+  })
+}
+
+
+function generateFireBaseAuthPromises (users) {
+  return users.map(user => {
+    return () => {
+      // let u = { uid: user.id, email: user.fields.email }
+      return fbase.getOrCreateUser(user, fbAdmin)
+    }
+  })
+}
+
 function generateAuth0Promises (users) {
   console.log('addUsersToAuth0', users.length)
   console.log('addUsersToAuth0', users[0])
   auth0Promises = []
   users.forEach(user => {
-    let newUser = {
-      "connection": "email",
-      "email": user.fields.email,
-      "email_verified": true,
-      "verify_email": false,
-    }
     // we need to define an function that returns the call to auth0.createUser
     // so we can execute it sequentially and not trigger the API limiting
     let auth0Promise = () => {
-      return auth0.createUser(newUser)
-      .then(user => {
-        console.log('auth0 user', user.email)
-        return user
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      return auth0Wrapper.getOrCreateUser(user.fields.email)
     }
     auth0Promises.push(auth0Promise)
   })

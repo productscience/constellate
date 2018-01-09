@@ -44,6 +44,8 @@ export default {
     authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
     })
+    // TODO decide whether we should add a listener here with firebase auth
+    // so we have the sign-in logic for both systems in the top level
     return {
       profile: {
         'createdTime': '--',

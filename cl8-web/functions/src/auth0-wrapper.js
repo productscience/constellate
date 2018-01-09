@@ -1,14 +1,14 @@
 const ManagementClient = require('auth0').ManagementClient
-const AuthenticationClient = require('auth0').AuthenticationClient
-
+// const AuthenticationClient = require('auth0').AuthenticationClient
+const debug = require('debug')('cl8-auth0-wrapper')
  // you get an auth0 token from
  // https://manage.auth0.com/#/apis/management/explorer
 
 module.exports = Auth0Wrapper
 
 function Auth0Wrapper (auth0Token, auth0Domain) {
-  // console.log(auth0Token)
-  // console.log(auth0Domain)
+  // debug(auth0Token)
+  // debug(auth0Domain)
   // var auth0 = function () {
 
     // TODO this is such a pain
@@ -32,11 +32,11 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
     //   scope: scopes
     // })
     // .then(response => {
-    //   console.log(response)
+    //   debug(response)
     //   return response
     // })
     // .catch(error => {
-    //   console.log(error)
+    //   debug(error)
     // })
     // .then(response =>{
 
@@ -44,6 +44,7 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
     token: auth0Token,
     domain: auth0Domain
   })
+  // debug(auth0)
     // })
 
   function getOrCreateUser (userEmail) {
@@ -57,18 +58,18 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
     }
     return auth0.createUser(user)
       .then(newUser => {
-        console.log('auth0 user', newUser.email)
+        debug('auth0 user', newUser.email)
         return newUser
       })
       .catch(err => {
-        console.log(err)
+        debug(err)
       })
   }
 
   function makeAdminUserByEmail (emailAddress) {
     return auth0.getUsersByEmail(emailAddress)
       .then(function (users) {
-        // console.log(users)
+        // debug(users)
         return (users)
       })
       .then(function (users) {
@@ -81,12 +82,11 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
   function addAirtableAPIToUserByEmail (emailAddress, params) {
     return auth0.getUsersByEmail(emailAddress)
       .then(function (users) {
-        // console.log(users)
-        return (users)
-      })
-      .then(function (users) {
-        let uid = users[0].user_id
-        return updateUser(uid, params)
+        debug(users)
+        if (users.length > 0) {
+          let uid = users[0].user_id
+          return updateUser(uid, params)
+        }
       })
   }
 
@@ -103,8 +103,8 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
   function updateUser (uid, params) {
     return auth0.updateAppMetadata({id: uid}, params)
       .then(function (user) {
-        console.log('user updated')
-        // console.log(user)
+        debug('user updated')
+        // debug(user)
         return user
       })
   }
@@ -123,7 +123,7 @@ function Auth0Wrapper (auth0Token, auth0Domain) {
     removeUser: removeUser,
     makeAdminUserByEmail: makeAdminUserByEmail,
     addAirtableAPIToUserByEmail: addAirtableAPIToUserByEmail,
-    updateUser, updateUser,
+    updateUser: updateUser,
     getUsers: getUsers,
     getUsersByEmail: getUsersByEmail
   }

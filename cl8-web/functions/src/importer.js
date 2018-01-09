@@ -2,7 +2,7 @@ const AirTableWrapper = require('./airtable-wrapper')
 const FireBaseWrapper = require('./firebase-auth-wrapper')
 const Auth0Wrapper = require('./auth0-wrapper')
 const _ = require('lodash')
-const debug = require('debug')('importer')
+const debug = require('debug')('cl8-importer')
 
 module.exports = Cl8Importer
 
@@ -105,12 +105,12 @@ function Cl8Importer (importerCredentials) {
       // }
     // })
   }
-  
+
   function importUsersAcrossServices (peepsToImport) {
-    console.log('importing: ', peepsToImport.length)
+    debug('importing: ', peepsToImport.length)
     let listOfPromises = []
     _.each(peepsToImport, peep => {
-      console.log(peep.fields)
+      debug(peep.fields)
         // create list of promises here, to then pass into the resolving function
       let userAddedtofbList = () => {
         let userObj = {
@@ -141,7 +141,7 @@ function Cl8Importer (importerCredentials) {
       listOfPromises.push(airtableIDAddedtoAuth0)
     })
     return executeSequentally(listOfPromises).catch(err => {
-      console.log(err)
+      debug(err)
     })
   }
     // How would you test this? Is it worth it?
@@ -227,9 +227,9 @@ function Cl8Importer (importerCredentials) {
 
       // build the list of users to import based on the email address list
       // we just created
-    console.log('fbUserEmails', fbUserEmails)
-    console.log('enrichedEmails', enrichedEmails)
-    console.log('airtableUserEmails', airtableUserEmails)
+    debug('fbUserEmails', fbUserEmails)
+    debug('enrichedEmails', enrichedEmails)
+    debug('airtableUserEmails', airtableUserEmails)
     let usersToImport = []
       // once we have the list of ids pull out
     airtableUserEmails.forEach((key) => {

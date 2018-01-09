@@ -3,6 +3,7 @@ import { FIREBASE_CONFIG } from './firebase-variables'
 import EventEmitter from 'EventEmitter'
 import Firebase from 'firebase'
 import axios from 'axios'
+const debug = require('debug')('FirebaseService')
 
 export default class FirebaseService {
   firebaseApp = Firebase.initializeApp(FIREBASE_CONFIG)
@@ -14,12 +15,14 @@ export default class FirebaseService {
   }
 
   db () {
+    debug('connecting to the db')
     let dbase = this.firebaseApp.database()
-    // console.log('db in firebase service', dbase)
+    debug('db in firebase service', dbase)
     return dbase
   }
 
   authToFireBase (user) {
+    debug('user:', user)
     axios({
       method: 'post',
       data: {

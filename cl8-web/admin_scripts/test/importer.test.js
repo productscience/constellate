@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const fs = require('fs')
-const debug = require('debug')('importer.test')
+const debug = require('debug')('cl8-importer-test')
 
 const Cl8Importer = require('../../functions/src/importer.js')
 const AirTableWrapper = require('../../functions/src/airtable-wrapper.js')
@@ -25,6 +25,8 @@ const importerCredentials = {
 const importer = Cl8Importer(importerCredentials)
 let preWork, tempPeep
 
+jest.setTimeout(10000)
+
 // How would you test this? Is it worth it?
 function executeSequentally (promises) {
   // accepts a list of promises, and executes them in order, appending
@@ -36,7 +38,7 @@ function executeSequentally (promises) {
   return result
 }
 
-jest.setTimeout(10000)
+
 
 describe('helper functions', () => {
   let testUsers, testTags
@@ -112,7 +114,7 @@ describe('3rd party API functions', () => {
     // be worth mocking it, or
     return importer.fetchAllDataforSyncing().then(payload => {
       // debugger
-      // console.log(payload.peeps)
+      // debug(payload.peeps)
       // var fs = require('fs');
 
       expect(payload).toHaveProperty('auth0users')
@@ -135,13 +137,13 @@ describe('finding new users to import', () => {
       .then(peeps => {
         let killList = peeps.map(peep => {
           return () => {
-            console.log('nuking: ', peep.id)
+            debug('nuking: ', peep.id)
             return importer.atbl.airtable('peeps').destroy(peep.id)
           }
         })
         return executeSequentally(killList)
       }).catch(err => {
-        console.log(err)
+        debug(err)
       })
       .then(() => {
         return importer.fbase.admin.database().ref('userlist').set(null)
@@ -152,8 +154,8 @@ describe('finding new users to import', () => {
           .then(tags => {
             return importer.atbl.getUsers()
               .then(peeps => {
-                console.log('before: peeps.length: ', peeps.length)
-                console.log('before: tags.length: ', tags.length)
+                debug('before: peeps.length: ', peeps.length)
+                debug('before: tags.length: ', tags.length)
                 payload.tags = tags
                 payload.peeps = peeps
                 return payload
@@ -178,7 +180,7 @@ describe('finding new users to import', () => {
             return payload
           })
           .catch(err => {
-            console.log(err)
+            debug(err)
           })
       })
       .then(payload => {
@@ -192,7 +194,7 @@ describe('finding new users to import', () => {
 
   test('filterOutPeepsToImport - none to import', () => {
     expect.assertions(3)
-    // console.log('payload.fbUserList', _.values(payload.fbUserList.val()))
+    // debug('payload.fbUserList', _.values(payload.fbUserList.val()))
     let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
     let usersToImport = importer.filterOutPeepsToImport(enrichedPeeps, payload.fbUserList)
     payload.fbUserList.val()
@@ -247,9 +249,9 @@ describe('finding new users to import', () => {
     if (typeof tempPeep !== 'undefined') {
       return importer.atbl.airtable(peepTable).destroy(tempPeep.id)
         .then(peep => {
-          console.log('destroyed: ', peep.id)
+          debug('destroyed: ', peep.id)
         }).catch(err => {
-          console.log(err)
+          debug(err)
         })
     }
   })
@@ -261,47 +263,55 @@ describe('importing users', () => {
   beforeEach(() => {
     let noStaleTestUsers = "{email} = 'importme@example.com'"
     let clearedTestUsers = importer.atbl.fetchRecords('peeps', noStaleTestUsers)
-          .then(peeps => {
-            let killList = peeps.map(peep => {
-              return () => {
-                console.log('nuking: ', peep.fields.email)
-                return importer.atbl.airtable('peeps').destroy(peep.id)
-              }
-            })
-            return executeSequentally(killList)
-          }).catch(err => {
-            console.log(err)
-          })
+      .then(peeps => {
+        debug(peeps.length + " peep to remove")
+        let killList = peeps.map(peep => {
+          return () => {
+            debug('nuking: ', peep.fields.email)
+            return importer.atbl.airtable('peeps').destroy(peep.id)
+          }
+        })
+        return executeSequentally(killList)
+      }).catch(err => {
+        debug(err)
+      })
 
-    let fetchTags = importer.atbl.getTags()
-    let fetchPeeps = importer.atbl.getUsers()
+    return clearedTestUsers.then(() => {
+      let fetchTags = importer.atbl.getTags()
+      let fetchPeeps = importer.atbl.getUsers()
         // set up our userList
-    let clearedFBlistUsers = importer.fbase.admin.database().ref('userlist').set(null)
+      let clearedFBlistUsers = importer.fbase.admin.database().ref('userlist').set(null)
 
-    return Promise.all([clearedTestUsers, fetchTags, fetchPeeps, clearedFBlistUsers])
-      .then(results => {
-        payload.tags = results[1]
-        payload.peeps = results[2]
+        return Promise.all([fetchTags, fetchPeeps, clearedFBlistUsers])
+    })
+    .then(results => {
+        payload.tags = results[0]
+        payload.peeps = results[1]
+        debug("payload keys: ", _.keys(payload))
+        debug("payload.peeps.length: ", payload.peeps.length)
+        debug("payload.tags.length: ", payload.tags.length)
 
-        console.log(_.keys(payload))
 
         // let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
 
         let promiseList = payload.peeps.map(peep => {
           return () => {
+
             let userObj = {
               id: peep.id,
               fields: peep.fields
             }
+            debug("adding: ", userObj)
             return importer.fbase.addUserToUserList(userObj)
           }
         })
+
 
         return executeSequentally(promiseList)
       })
   })
 
-  test.only('importUsersAcrossServices', () => {
+  test('importUsersAcrossServices', () => {
     // add a new person to import
     return importer.atbl.airtable(peepTable).create({
       'name': 'Person to import',
@@ -309,6 +319,7 @@ describe('importing users', () => {
       'visible': 'yes',
       'admin': 'false'
     })
+    // return Promise.resolve()
     .then(peep => {
       debug('created user: ', peep.id)
       tempPeep = peep
@@ -342,7 +353,10 @@ describe('importing users', () => {
     })
     // run the import command
     .then(() => {
-      expect.assertions(4)
+      expect.assertions(6)
+      expect(payload.peeps.length).toBe(7)
+      expect(_.values(payload.fbUserList.val()).length).toBe(6)
+
       let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
       let usersToImport = importer.filterOutPeepsToImport(enrichedPeeps, payload.fbUserList)
       expect(usersToImport.length).toBe(1)
@@ -373,33 +387,13 @@ describe('importing users', () => {
     })
   })
 
-      // console.log('make a user')
-      // return importer.fbase.getUserList()
-      //   .then(fbUserList => {
-      //     payload.fbUserList = fbUserList
-      //   })
-      //   .then(userToImport => {
-      //     return importer.atbl.airtable(peepTable).create({
-      //       'name': 'Person to import',
-      //       'email': 'importme@example.com',
-      //       'visible': 'yes',
-      //       'admin': 'false'
-      //     })
-      //   })
-      //   .then(() => {
-      //     return importer.atbl.getUsers()
-      //       .then(peeps => {
-      //         payload.peeps = peeps
-      //       })
-      //   })
-      // return payload
-    // })
-    // console.log('usersToImport', _.keys(payload))
-    // // debugger
-    // let enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
-    // let usersToImport = importer.filterOutPeepsToImport(enrichedPeeps, payload.fbUserList)
-    // // debugger
-    //
-    // expect(usersToImport.length).toBe(1)
-  // })
+  afterEach(() => {
+    if (typeof tempPeep !== 'undefined') {
+      let peepToDelete = {
+        id: tempPeep.id,
+        fields: tempPeep.fields
+      }
+      return importer.fbase.deleteUser(peepToDelete)
+    }
+  })
 })

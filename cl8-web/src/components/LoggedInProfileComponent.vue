@@ -59,6 +59,9 @@ import SearchViewComponent from './SearchViewComponent.vue'
 import axios from 'axios'
 import { includes } from 'lodash'
 
+const debug = require('debug')('LoggedInProfileComponent');
+
+
 const searchkeys = ["fields.name", "fields.email", "fields.tags.name"]
 
 export default {
@@ -159,8 +162,10 @@ export default {
       }
     },
     authenticated () {
-      if (this.authenticated){
-        // console.log('authenticated')
+      debug('user', this.user)
+      if (this.authenticated && this.user !== null){
+        debug('authenticated', this.user)
+        debug('firebase ID: ', this.user['https://cl8.io/firebaseId'])
         this.fbase.authToFireBase(this.user)
       }
     }

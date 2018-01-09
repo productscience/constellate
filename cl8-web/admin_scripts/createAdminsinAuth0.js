@@ -15,7 +15,7 @@ adminUsers.forEach(function(email) {
 })
 
 function makeAdminUser (emailAddress) {
-  auth0.getUsersByEmail(emailAddress)
+  return auth0.getUsersByEmail(emailAddress)
     .then(function (users) {
       console.log(users)
       return (users)
@@ -23,12 +23,12 @@ function makeAdminUser (emailAddress) {
     .then(function (users) {
       let uid = users[0].user_id
       let params = { admin: true }
-      updateUser(uid, params)
+      return updateUser(uid, params)
     })
 }
 
 function updateUser(uid, params) {
-  auth0.updateAppMetadata({id: uid}, params)
+  return auth0.updateAppMetadata({id: uid}, params)
     .then(function (user) {
       console.log('user updated')
       console.log(user)

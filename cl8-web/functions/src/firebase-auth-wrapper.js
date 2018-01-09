@@ -1,6 +1,6 @@
 const fbadmin = require('firebase-admin')
 const _ = require('lodash')
-const debug = require('debug')('firebase-auth-wrapper')
+const debug = require('debug')('cl8-firebase-auth-wrapper')
 
 module.exports = FireBaseAuthWrapper
 
@@ -15,25 +15,27 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
   }
 
   function deleteUser (user) {
-    console.log(user)
+    debug(user)
     // We can't control the ids these use, so we're better off:
     // fetching by email, then
     // fetch the id
     return admin.auth().getUserByEmail(user.fields.email)
       .then(returnedUser => {
-        // console.log(returnedUser.uid)
-        return admin.auth().deleteUser(returnedUser.uid)
-          .catch(err => {
-            console.log('auth:error')
-            console.log(err)
-          })
+        if (typeof returnedUser !== 'undefined') {
+          // debug(returnedUser.uid)
+          return admin.auth().deleteUser(returnedUser.uid)
+            .catch(err => {
+              debug('auth:error')
+              debug(err)
+            })
+        }
       })
       .catch(function (error) {
         if (error.errorInfo.code == 'auth/user-not-found') {
-          console.log('user no longer exists:', user.fields.email)
+          debug('user no longer exists:', user.fields.email)
         }
         return user
-        // console.log(error)
+        // debug(error)
       })
   }
 
@@ -41,7 +43,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
     return admin.auth().getUserByEmail(user.fields.email)
       .then(function (userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
-        console.log('Successfully fetched user data:', userRecord.uid, userRecord.email)
+        debug('Successfully fetched user data:', userRecord.uid, userRecord.email)
         return userRecord
       })
   }
@@ -49,7 +51,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
   function getOrCreateUser (user) {
     return checkForUser(user)
       .then(function (newUser) {
-        // console.log('found user:', newUser)
+        // debug('found user:', newUser)
         return newUser
       })
       .catch(function (error) {
@@ -60,7 +62,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
           }
           return admin.auth().createUser(u)
             .then(function (newUser) {
-              console.log('Successfully created new user:', u.uid, u.email)
+              debug('Successfully created new user:', u.uid, u.email)
               // debugger
               return newUser
             })
@@ -71,7 +73,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
             })
         }
         if (error.errorInfo.code == 'auth/email-already-exists') {
-          console.log(error.errorInfo.message, user.email)
+          debug(error.errorInfo.message, user.email)
           return user
         }
       })
@@ -94,34 +96,34 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
         function matchesUserId (returnedUser) {
           return returnedUser.id == user.id
         }
-        // console.log(user)
+        // debug(user)
         let filteredUsers = _.filter(usersArray, matchesUserId)
-        // console.log(filteredUsers)
+        // debug(filteredUsers)
         if (filteredUsers.length === 0) {
-          // console.log(user.fields)
-          // console.log(user)
+          // debug(user.fields)
+          // debug(user)
           return dataSnapshot.ref.push(user)
             .then(reference => {
-              // console.log(user)
+              // debug(user)
               // return user
               return reference.once('value')
                 .then(snap => {
-                  console.log(snap.val())
+                  debug(snap.val())
                   return user
                 })
-              // console.log(reference.key)
-              // console.log(reference.toJSON())
-              // console.log(reference.ref.toJSON())
-              // console.log(user._rawJson)
+              // debug(reference.key)
+              // debug(reference.toJSON())
+              // debug(reference.ref.toJSON())
+              // debug(user._rawJson)
               // return reference
             }).catch(err => {
-              return console.log(err)
+              return debug(err)
             })
             // .then(function() {
               // return key.set(user)
             // })
         } else {
-          // console.log("returning the original", filteredUsers[0])
+          // debug("returning the original", filteredUsers[0])
           return filteredUsers[0]
         }
       })
@@ -135,7 +137,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
     return getUserList(admin)
       .then(function (userlist) {
         let usersArray = _.values(userlist.val())
-        // console.log(usersArray[1])
+        // debug(usersArray[1])
         let filteredUsers = usersArray.filter(function (returnedUser) {
           return returnedUser.id == user.id
         })

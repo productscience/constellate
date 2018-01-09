@@ -40,17 +40,6 @@ export default {
       console.log(this)
       return true
     },
-    onSubmit: function () {
-      console.log('bredren')
-      // var todoName = document.querySelector('[type="text"]').value;
-      //
-      // function addedFeedback(todoName) {
-      //   let liveRegion = document.querySelector('[role="status"]');
-      //   liveRegion.textContent = `${todoName} added.`;
-      // }
-      // example usage
-      // addedFeedback(todoName);
-    }
   }
 }
 </script>

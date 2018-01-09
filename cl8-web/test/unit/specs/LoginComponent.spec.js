@@ -10,11 +10,11 @@ const fbase = new FirebaseService()
 
 describe('Login Component', () => {
   test('validSubmission', () => {
-    let wrapper = mount(LoginComponent, {
-      propsData: { fbase: fbase }
-    })
-    expect(wrapper.findAll('img.supplied-photo').length).toBe(1)
-    expect(wrapper.findAll('.gravatar').length).toBe(0)
+    // let wrapper = mount(LoginComponent, {
+    //   propsData: { fbase: fbase }
+    // })
+    //
+    expect(0).toBe(1)
   })
 
 })

@@ -31,10 +31,14 @@ export default {
       console.log(this.fbase)
       // debugger
       this.fbase.firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password)
+        .then(function (message) {
+          // okay now we need to bounce to the logged in screen, and pass along
+          // the ID
+          console.log(message.uid, message.email)
+        })
         .catch(function (error) {
           console.log(error)
         })
-        // debugger
     },
     validSubmission: function () {
       console.log(this)

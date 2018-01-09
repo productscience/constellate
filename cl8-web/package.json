@@ -23,6 +23,7 @@
     "firebase": "^4.7.0",
     "marked": "^0.3.7",
     "tachyons": "^4.9.0",
+    "vee-validate": "^2.0.0",
     "vue": "^2.5.9",
     "vue-fuse": "^1.2.1",
     "vue-gravatar": "^1.1.3",

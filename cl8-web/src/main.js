@@ -5,11 +5,13 @@ import App from './App'
 import router from './router'
 import VueFuse from 'vue-fuse'
 import VueFire from 'vuefire'
+import VeeValidate from 'vee-validate'
 
 Vue.config.productionTip = false
 
 Vue.use(VueFuse)
 Vue.use(VueFire)
+Vue.use(VeeValidate)
 
 /* eslint-disable no-new */
 new Vue({

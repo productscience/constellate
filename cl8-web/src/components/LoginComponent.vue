@@ -29,16 +29,12 @@ export default {
   methods: {
     signIn: function () {
       console.log(this.fbase)
-      // debugger
-      this.fbase.firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password)
-        .then(function (message) {
-          // okay now we need to bounce to the logged in screen, and pass along
-          // the ID
-          console.log(message.uid, message.email)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      let user = {
+        email: this.email,
+        password: this.password
+      }
+      let loginResponse = this.fbase.handleAuthentication(user)
+      console.log(loginResponse)
     },
     validSubmission: function () {
       console.log(this)
@@ -52,10 +48,8 @@ export default {
       //   let liveRegion = document.querySelector('[role="status"]');
       //   liveRegion.textContent = `${todoName} added.`;
       // }
-
       // example usage
       // addedFeedback(todoName);
-
     }
   }
 }

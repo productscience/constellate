@@ -5,23 +5,18 @@
       <div class="v-mid sign-in-prompt relative">
 
         <h2 class="absolute" style="top: 120px; left: 145px;">Constellation</h2>
-
-        <a class="f6 br-pill bg-dark-red no-underline white ba grow pv2 ph3 dib absolute "
-          @click="login()"
-          href="#">
-            Log in with email
-        </a>
+        <login-component
+          class=""
+          :fbase=fbase>
+        </login-component>
 
       </div>
     </div>
 
+
+
     <router-view
-        :auth="auth"
-        :authenticated="authenticated"
-        :authNotifier="authNotifier"
-        :logout="logout"
-        v-on:profileChosen="showProfile"
-        :profile="profile"
+
         :fbase="fbase"
         >
     </router-view>
@@ -31,19 +26,23 @@
 </template>
 
 <script>
-import AuthService from './auth/AuthService'
+import LoginComponent from './components/LoginComponent.vue'
+// import AuthService from './auth/AuthService'
 import FirebaseService from './persistence/FirebaseService'
 
-const auth = new AuthService()
-const { login, logout, authenticated, authNotifier } = auth
+// const auth = new AuthService()
+// const { login, logout, authenticated, authNotifier } = auth
 const fbase = new FirebaseService()
 
 export default {
+  components: {
+    LoginComponent
+  },
   name: 'app',
   data () {
-    authNotifier.on('authChange', authState => {
-      this.authenticated = authState.authenticated
-    })
+    // authNotifier.on('authChange', authState => {
+    //   this.authenticated = authState.authenticated
+    // })
     // TODO decide whether we should add a listener here with firebase auth
     // so we have the sign-in logic for both systems in the top level
     return {
@@ -58,18 +57,18 @@ export default {
         },
         'id': '--'
       },
-      auth,
-      authenticated,
-      authNotifier,
-      logout,
+      // auth,
+      // authenticated,
+      // authNotifier,
+      // logout,
       fbase
     }
   },
   methods: {
-    login,
-    showProfile: function (profile) {
-      this.profile = profile
-    }
+    // login,
+    // showProfile: function (profile) {
+      // this.profile = profile
+    // }
   }
 }
 </script>

@@ -56,7 +56,7 @@
 /* eslint-disable */
 import ProfileComponent from './ProfileComponent.vue'
 import SearchViewComponent from './SearchViewComponent.vue'
-import axios from 'axios'
+// import axios from 'axios'
 import { includes } from 'lodash'
 
 const debug = require('debug')('LoggedInProfileComponent');

@@ -10,7 +10,8 @@ import VeeValidate from 'vee-validate'
 Vue.config.productionTip = false
 
 const config = {
-  events: 'blur'
+  events: 'blur',
+  class: true
 }
 
 Vue.use(VueFuse)

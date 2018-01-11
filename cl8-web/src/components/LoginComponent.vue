@@ -1,6 +1,18 @@
 <template>
 <div class="w-100">
-  <div role="status" aria-live="polite">
+  <div role="status" aria-live="polite" class="vh">
+    <!--
+    when there is an error, we want list it in here, to a screen reader
+    can pick it up and read out the announcement
+    -->
+      <div v-if="errors" class="errors">
+        <p v-for="(key, val) in errors.all()">
+          {{ key }}
+        </p>
+      </div>
+
+
+
     </div>
   <form v-on:submit.prevent="signIn">
 
@@ -8,7 +20,7 @@
 
       <input type="text" name="email" v-model="email"
         class="input-reset pa2 ba  mt1 w-50"
-        :class="{'bg-washed-red': errors && errors.has('email') }"
+        :class=" {'bg-washed-red': errors ? errors.has('email') : null}"
         placeholder="your email address"
         aria-label="your email address"
         v-validate="'required|email'"
@@ -24,15 +36,24 @@
     <div class="w-100">
       <input type="password" name="password" v-model="password"
         class="input-reset pa2 ba w-50"
+        :class=" {'bg-washed-red': errors && errors.has('password') }"
         placeholder="your password"
-        aria-label="your password" autocomplete="current-password">
+        v-validate="'required'"
+        aria-label="your password" autocomplete="current-password"
+        @blur="checkValidFormBits" />
+
+      <small v-if="errors && errors.has('password')"
+        class="red ">
+        {{ errors.first('password') }}
+      </small>
     </div>
 
     <div class="mt2">
         <button
-          class="f6 link dim br-pill ph3 pv2 mb2 dib bg-light-silver white w-50 ml0 mt2"
-          :class="{'bg-light-green': validity }"
-          :disabled="errors && errors.any()"
+          class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2"
+          :class="{'bg-light-green pointer grow': formValid}"
+          :disabled="!formValid"
+          v-bind:id="formValid"
           type="submit" name="button">
           Sign in
         </button>
@@ -45,31 +66,47 @@
 </template>
 
 <script>
-
+const debug = require('debug')('LoginComponent')
 export default {
   name: 'LoginComponent',
   props: ['fbase'],
   data: function () {
     return {
       email: '',
-      password: null
+      password: null,
+      announcement: '',
+      formIsValid: false
     }
   },
   methods: {
     signIn: function () {
-      // console.log(this.fbase)
-      // let user = {
-      //   email: this.email,
-      //   password: this.password
-      // }
-      // console.log(this.$validator.fields)
-      // let loginResponse = this.fbase.handleAuthentication(user)
-      // console.log(loginResponse)
+      let user = {
+        email: this.email,
+        password: this.password
+      }
+      // this.$emit()
+      console.log(loginResponse)
+    },
+    checkValidFormBits: function() {
+      let validation = {email: this.email, password: this.password}
+      return this.$validator.validateAll(validation)
+        .then(result => {
+          if (!result) {
+            this.formIsValid = result
+            return false
+          }
+          debug(result)
+          this.formIsValid = result
+          return result
+        })
+        .catch(err => {
+          debug(err)
+        })
     }
   },
   computed: {
-    validity: function () {
-      console.log(this.email)
+    formValid: function () {
+      return this.formIsValid
     }
   }
 }
@@ -86,14 +123,20 @@ export default {
   background-image: url(../assets/earth-transparent.png);
   background-repeat: no-repeat;
 }
-.sign-in-prompt a{
+.sign-in-prompt a {
 
   top: 175px;
   left: 145px;
 }
 
-
-.bg-network{
-
+.vh {
+  position: absolute !important;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding:0 !important;
+  border:0 !important;
+  height: 1px !important;
+  width: 1px !important;
+  overflow: hidden;
 }
+
 </style>

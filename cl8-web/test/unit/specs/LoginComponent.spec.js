@@ -29,9 +29,7 @@ describe('LoginComponent.Vue', () => {
   describe('adding valid data', () => {
 
     test('the submit button should be disabled with invalid data', () => {
-      return localVue.nextTick(() => {
         expect(wrapper.find('button').element.disabled).toBe(true)
-      })
     })
 
     test('the submit button should no longer be disabled', () => {

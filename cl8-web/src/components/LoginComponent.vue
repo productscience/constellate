@@ -10,9 +10,6 @@
           {{ key }}
         </p>
       </div>
-
-
-
     </div>
   <form v-on:submit.prevent="signIn">
 
@@ -84,10 +81,10 @@ export default {
         email: this.email,
         password: this.password
       }
-      // this.$emit()
-      console.log(loginResponse)
+      debug(user)
+      this.$emit('loginSubmission', user)
     },
-    checkForValidFormSubmission: function() {
+    checkForValidFormSubmission: function () {
       let validation = {email: this.email, password: this.password}
       return this.$validator.validateAll(validation)
         .then(result => {

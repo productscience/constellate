@@ -9,9 +9,13 @@ import VeeValidate from 'vee-validate'
 
 Vue.config.productionTip = false
 
+const config = {
+  events: 'blur'
+}
+
 Vue.use(VueFuse)
 Vue.use(VueFire)
-Vue.use(VeeValidate)
+Vue.use(VeeValidate, config)
 
 /* eslint-disable no-new */
 new Vue({

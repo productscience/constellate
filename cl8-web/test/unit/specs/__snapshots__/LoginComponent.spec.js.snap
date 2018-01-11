@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Component mounts with expected data login mounts 1`] = `
+"<div><div role=\\"status\\" aria-live=\\"polite\\"></div> <form><input type=\\"text\\" name=\\"email\\" placeholder=\\"your email address\\" autocomplete=\\"email\\" aria-label=\\"your email address\\" class=\\"input-reset pa2 ba\\"> <!----> <input type=\\"password\\" name=\\"password\\" placeholder=\\"your password\\" aria-label=\\"your password\\" autocomplete=\\"current-password\\" class=\\"input-reset pa2 ba\\"> <button type=\\"submit\\" name=\\"button\\" class=\\"f6 link dim br-pill ph3 pv2 mb2 dib white bg-black\\">
+      Sign in
+    </button></form></div>"
+`;

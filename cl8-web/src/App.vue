@@ -4,9 +4,9 @@
     <div class="w-100 border-box pa3 ph5-ns bg-white" v-if="!authenticated" >
       <div class="v-mid sign-in-prompt relative">
 
-        <h2 class="absolute" style="top: 120px; left: 145px;">Constellation</h2>
+        <h2 class="absolute" style="top: 80px; left: 145px;">Constellation</h2>
         <login-component
-          class=""
+          class="absolute" style="top: 140px; left: 100px;"
           :fbase=fbase>
         </login-component>
 
@@ -74,24 +74,5 @@ export default {
 </script>
 
 <style>
-  @import '../node_modules/tachyons/css/tachyons.css';
 
-  .sign-in-prompt{
-    width: 500px;
-    height: 500px;
-    margin-left:auto;
-    margin-right:auto;
-    background-image: url(assets/earth-transparent.png);
-    background-repeat: no-repeat;
-  }
-  .sign-in-prompt a{
-
-    top: 175px;
-    left: 145px;
-  }
-
-
-  .bg-network{
-
-  }
 </style>

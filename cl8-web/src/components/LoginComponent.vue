@@ -40,7 +40,7 @@
         placeholder="your password"
         v-validate="'required'"
         aria-label="your password" autocomplete="current-password"
-        @blur="checkValidFormBits" />
+        @blur="checkForValidFormSubmission" />
 
       <small v-if="errors && errors.has('password')"
         class="red ">
@@ -87,7 +87,7 @@ export default {
       // this.$emit()
       console.log(loginResponse)
     },
-    checkValidFormBits: function() {
+    checkForValidFormSubmission: function() {
       let validation = {email: this.email, password: this.password}
       return this.$validator.validateAll(validation)
         .then(result => {

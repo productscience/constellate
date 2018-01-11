@@ -40,7 +40,12 @@ describe('LoginComponent.Vue', () => {
         password: 'topSekrit'
       }
       wrapper.setProps(validProps)
+      // Because validation occurs on blur, I think we need to simulate this
+      let passwordInput = wrapper.find("[name='password']")
+      passwordInput.trigger('blur')
+
       return localVue.nextTick().then(() => {
+
         // console.log(otherMount.find('button').element.disabled)
         expect(wrapper.find('button').element.disabled).toBe(false)
       })

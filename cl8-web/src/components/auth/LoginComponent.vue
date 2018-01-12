@@ -63,6 +63,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import debugLib from 'debug'
 const debug = debugLib('cl8.LoginComponent')
 debug('sign in page')
@@ -86,7 +87,7 @@ export default {
         password: this.password
       }
       debug(user)
-      this.$emit('loginSubmission', user)
+      this.$store.dispatch('login', user)
     },
     checkForValidFormSubmission: function() {
       let validation = {

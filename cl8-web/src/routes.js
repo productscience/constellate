@@ -15,7 +15,7 @@ export default new Router({
   routes: [
     {
       path: '/home',
-      name: 'LoggedInProfileComponent',
+      name: 'home',
       component: LoggedInProfileComponent,
       beforeEnter (to, from, next) {
         if (store.state.user) {
@@ -27,12 +27,12 @@ export default new Router({
     },
     {
       path: '/edit',
-      name: 'EditProfileComponent',
+      name: 'editProfile',
       component: EditProfileComponent
     },
     {
       path: '/signin',
-      name: 'LoginComponent',
+      name: 'signin',
       component: LoginComponent
     },
     {

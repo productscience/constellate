@@ -5,6 +5,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import debugLib from 'debug'
 
 // eslint-disable-next-line
@@ -17,6 +18,9 @@ export default {
     return {}
   },
   methods: {},
-  created () {}
+  created () {
+    this.$store.dispatch('tryAutoLogin')
+
+  }
 }
 </script>

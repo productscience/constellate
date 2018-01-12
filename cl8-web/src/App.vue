@@ -21,7 +21,7 @@ export default {
   methods: {},
   created () {
 
-    debug('adding listener to sign in to FB')
+    debug('adding a listener to sign into firebase')
     // without this, a user needs to sign-in each time
     fbase.auth().onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
@@ -29,7 +29,10 @@ export default {
         this.$store.dispatch('autoLogin', firebaseUser)
         this.$router.replace('home')
       }
-
+      else {
+        debug('nope. Nothing')
+        this.$router.replace('signin')
+      }
     })
   }
 }

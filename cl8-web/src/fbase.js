@@ -1,4 +1,3 @@
-
 import { FIREBASE_CONFIG } from './persistence/firebase-variables'
 import Firebase from 'firebase'
 

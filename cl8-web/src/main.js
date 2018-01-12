@@ -4,22 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './routes'
 
-import VueFuse from 'vue-fuse'
-import VueFire from 'vuefire'
-
-import VeeValidate from 'vee-validate'
-
 Vue.config.productionTip = false
 Vue.config.devtools = true
-
-const config = {
-  events: 'blur',
-  class: true
-}
-
-Vue.use(VueFuse)
-Vue.use(VueFire)
-Vue.use(VeeValidate, config)
 
 /* eslint-disable no-new */
 new Vue({

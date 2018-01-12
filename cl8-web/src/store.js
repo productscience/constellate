@@ -2,17 +2,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import router from './routes'
+import fbase from './fbase'
 
-import Firebase from 'firebase'
-import { FIREBASE_CONFIG } from './persistence/firebase-variables'
 const debug = require('debug')('cl8.store')
 
-const fbase = Firebase.initializeApp(FIREBASE_CONFIG)
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: null
+    user: null,
+
   },
   getters: {
     currentUser: function (state) {
@@ -25,16 +24,16 @@ export default new Vuex.Store({
       const user = fbase.auth().currentUser
       if (user) {
         state.user = user.toJSON()
-        debug('setFBUser', state.user)
+        debug('setFBUser - state user', state.user)
       }
     }
 
   },
   actions: {
-    tryAutoLogin: function (context) {
-      // check if firebase has a user when we intialise it.
-      // if so, set it
+    autoLogin: function (context) {
       context.commit('setFBUser')
+      // check if firebase has a user when we intialise it.
+      debug('autoLogin', context.state)
     },
     // otherwise log user in here
     login: function (context, payload) {
@@ -45,10 +44,6 @@ export default new Vuex.Store({
           user => {
             debug(user)
             context.commit('setFBUser', user)
-
-            // I should have a user logged in. Route me to the correct page.
-            // Do I do this here, or somewhere else?
-
           },
           error => {
             alert(error.message);

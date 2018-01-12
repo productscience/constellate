@@ -1,6 +1,8 @@
 <template>
   <div class="cf bg-white bg-network">
-    <h1>LOGGED IN!</h1>
+    <nav-header></nav-header>
+
+    {{ user }}
 
   </div>
 </template>
@@ -11,7 +13,7 @@
 // import SearchViewComponent from './SearchViewComponent.vue'
 // import axios from 'axios'
 // import { includes } from 'lodash'
-
+import NavHeader from '@/components/Header'
 import debugLib from 'debug'
 const debug = debugLib('cl8.LoggedInProfileComponent');
 
@@ -20,7 +22,14 @@ const debug = debugLib('cl8.LoggedInProfileComponent');
 
 export default {
   name: 'LoggedInProfile',
-
+  components: {
+    NavHeader
+  },
+  computed: {
+    user () {
+        return this.$store.getters.currentUser ? this.$store.getters.currentUser : false
+      }
+  }
 }
 </script>
 

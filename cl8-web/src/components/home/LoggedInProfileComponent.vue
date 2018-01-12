@@ -3,9 +3,8 @@
   <nav-header></nav-header>
 
   <div class="fl w-two-thirds pa br b--light-silver profile-holder"></div>
-
   <div class="fl w-third pa2">
-
+    <h2>{{ term }}</h2>
     <div class="tag-list ba b--light-silver">
       <p>
         <span v-for="tag in activetags"
@@ -27,7 +26,6 @@
       </search-view-component>
     </ul>
 
-
   </div>
 
 </div>
@@ -38,7 +36,7 @@
 // import ProfileComponent from '@/components/profile/ProfileComponent.vue'
 import SearchViewComponent from './SearchViewComponent.vue'
 // import axios from 'axios'
-// import { includes } from 'lodash'
+import { includes } from 'lodash'
 import NavHeader from '@/components/Header'
 import debugLib from 'debug'
 const debug = debugLib('cl8.LoggedInProfileComponent');
@@ -64,11 +62,10 @@ export default {
   },
   data () {
     return {
-      activetags: ['taggo'],
+      activetags: [],
       items: [],
       fetchedItems: [],
       tagList: [],
-      term: ""
     }
   },
   computed: {
@@ -76,23 +73,67 @@ export default {
       return this.$store.getters.currentUser ? this.$store.getters.currentUser : false
     },
     matchingTags: function () {
-      return this.items
+      let terms = this.activetags
+      if (typeof terms === 'undefined') {
+        return this.items
+      }
+      let matchingPeeps = this.items
+      // clear out peeps with NO tags
+      let peepsWithFields = matchingPeeps.filter(function (peep) {
+        return typeof peep.fields !== 'undefined'
+      })
+      let peepsWithTags = peepsWithFields.filter(function (peep) {
+        return typeof peep.fields.tags !== 'undefined'
+      })
+      // now reduce the list till we only have people matching all tags
+      terms.forEach(function (term) {
+        peepsWithTags = peepsWithTags.filter(function (peep) {
+          let peepTerms = peep.fields.tags.map(function (tag) {
+            return tag.name
+          })
+          return includes(peepTerms, term)
+        })
+      })
+      let visiblePeeps = peepsWithTags.filter(function(peep) {
+        return peep.fields.visible == 'yes'
+      })
+      return visiblePeeps
     },
+
+
+    // we're doig the same watching here. TODO dry it up.
     term () {
-      let vm = this
-      if (this.term === ""){
+      let term = this.$store.getters.currentTerm
+      debug('term is', term)
+      if (term === ""){
         this.methodResults = this.matchingTags
       } else {
-        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
+        this.$search(term, this.matchingTags, searchOptions).then(results => {
           this.methodResults = results
         })
       }
+      return term
+    },
+    activetags () {
+      let term = this.$store.getters.currentTerm
+      debug('term is', term)
+      if (term === ""){
+        this.methodResults = this.matchingTags
+      } else {
+        this.$search(term, this.matchingTags, this.options).then(results => {
+          this.methodResults = results
+        })
+      }
+
     },
 
   },
   methods: {
     showProfile: function () {
       debug('ShowProfile')
+    },
+    updateSearchTerm: function (term) {
+      debug(term)
     },
     updateActiveTags: function (triggeredTerm) {
       if (this.activetags.indexOf(triggeredTerm) !== -1) {

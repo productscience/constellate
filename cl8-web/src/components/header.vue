@@ -3,9 +3,10 @@
 
   <div class="dtc v-mid w-75 tr">
     <input
-      v-model="term" placeholder="search across everything"
+      placeholder="search across everything"
       class="input-reset b--black-20 pa2 mr1 w-20"
       name="search-term"
+      @input="updateSearchTerm"
        />
     <a href="#"
       class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
@@ -22,7 +23,16 @@
 </template>
 
 <script>
+import debugLib from 'debug'
+const debug = debugLib('cl8.Header')
 export default {
-  name: 'Header'
+  name: 'Header',
+  methods: {
+    updateSearchTerm (ev) {
+      let term = ev.target.value.trim()
+      debug(term)
+      this.$store.commit('setTerm', term)
+    }
+  }
 }
 </script>

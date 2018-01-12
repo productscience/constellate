@@ -11,7 +11,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
-    loading: true
+    loading: true,
+    searchTerm: ""
   },
   getters: {
     currentUser: function (state) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     },
     isLoading: function (state) {
       return state.loading
+    },
+    currentTerm: function (state) {
+      return state.searchTerm
     }
   },
   mutations: {
@@ -32,8 +36,11 @@ export default new Vuex.Store({
         state.user = user.toJSON()
         debug('setFBUser - state user', state.user)
       }
+    },
+    setTerm: function (state, payload) {
+      debug(payload)
+      state.searchTerm = payload
     }
-
   },
   actions: {
     autoLogin: function (context) {

@@ -1,5 +1,6 @@
 <template>
 <div class="w-100">
+  <h1>login please</h1>
   <div role="status" aria-live="polite" class="vh">
     <!--
     when there is an error, we want list it in here, to a screen reader
@@ -37,7 +38,7 @@
         placeholder="your password"
         v-validate="'required'"
         aria-label="your password" autocomplete="current-password"
-        @blur="checkForValidFormSubmission" />
+        @input="checkForValidFormSubmission" />
 
       <small v-if="errors && errors.has('password')"
         class="red ">
@@ -63,7 +64,9 @@
 </template>
 
 <script>
-const debug = require('debug')('LoginComponent')
+import debugLib from 'debug'
+const debug = debugLib('cl8.LoginComponent')
+
 export default {
   name: 'LoginComponent',
   props: ['fbase'],
@@ -105,19 +108,22 @@ export default {
     formValid: function () {
       return this.formIsValid
     }
+  },
+  created () {
+    debug('sign in page')
   }
 }
 </script>
 
 <style>
-@import '../../node_modules/tachyons/css/tachyons.css';
+@import '../../../node_modules/tachyons/css/tachyons.css';
 
 .sign-in-prompt{
   width: 500px;
   height: 500px;
   margin-left:auto;
   margin-right:auto;
-  background-image: url(../assets/earth-transparent.png);
+  background-image: url(../../assets/earth-transparent.png);
   background-repeat: no-repeat;
 }
 .sign-in-prompt a {

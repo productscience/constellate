@@ -1,16 +1,17 @@
 <template>
   <div class="spinner">
-    <img src="../assets/loading.svg" alt="loading"/>
+    <img src="../../assets/loading.svg" alt="loading"/>
   </div>
 </template>
 
 <script>
   export default {
     name: 'callback',
-    props: ['auth'],
+    props: [],
     data () {
-      this.auth.handleAuthentication(window.location.hash)
-      return {}
+      return {
+
+      }
     }
   }
 </script>

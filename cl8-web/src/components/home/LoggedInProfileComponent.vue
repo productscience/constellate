@@ -1,6 +1,6 @@
 <template>
   <div class="cf bg-white bg-network">
-    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10 bg-white" v-if="authenticated" >
+    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10 bg-white" v-if="!!user" >
 
       <div class="dtc v-mid w-75 tr">
             <input
@@ -8,24 +8,32 @@
               class="input-reset b--black-20 pa2 mr1 w-20"
               name="search-term"
                />
-        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="myProfile" title="my profile">my profile</a>
-        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="logout()" title="log out">log out</a>
+        <a href="#"
+          class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
+          @click="myProfile" title="my profile">
+          my profile
+        </a>
+        <a href="#"
+          class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
+          @click="logout()" title="log out">
+          log out
+      </a>
       </div>
     </nav>
 
-    <div v-if="authenticated" class="fl w-two-thirds pa br b--light-silver profile-holder">
+    <div v-if="profile" class="fl w-two-thirds pa br b--light-silver profile-holder">
 
       <profile-component class=""
         v-bind:profile="profile"
         v-bind:fbtagList="fbtagList"
-        v-bind:currentUser="currentUser"
+        v-bind:currentUser="!!user"
         v-bind:activetags="activetags"
         v-on:toggleTag="updateActiveTags">
       </profile-component>
 
     </div>
 
-    <div v-if="authenticated" class="fl w-third pa2">
+    <div v-if="!!user" class="fl w-third pa2">
       <div class="tag-list">
         <p>
           <span v-for="tag in activetags"
@@ -54,12 +62,13 @@
 
 <script>
 /* eslint-disable */
-import ProfileComponent from './ProfileComponent.vue'
+import ProfileComponent from '../profile/ProfileComponent.vue'
 import SearchViewComponent from './SearchViewComponent.vue'
 // import axios from 'axios'
 import { includes } from 'lodash'
 
-const debug = require('debug')('LoggedInProfileComponent');
+import debugLib from 'debug'
+const debug = debugLib('cl8.LoggedInProfileComponent');
 
 
 const searchkeys = ["fields.name", "fields.email", "fields.tags.name"]
@@ -69,7 +78,8 @@ export default {
   props: ['auth', 'authenticated', 'logout', 'profile', 'fbase'],
   firebase: function () {
     return {
-      fbpeeps: this.fbase.db().ref('userlist'),
+      fbpeeps: this.fbase.fbase.database().ref('userlist')
+      // fbpeeps: this.fbase.db().ref('userlist'),
     }
   },
   data () {
@@ -83,7 +93,7 @@ export default {
       keys: searchkeys,
       componentResults: [],
       methodResults: [],
-      user: JSON.parse(localStorage.getItem('user')),
+      user: this.fbase.fbase.auth().currentUser,
       activetags: [],
       items: [],
       fetchedItems: [],
@@ -108,19 +118,20 @@ export default {
     },
     myProfile: function () {
       let vm = this
+
       let newProfile = this.items.filter(function (peep) {
-        return peep.id === vm.user['https://cl8.io/firebaseId']
+        return peep.id === user.uid
       })
       if (newProfile.length > 0) {
-        this.currentUser = newProfile[0].id == this.user['https://cl8.io/firebaseId']
+        this.currentUser = newProfile[0].id == user.uid
         this.$emit('profileChosen', newProfile[0])
       }
     },
     canEditUser: function (newProfile) {
-      if (this.user['https://cl8.io/admin'] === true) {
-        return true
-      }
-      return newProfile.id == this.user['https://cl8.io/firebaseId']
+      // if (this.user['https://cl8.io/admin'] === true) {
+        // return true
+      // }
+      return newProfile.id == user.uid
     },
     updateActiveTags: function (triggeredTerm) {
       if (this.activetags.indexOf(triggeredTerm) !== -1) {
@@ -163,11 +174,6 @@ export default {
     },
     authenticated () {
       debug('user', this.user)
-      if (this.authenticated && this.user !== null){
-        debug('authenticated', this.user)
-        debug('firebase ID: ', this.user['https://cl8.io/firebaseId'])
-        this.fbase.authToFireBase(this.user)
-      }
     }
   },
   computed: {
@@ -200,7 +206,9 @@ export default {
     }
   },
   created () {
+    console.log(this.profile)
     let vm = this
+    window.fbase = this.fbase
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
     this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
   }
@@ -228,7 +236,7 @@ p span.list{
   font-style:normal;
 }
 .bg-network{
-  background-image: url(../assets/network-watermark.png);
+  background-image: url(../../assets/network-watermark.png);
   background-repeat: no-repeat;
 }
 .profile-holder{

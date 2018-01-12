@@ -45,6 +45,10 @@ export default new Vuex.Store({
           user => {
             debug(user)
             context.commit('setFBUser', user)
+
+            // I should have a user logged in. Route me to the correct page.
+            // Do I do this here, or somewhere else?
+
           },
           error => {
             alert(error.message);

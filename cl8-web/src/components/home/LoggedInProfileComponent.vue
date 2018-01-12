@@ -1,217 +1,26 @@
 <template>
   <div class="cf bg-white bg-network">
-    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10 bg-white" v-if="!!user" >
+    <h1>LOGGED IN!</h1>
 
-      <div class="dtc v-mid w-75 tr">
-            <input
-              v-model="term" placeholder="search across everything"
-              class="input-reset b--black-20 pa2 mr1 w-20"
-              name="search-term"
-               />
-        <a href="#"
-          class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
-          @click="myProfile" title="my profile">
-          my profile
-        </a>
-        <a href="#"
-          class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
-          @click="logout()" title="log out">
-          log out
-      </a>
-      </div>
-    </nav>
-
-    <div v-if="profile" class="fl w-two-thirds pa br b--light-silver profile-holder">
-
-      <profile-component class=""
-        v-bind:profile="profile"
-        v-bind:fbtagList="fbtagList"
-        v-bind:currentUser="!!user"
-        v-bind:activetags="activetags"
-        v-on:toggleTag="updateActiveTags">
-      </profile-component>
-
-    </div>
-
-    <div v-if="!!user" class="fl w-third pa2">
-      <div class="tag-list">
-        <p>
-          <span v-for="tag in activetags"
-                @click="toggleTag"
-                class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red"
-                >
-                {{ tag }}
-                <i class="remove_icon"></i>
-          </span>
-        </p>
-
-      </div>
-
-        <ul class="list ml0 pl0">
-          <search-view-component
-            v-for="item in methodResults"
-            v-bind:item="item"
-            v-bind:key="item.id"
-            v-on:profileChosen="showProfile">
-          </search-view-component>
-        </ul>
-
-    </div>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-import ProfileComponent from '../profile/ProfileComponent.vue'
-import SearchViewComponent from './SearchViewComponent.vue'
+// import ProfileComponent from '../profile/ProfileComponent.vue'
+// import SearchViewComponent from './SearchViewComponent.vue'
 // import axios from 'axios'
-import { includes } from 'lodash'
+// import { includes } from 'lodash'
 
 import debugLib from 'debug'
 const debug = debugLib('cl8.LoggedInProfileComponent');
 
 
-const searchkeys = ["fields.name", "fields.email", "fields.tags.name"]
+// const searchkeys = ["fields.name", "fields.email", "fields.tags.name"]
 
 export default {
   name: 'LoggedInProfile',
-  props: ['auth', 'authenticated', 'logout', 'profile', 'fbase'],
-  firebase: function () {
-    return {
-      fbpeeps: this.fbase.fbase.database().ref('userlist')
-      // fbpeeps: this.fbase.db().ref('userlist'),
-    }
-  },
-  data () {
-    return {
-      term: "",
-      options: {
-        keys: searchkeys,
-        defaultAll: true,
-        threshold: 0.2
-      },
-      keys: searchkeys,
-      componentResults: [],
-      methodResults: [],
-      user: this.fbase.fbase.auth().currentUser,
-      activetags: [],
-      items: [],
-      fetchedItems: [],
-      fbtagList: [],
-      currentUser: false
-    }
-  },
-  components: {
-      SearchViewComponent,
-      ProfileComponent
-  },
-  methods: {
-    showProfile: function (someThing, childInstance) {
-      let newProfile = this.items.filter(function (peep) {
-        return peep.id === childInstance.item.id
-      })
-      if (newProfile.length > 0) {
-        this.currentUser = this.canEditUser(newProfile[0])
-        this.$emit('profileChosen', newProfile[0])
-      }
 
-    },
-    myProfile: function () {
-      let vm = this
-
-      let newProfile = this.items.filter(function (peep) {
-        return peep.id === user.uid
-      })
-      if (newProfile.length > 0) {
-        this.currentUser = newProfile[0].id == user.uid
-        this.$emit('profileChosen', newProfile[0])
-      }
-    },
-    canEditUser: function (newProfile) {
-      // if (this.user['https://cl8.io/admin'] === true) {
-        // return true
-      // }
-      return newProfile.id == user.uid
-    },
-    updateActiveTags: function (triggeredTerm) {
-      if (this.activetags.indexOf(triggeredTerm) !== -1) {
-        let index = this.activetags.indexOf(triggeredTerm)
-        this.activetags.splice(index, 1)
-      } else {
-        this.activetags.push(triggeredTerm)
-      }
-    },
-    // this is the same function as in profilecomponent - reuse instead?
-    toggleTag: function (triggeredEvent) {
-      let tagToToggle = triggeredEvent.target.textContent.trim()
-      this.updateActiveTags(tagToToggle)
-    },
-  },
-  watch: {
-    term () {
-      let vm = this
-      if (this.term === ""){
-        this.methodResults = this.matchingTags
-      } else {
-      this.$search(this.term, this.matchingTags, this.options).then(results => {
-        this.methodResults = results
-      })
-      }
-    },
-    activetags () {
-      if (this.term === ""){
-        this.methodResults = this.matchingTags
-      } else {
-      this.$search(this.term, this.matchingTags, this.options).then(results => {
-        this.methodResults = results
-      })
-      }
-    },
-    items () {
-      if (!this.currentUser && this.authenticated){
-        this.myProfile()
-      }
-    },
-    authenticated () {
-      debug('user', this.user)
-    }
-  },
-  computed: {
-    matchingTags: function () {
-      let terms = this.activetags
-      if (typeof terms === 'undefined') {
-        return this.items
-      }
-      let matchingPeeps = this.items
-      // clear out peeps with NO tags
-      let peepsWithFields = matchingPeeps.filter(function (peep) {
-        return typeof peep.fields !== 'undefined'
-      })
-      let peepsWithTags = peepsWithFields.filter(function (peep) {
-        return typeof peep.fields.tags !== 'undefined'
-      })
-      // now reduce the list till we only have people matching all tags
-      terms.forEach(function (term) {
-        peepsWithTags = peepsWithTags.filter(function (peep) {
-          let peepTerms = peep.fields.tags.map(function (tag) {
-            return tag.name
-          })
-          return includes(peepTerms, term)
-        })
-      })
-      let visiblePeeps = peepsWithTags.filter(function(peep) {
-        return peep.fields.visible == 'yes'
-      })
-      return visiblePeeps
-    }
-  },
-  created () {
-    console.log(this.profile)
-    let vm = this
-    window.fbase = this.fbase
-    this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
-    this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
-  }
 }
 </script>
 

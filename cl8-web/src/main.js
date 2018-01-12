@@ -5,8 +5,13 @@ import Vue from 'vue'
 import App from './App'
 import router from './routes'
 import store from './store'
-
 import VeeValidate from 'vee-validate'
+import VueFire from 'vuefire'
+import VueFuse from 'vue-fuse'
+import fbase from './fbase'
+
+import debugLib from 'debug'
+const debug = debugLib('cl8.main.js');
 
 Vue.config.productionTip = false
 Vue.config.devtools = true
@@ -16,6 +21,8 @@ const vvConfig = {
   class: true
 }
 Vue.use(VeeValidate, vvConfig)
+Vue.use(VueFuse)
+Vue.use(VueFire)
 
 
 /* eslint-disable no-new */

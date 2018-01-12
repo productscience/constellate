@@ -5,6 +5,7 @@
   <div class="fl w-two-thirds pa br b--light-silver profile-holder"></div>
 
   <div class="fl w-third pa2">
+
     <div class="tag-list ba b--light-silver">
       <p>
         <span v-for="tag in activetags"
@@ -16,6 +17,17 @@
         </span>
       </p>
     </div>
+
+    <ul class="list ml0 pl0">
+      <search-view-component
+        v-for="item in methodResults"
+        v-bind:item="item"
+        v-bind:key="item.id"
+        v-on:profileChosen="showProfile">
+      </search-view-component>
+    </ul>
+
+
   </div>
 
 </div>

@@ -1,5 +1,12 @@
 <template>
 <div class="w-100">
+
+  <div v-if="loading" class="">
+    <h1>Loading</h1>
+  </div>
+
+  <div v-if="!loading" class="">
+
   <div class="v-mid sign-in-prompt">
 
     <h2 class="pt5 pl6">Constellation</h2>
@@ -58,6 +65,7 @@
 
     </div>
   </div>
+  </div>
 
 </div>
 </template>
@@ -81,7 +89,7 @@ export default {
     }
   },
   methods: {
-    signIn: function() {
+    signIn: function () {
       let user = {
         email: this.email,
         password: this.password
@@ -110,8 +118,11 @@ export default {
     }
   },
   computed: {
-    formValid: function() {
+    formValid: function () {
       return this.formIsValid
+    },
+    loading: function () {
+      return this.$store.getters.isLoading
     }
   }
 }

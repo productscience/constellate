@@ -22,6 +22,7 @@ export default {
   created () {
 
     debug('adding a listener to sign into firebase')
+
     // without this, a user needs to sign-in each time
     fbase.auth().onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
@@ -31,7 +32,7 @@ export default {
       }
       else {
         debug('nope. Nothing')
-        this.$router.replace('signin')
+        this.$router.commit('stopLoading')
       }
     })
   }

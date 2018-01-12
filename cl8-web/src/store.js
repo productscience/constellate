@@ -11,14 +11,20 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
-
+    loading: true
   },
   getters: {
     currentUser: function (state) {
       return state.user
+    },
+    isLoading: function (state) {
+      return state.loading
     }
   },
   mutations: {
+    stopLoading: function (state) {
+      state.loading = false
+    },
     setFBUser: function (state) {
       debug('setFBUser', state.user)
       const user = fbase.auth().currentUser

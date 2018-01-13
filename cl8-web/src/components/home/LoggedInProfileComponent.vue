@@ -1,6 +1,6 @@
 <template>
 <div class="cf bg-white bg-network">
-  <nav-header></nav-header>
+  <nav-header @myProfile="setUserProfile"></nav-header>
 
   <div class="profile-holder fl w-two-thirds pa br b--light-silver">
     <profile-component></profile-component>
@@ -63,7 +63,7 @@ export default {
       readyCallback: function () {
         debug('data retrieved from fbase')
         this.setUserProfile()
-        
+
       }
     }
   },

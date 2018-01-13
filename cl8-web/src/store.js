@@ -119,7 +119,6 @@ export default new Vuex.Store({
     updateProfile: function (context, payload) {
       debug('sending update to Firebase', payload)
 
-      // debugger
       // not super happy about this - surely there's a toJSON() method?
       let newProfile = JSON.parse(JSON.stringify(payload))
       delete newProfile['.key']
@@ -131,11 +130,6 @@ export default new Vuex.Store({
         .catch(error => {
           debug('Saving profile: ', payload , 'failed', error)
         })
-      // this.$firebaseRefs.fbpeeps.child(this.profile['.key']).set(newProfile)
-      //
-      // this.$emit('profileUpdate', this.profile)
-      // this.$emit('profileChosen', this.profile)
-
     }
   }
 })

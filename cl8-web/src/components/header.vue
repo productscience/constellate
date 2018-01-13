@@ -8,16 +8,16 @@
       name="search-term"
       @input="updateSearchTerm"
        />
-    <a href="#"
+    <span
       class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
       @click="myProfile" title="my profile">
       my profile
-    </a>
-    <a href="#"
+    </span>
+    <span
       class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
       @click="logout" title="log out">
       log out
-  </a>
+    </span>
   </div>
 </nav>
 </template>
@@ -36,6 +36,10 @@ export default {
     logout: function () {
       debug('log out')
       this.$store.dispatch('logout')
+    },
+    myProfile: function () {
+      debug('setting profile back to user')
+      this.$emit('myProfile')
     }
   }
 }

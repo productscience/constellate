@@ -58,7 +58,13 @@ export default {
     SearchViewComponent
   },
   firebase: {
-    fbpeeps: fbase.database().ref('userlist'),
+    fbpeeps: {
+      source: fbase.database().ref('userlist'),
+      readyCallback: function () {
+        debug('data retrieved from fbase')
+        this.setUserProfile()
+      }
+    }
   },
   data () {
     return {
@@ -107,38 +113,49 @@ export default {
   },
   watch: {
     term () {
-      debug('term is', this.term)
+      debug('watching term', this.term)
       if (this.term === ""){
         this.methodResults = this.matchingTags
       } else {
-        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
-          this.methodResults = results
-        })
+      this.methodResults = this.matchingTags
+        // this.$search(this.term, this.matchingTags, searchOptions).then(results => {
+        //   this.methodResults = results
+        // })
       }
     },
     activeTags () {
+      debug('watching activeTags', this.term)
       if (this.term === ""){
         this.methodResults = this.matchingTags
       } else {
-        this.$search(this.term, this.matchingTags, this.options).then(results => {
-          this.methodResults = results
-        })
+        this.methodResults = this.matchingTags
       }
     }
 
   },
   methods: {
-    updateSearchTerm: function (term) {
-      debug(term)
-    },
     toggleTag: function (ev) {
-      let tagToToggle = ev.target.textContent.trim()
-      this.$state.dispatch('updateActiveTags', tagToToggle)
+      let tag = ev.target.textContent.trim()
+      this.$store.dispatch('updateActiveTags', tag)
+    },
+    setUserProfile () {
+      debug('setting own profile for ', this.user)
+      let user = this.user
+      let matchingProfiles = this.items.filter(function (peep) {
+        return peep.id === user.uid
+      })
+      if (matchingProfiles.length > 0) {
+        debug('We have a match!', matchingProfiles[0])
+        this.$store.commit('setProfile', matchingProfiles[0])
+      } else {
+        debug('No matches', matchingProfiles)
+      }
     }
   },
   created () {
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
     this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
+
   }
 }
 </script>

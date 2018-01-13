@@ -12,7 +12,7 @@ export default new Vuex.Store({
   state: {
     user: null,
     loading: true,
-    searchTerm: null,
+    searchTerm: "",
     searchTags: [],
     profile: null
   },
@@ -27,6 +27,7 @@ export default new Vuex.Store({
       return state.searchTerm
     },
     activeTags: function (state) {
+      debug('activeTags', state.searchTags)
       return state.searchTags
     },
     profile: function (state) {
@@ -83,6 +84,7 @@ export default new Vuex.Store({
       debug('updateActiveTags', payload)
       let tag = payload
       let tags = context.state.searchTags
+      debug('tags', tags)
       if (tags.indexOf(tag) !== -1) {
         let index = tags.indexOf(tag)
         tags.splice(index, 1)

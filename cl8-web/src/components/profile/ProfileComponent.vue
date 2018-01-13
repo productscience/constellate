@@ -57,7 +57,7 @@
         <li
           v-for="tag in profile.fields.tags"
           class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-washed-red"
-          v-bind:class="{ 'bg-dark-red white': isActive(tag.name) }"
+          :class="{ 'bg-dark-red white': isActive(tag.name) }"
           @click="toggleTag">
           {{ tag.name }}
         </li>
@@ -88,6 +88,9 @@ Vue.component('v-gravatar', Gravatar)
 
 export default {
   name: 'ProfileComponent',
+  components: {
+    Gravatar
+  },
   props: ['auth', 'currentUser', 'fbtagList'],
   data() {
     return {}
@@ -95,10 +98,10 @@ export default {
   computed: {
     profile () {
       return this.$store.getters.profile
+    },
+    activeTags () {
+      return this.$store.getters.activeTags
     }
-  },
-  components: {
-    Gravatar
   },
   methods: {
     toggleTag: function (ev) {
@@ -106,8 +109,8 @@ export default {
       this.$store.dispatch('updateActiveTags', tag)
     },
     isActive: function (term) {
-      if (typeof this.activetags !== 'undefined') {
-          let matchesActiveTag = this.activetags.indexOf(term) !== -1
+      if (typeof this.activeTags !== 'undefined') {
+          let matchesActiveTag = this.activeTags.indexOf(term) !== -1
           return matchesActiveTag
         }
     },
@@ -124,7 +127,7 @@ export default {
       if (this.profile.fields.photo.length > 0) {
         return true
       }
-      // otherwise jjust return false
+      // otherwise just return false
       return false
     }
   },

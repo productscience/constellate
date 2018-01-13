@@ -1,13 +1,7 @@
 <template>
   <div class="cf bg-white">
-    <nav class="dt w-100 border-box pa3 ph5-ns bb b--black-10 bg-white" v-if="authenticated" >
-
-      <div class="dtc v-mid w-75 tr">
-        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" title="my profile">my profile</a>
-        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="#" @click="logout()" title="log out">log out</a>
-      </div>
-    </nav>
-    <div v-if="authenticated" class="fl w-two-thirds pa2">
+    <nav-header></nav-header>
+    <div class="fl w-two-thirds pa2">
       <div class="pa3 center w-80 cf">
         <div>
           <form class="">
@@ -106,8 +100,6 @@
               Save
             </a>
 
-
-
           </form>
         </div>
       </div>
@@ -116,15 +108,28 @@
 </template>
 
 <script>
+/* eslint-disable */
 import Multiselect from 'vue-multiselect'
 import { includes } from 'lodash'
+import debugLib from 'debug'
+import fbase from '@/fbase'
+
+const debug = debugLib('cl8.EditProfileComponent')
+
 
 export default {
   name: 'EditProfileComponent',
-  props: ['auth', 'authenticated', 'tags', 'profile', 'fbase'],
+  components: {
+    Multiselect
+  },
   firebase: function () {
     return {
-      fbpeeps: this.fbase.db().ref('userlist')
+      fbpeeps: {
+        source: fbase.database().ref('userlist'),
+        readyCallback: function () {
+          debug('data retrieved from fbase')
+        }
+      }
     }
   },
   data () {
@@ -132,65 +137,12 @@ export default {
       items: [], // this needs to be the list from firebase
       tagList: [],
       unsyncedTags: [],
-      user: JSON.parse(localStorage.getItem('user'))
     }
   },
-  components: {
-    Multiselect
-  },
-  methods: {
-    addTag (newTag) {
-      let tempVal = newTag.substring(0, 2) + Math.floor(
-        (Math.random() * 10000000)
-      )
-      const tag = {
-        name: newTag,
-        code: tempVal,
-        id: 'tempval' + tempVal
-      }
-      this.profile.fields.tags.push(tag)
-      this.unsyncedTags.push(tag)
-    },
-    myProfile: function () {
-      let vm = this
-      let newProfile = this.items.filter(function (peep) {
-        return peep.id === vm.user['https://cl8.io/firebaseId']
-      })
-      if (newProfile.length > 0) {
-        this.$emit('profileChosen', newProfile[0])
-      }
-    },
-    onSubmit: function (item) {
-      let newProfile = JSON.parse(JSON.stringify(this.profile))
-      delete newProfile['.key']
-      this.$firebaseRefs.fbpeeps.child(this.profile['.key']).set(newProfile)
-
-      this.$emit('profileUpdate', this.profile)
-      this.$emit('profileChosen', this.profile)
-      this.$router.push('/home')
-    },
-    showProfile: function (someThing, childInstance) {
-      let newProfile = this.items.filter(function (peep) {
-        return peep.id === childInstance.item.id
-      })
-      this.profile = newProfile[0]
-    },
-    hasPhoto () {
-      if (typeof this.profile.fields === 'undefined') {
-        return false
-      }
-      if (typeof this.profile.fields.photo === 'undefined') {
-        return false
-      }
-      if (this.profile.fields.photo.length > 0) {
-        return true
-      }
-      // otherwise jjust return false
-      return false
-    }
-  },
-  watch: {},
   computed: {
+    profile () {
+      return this.$store.getters.profile
+    },
     profileTags: function () {
       let tagList = []
 
@@ -218,8 +170,38 @@ export default {
       return tagList
     }
   },
+  methods: {
+    addTag (newTag) {
+      let tempVal = newTag.substring(0, 2) + Math.floor(
+        (Math.random() * 10000000)
+      )
+      const tag = {
+        name: newTag,
+        code: tempVal,
+        id: 'tempval' + tempVal
+      }
+      this.profile.fields.tags.push(tag)
+      this.unsyncedTags.push(tag)
+    },
+    onSubmit: function (item) {
+      debug('updating profile', this.profile)
+      this.$store.dispatch('updateProfile', this.profile)
+    },
+    hasPhoto () {
+      if (typeof this.profile.fields === 'undefined') {
+        return false
+      }
+      if (typeof this.profile.fields.photo === 'undefined') {
+        return false
+      }
+      if (this.profile.fields.photo.length > 0) {
+        return true
+      }
+      // otherwise jjust return false
+      return false
+    }
+  },
   created () {
-    this.fbase.authToFireBase(this.user)
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
   }
 }

@@ -60,7 +60,7 @@
           </button>
         </div>
 
-        <router-link :to="{ name: 'ResetPassword' }">Forgot password</router-link>
+        <router-link :to="{ name: 'resetPassword' }">Forgot password</router-link>
 
 
       </form>

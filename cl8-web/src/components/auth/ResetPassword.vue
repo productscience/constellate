@@ -40,6 +40,8 @@
                 Reset Password
               </button>
           </div>
+
+          <router-link :to="{ name: 'signin' }">Back to Sign in</router-link>
         </form>
       </div>
     </div>

@@ -64,9 +64,9 @@
       </ul>
     </div>
 
-    <div v-if="currentUser">
+    <div v-if="canEdit">
       <hr>
-        <router-link to="/edit"
+        <router-link :to="{ name: 'editProfile' }"
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
           Edit
         </router-link>
@@ -96,6 +96,9 @@ export default {
     return {}
   },
   computed: {
+    user() {
+      return this.$store.getters.currentUser
+    },
     profile () {
       return this.$store.getters.profile
     },
@@ -104,6 +107,10 @@ export default {
     }
   },
   methods: {
+    canEdit: function () {
+      debug(this.profile, this.user)
+      return this.profile.id === this.user
+    },
     toggleTag: function (ev) {
       let tag = ev.target.textContent.trim()
       this.$store.dispatch('updateActiveTags', tag)

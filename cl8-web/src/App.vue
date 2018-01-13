@@ -32,7 +32,7 @@ export default {
       }
       else {
         debug('nope. Nothing')
-        this.$router.commit('stopLoading')
+        this.$store.commit('stopLoading')
       }
     })
   }

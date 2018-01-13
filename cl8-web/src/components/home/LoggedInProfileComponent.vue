@@ -2,12 +2,14 @@
 <div class="cf bg-white bg-network">
   <nav-header></nav-header>
 
-  <div class="fl w-two-thirds pa br b--light-silver profile-holder"></div>
+  <div class="fl w-two-thirds pa br b--light-silver profile-holder">
+    <profile-component></profile-component>
+  </div>
   <div class="fl w-third pa2">
     <h2>{{ term }}</h2>
     <div class="tag-list ba b--light-silver">
       <p>
-        <span v-for="tag in activetags"
+        <span v-for="tag in activeTags"
               @click="toggleTag"
               class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red"
               >
@@ -33,15 +35,14 @@
 
 <script>
 /* eslint-disable */
-// import ProfileComponent from '@/components/profile/ProfileComponent.vue'
+import ProfileComponent from '@/components/profile/ProfileComponent.vue'
 import SearchViewComponent from './SearchViewComponent.vue'
-// import axios from 'axios'
 import { includes } from 'lodash'
 import NavHeader from '@/components/Header'
 import debugLib from 'debug'
-const debug = debugLib('cl8.LoggedInProfileComponent');
 import fbase from '@/fbase'
 
+const debug = debugLib('cl8.LoggedInProfileComponent')
 const searchKeys = ["fields.name", "fields.email", "fields.tags.name"]
 const searchOptions = {
   keys: searchKeys,
@@ -49,12 +50,11 @@ const searchOptions = {
   threshold: 0.2
 }
 
-
 export default {
   name: 'LoggedInProfile',
   components: {
     NavHeader,
-    // ProfileComponent
+    ProfileComponent,
     SearchViewComponent
   },
   firebase: {
@@ -62,7 +62,6 @@ export default {
   },
   data () {
     return {
-      activetags: [],
       items: [],
       fetchedItems: [],
       tagList: [],
@@ -73,7 +72,7 @@ export default {
       return this.$store.getters.currentUser ? this.$store.getters.currentUser : false
     },
     matchingTags: function () {
-      let terms = this.activetags
+      let terms = this.activeTags
       if (typeof terms === 'undefined') {
         return this.items
       }
@@ -99,53 +98,42 @@ export default {
       })
       return visiblePeeps
     },
-
-
-    // we're doig the same watching here. TODO dry it up.
     term () {
-      let term = this.$store.getters.currentTerm
-      debug('term is', term)
-      if (term === ""){
+      return this.$store.getters.currentTerm
+    },
+    activeTags () {
+      return this.$store.getters.activeTags
+    }
+  },
+  watch: {
+    term () {
+      debug('term is', this.term)
+      if (this.term === ""){
         this.methodResults = this.matchingTags
       } else {
-        this.$search(term, this.matchingTags, searchOptions).then(results => {
+        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
           this.methodResults = results
         })
       }
-      return term
     },
-    activetags () {
-      let term = this.$store.getters.currentTerm
-      debug('term is', term)
-      if (term === ""){
+    activeTags () {
+      if (this.term === ""){
         this.methodResults = this.matchingTags
       } else {
-        this.$search(term, this.matchingTags, this.options).then(results => {
+        this.$search(this.term, this.matchingTags, this.options).then(results => {
           this.methodResults = results
         })
       }
-
-    },
+    }
 
   },
   methods: {
-    showProfile: function () {
-      debug('ShowProfile')
-    },
     updateSearchTerm: function (term) {
       debug(term)
     },
-    updateActiveTags: function (triggeredTerm) {
-      if (this.activetags.indexOf(triggeredTerm) !== -1) {
-        let index = this.activetags.indexOf(triggeredTerm)
-        this.activetags.splice(index, 1)
-      } else {
-        this.activetags.push(triggeredTerm)
-      }
-    },
     toggleTag: function (ev) {
       let tagToToggle = ev.target.textContent.trim()
-      this.updateActiveTags(tagToToggle)
+      this.$state.dispatch('updateActiveTags', tagToToggle)
     }
   },
   created () {

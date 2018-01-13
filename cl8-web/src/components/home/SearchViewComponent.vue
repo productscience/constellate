@@ -24,6 +24,8 @@
 <script>
 import Vue from 'vue'
 import Gravatar from 'vue-gravatar'
+import debugLib from 'debug'
+const debug = debugLib('cl8.SearchViewComponent')
 Vue.component('v-gravatar', Gravatar)
 
 export default {
@@ -33,8 +35,9 @@ export default {
   },
   computed: {},
   methods: {
-    profileChosen (someEvent) {
-      this.$emit('profileChosen', someEvent, this)
+    profileChosen () {
+      debug(this.item)
+      this.$store.commit('setProfile', this.item)
     },
     hasfields () {
       if (typeof this.item.fields === 'undefined') {

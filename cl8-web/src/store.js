@@ -12,7 +12,9 @@ export default new Vuex.Store({
   state: {
     user: null,
     loading: true,
-    searchTerm: ""
+    searchTerm: null,
+    searchTags: [],
+    profile: null
   },
   getters: {
     currentUser: function (state) {
@@ -23,6 +25,12 @@ export default new Vuex.Store({
     },
     currentTerm: function (state) {
       return state.searchTerm
+    },
+    activeTags: function (state) {
+      return state.searchTags
+    },
+    profile: function (state) {
+      return state.profile
     }
   },
   mutations: {
@@ -38,8 +46,16 @@ export default new Vuex.Store({
       }
     },
     setTerm: function (state, payload) {
-      debug(payload)
+      debug('setTerm', payload)
       state.searchTerm = payload
+    },
+    setTags: function (state, payload) {
+      debug('setTags', payload)
+      state.searchTags = payload
+    },
+    setProfile: function (state, payload) {
+      debug('setProfile', payload)
+      state.profile = payload
     }
   },
   actions: {
@@ -61,8 +77,19 @@ export default new Vuex.Store({
           error => {
             alert(error.message);
           }
-        );
-
+        )
+    },
+    updateActiveTags: function (context, payload) {
+      debug('updateActiveTags', payload)
+      let tag = payload
+      let tags = context.state.searchTags
+      if (tags.indexOf(tag) !== -1) {
+        let index = tags.indexOf(tag)
+        tags.splice(index, 1)
+      } else {
+        tags.push(tag)
+      }
+      context.commit('setTags', tags)
     }
   }
 })

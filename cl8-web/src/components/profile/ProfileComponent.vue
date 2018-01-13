@@ -1,5 +1,5 @@
 <template>
-  <div class="pa3 center w-80 cf">
+  <div class="pa3 center w-80 cf" v-if="!!profile">
 
     <div class="cf" style="min-height:11em;">
       <div class="fl w-20">
@@ -82,24 +82,28 @@
 import Vue from 'vue'
 import Gravatar from 'vue-gravatar'
 import marked from 'marked'
-
+import debugLib from 'debug'
+const debug = debugLib('cl8.ProfileComponent')
 Vue.component('v-gravatar', Gravatar)
 
 export default {
   name: 'ProfileComponent',
-  props: ['auth', 'authenticated', 'profile', 'activetags', 'currentUser', 'fbtagList'],
+  props: ['auth', 'currentUser', 'fbtagList'],
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    profile () {
+      return this.$store.getters.profile
+    }
+  },
   components: {
     Gravatar
   },
   methods: {
-    toggleTag: function (triggeredEvent) {
-      let triggeredTerm = triggeredEvent.target.textContent.trim()
-      this.$emit('toggleTag', triggeredTerm)
-      // update appearance by toggling a class
+    toggleTag: function (ev) {
+      let tag = ev.target.textContent.trim()
+      this.$store.dispatch('updateActiveTags', tag)
     },
     isActive: function (term) {
       if (typeof this.activetags !== 'undefined') {

@@ -2,10 +2,10 @@
 <div class="cf bg-white bg-network">
   <nav-header></nav-header>
 
-  <div class="fl w-two-thirds pa br b--light-silver profile-holder">
+  <div class="profile-holder fl w-two-thirds pa br b--light-silver">
     <profile-component></profile-component>
   </div>
-  <div class="fl w-third pa2">
+  <div class="side-column fl w-third pa2">
     <h2>{{ term }}</h2>
     <div class="tag-list ba b--light-silver">
       <p>
@@ -117,10 +117,9 @@ export default {
       if (this.term === ""){
         this.methodResults = this.matchingTags
       } else {
-      this.methodResults = this.matchingTags
-        // this.$search(this.term, this.matchingTags, searchOptions).then(results => {
-        //   this.methodResults = results
-        // })
+        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
+          this.methodResults = results
+        })
       }
     },
     activeTags () {
@@ -128,7 +127,9 @@ export default {
       if (this.term === ""){
         this.methodResults = this.matchingTags
       } else {
-        this.methodResults = this.matchingTags
+        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
+          this.methodResults = results
+        })
       }
     }
 
@@ -162,6 +163,11 @@ export default {
 
 
 <style media="screen">
+.side-column{
+  height: 100vh;
+  overflow: auto;
+}
+
 p span.list {
   display: inline-block;
 }

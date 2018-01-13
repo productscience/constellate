@@ -63,7 +63,6 @@ export default {
       readyCallback: function () {
         debug('data retrieved from fbase')
         this.setUserProfile()
-
       }
     }
   },
@@ -156,7 +155,7 @@ export default {
   },
   created () {
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
-    this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps)
+    this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps.orderByChild('fields/visible').equalTo('yes'))
 
   }
 }

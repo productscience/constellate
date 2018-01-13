@@ -33,6 +33,7 @@ export default {
       else {
         debug('nope. Nothing')
         this.$store.commit('stopLoading')
+        this.$router.replace('signin')
       }
     })
   }

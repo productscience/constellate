@@ -15,7 +15,7 @@
     </a>
     <a href="#"
       class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns"
-      @click="logout()" title="log out">
+      @click="logout" title="log out">
       log out
   </a>
   </div>
@@ -32,6 +32,10 @@ export default {
       let term = ev.target.value.trim()
       debug(term)
       this.$store.commit('setTerm', term)
+    },
+    logout: function () {
+      debug('log out')
+      this.$store.dispatch('logout')
     }
   }
 }

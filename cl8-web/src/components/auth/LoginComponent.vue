@@ -60,6 +60,8 @@
           </button>
         </div>
 
+        <router-link :to="{ name: 'ResetPassword' }">Forgot password</router-link>
+
 
       </form>
 
@@ -79,7 +81,6 @@ debug('sign in page')
 
 export default {
   name: 'LoginComponent',
-  props: ['fbase'],
   data: function() {
     return {
       email: '',

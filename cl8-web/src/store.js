@@ -46,6 +46,10 @@ export default new Vuex.Store({
         debug('setFBUser - state user', state.user)
       }
     },
+    clearFBUser: function (state) {
+      debug('clearFBUser', state.user)
+      state.user = null
+    },
     setTerm: function (state, payload) {
       debug('setTerm', payload)
       state.searchTerm = payload
@@ -79,6 +83,25 @@ export default new Vuex.Store({
             alert(error.message);
           }
         )
+    },
+    logout: function (context) {
+      fbase.auth().signOut().then(function() {
+        // Sign-out successful.
+        context.commit('clearFBUser')
+      }).catch(function(error) {
+        // An error happened
+        debug('Logout Failed!', error)
+      })
+    },
+    resetPassword: function (context, payload) {
+      debug('send password reset for ', payload)
+      fbase.auth().sendPasswordResetEmail(payload).then(function() {
+        // Email sent.
+        debug('password reset requested', payload)
+      }).catch(function(error) {
+      // An error happened.
+        debug('Problem sending password: ', error)
+      });
     },
     updateActiveTags: function (context, payload) {
       debug('updateActiveTags', payload)

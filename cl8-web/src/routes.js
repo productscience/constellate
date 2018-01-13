@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import store from './store'
 
 import LoginComponent from '@/components/auth/LoginComponent'
+import ResetPassword from '@/components/auth/ResetPassword'
 // import Callback from '@/components/auth/Callback'
 import LoggedInProfileComponent from '@/components/home/LoggedInProfileComponent'
 import EditProfileComponent from '@/components/profile/EditProfileComponent'
@@ -34,6 +35,11 @@ export default new Router({
       path: '/signin',
       name: 'signin',
       component: LoginComponent
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetPassword',
+      component: ResetPassword
     },
     {
       path: '/',

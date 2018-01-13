@@ -6,7 +6,7 @@
     <profile-component></profile-component>
   </div>
   <div class="side-column fl w-third pa2">
-    <h2>{{ term }}</h2>
+
     <div class="tag-list ba b--light-silver">
       <p>
         <span v-for="tag in activeTags"
@@ -63,6 +63,7 @@ export default {
       readyCallback: function () {
         debug('data retrieved from fbase')
         this.setUserProfile()
+        
       }
     }
   },

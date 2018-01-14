@@ -30,9 +30,11 @@
               @input="checkForValidFormSubmission"
             />
 
-            <small v-if="errors && errors.has('email')" class="red ">
+            <div>
+              <small v-if="errors && errors.has('email')" class="red w-40">
               {{ errors.first('email') }}
             </small>
+            </div>
           </div>
 
           <div class="mt2">
@@ -41,7 +43,7 @@
               </button>
           </div>
 
-          <router-link :to="{ name: 'signin' }">Back to Sign in</router-link>
+          <router-link :to="{ name: 'signin' }" class="f6 ml4">Back to Sign in</router-link>
         </form>
       </div>
     </div>

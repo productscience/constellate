@@ -3,8 +3,8 @@
 
   <div v-if="loading" class="">
     <div class="spinner">
-    <img src="../../assets/loading.svg" alt="loading"/>
-  </div>
+      <img src="../../assets/loading.svg" alt="loading"/>
+    </div>
   </div>
 
   <div v-if="!loading" class="">
@@ -19,7 +19,7 @@
       can pick it up and read out the announcement
       -->
         <div v-if="errors" class="errors">
-          <p v-for="(key, val) in errors.all()">
+          <p v-for="(key, val) in errors.all()" v-bind:key="key">
             {{ key }}
           </p>
         </div>
@@ -36,9 +36,13 @@
             autocomplete="email"
           />
 
-          <small v-if="errors && errors.has('email')" class="red ">
-          {{ errors.first('email') }}
-        </small>
+          <div>
+            <small v-if="errors && errors.has('email')" class="red ">
+            {{ errors.first('email') }}
+            </small>
+          </div>
+          
+
 
         </div>
 
@@ -51,9 +55,12 @@
             autocomplete="current-password"
             @input="checkForValidFormSubmission" />
 
-          <small v-if="errors && errors.has('password')" class="red ">
+          <div>
+            <small v-if="errors && errors.has('password')" class="red">
           {{ errors.first('password') }}
         </small>
+          </div>
+          
         </div>
 
         <div class="mt2">
@@ -62,7 +69,7 @@
           </button>
         </div>
 
-        <router-link :to="{ name: 'resetPassword' }">Forgot password</router-link>
+        <router-link :to="{ name: 'resetPassword' }" class="f6 ml4">Reset password</router-link>
 
 
       </form>
@@ -75,15 +82,18 @@
 </template>
 
 <script>
-/* eslint-disable */
+import LoadingSpinner from '@/components/auth/LoadingSpinner'
 import debugLib from 'debug'
 const debug = debugLib('cl8.LoginComponent')
 debug('sign in page')
 
-
 export default {
+
   name: 'LoginComponent',
-  data: function() {
+  components: {
+    LoadingSpinner
+  },
+  data: function () {
     return {
       email: '',
       password: null,
@@ -100,7 +110,7 @@ export default {
       debug(user)
       this.$store.dispatch('login', user)
     },
-    checkForValidFormSubmission: function() {
+    checkForValidFormSubmission: function () {
       let validation = {
         email: this.email,
         password: this.password

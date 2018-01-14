@@ -1,12 +1,13 @@
 <template>
   <div class="spinner">
     <img src="../../assets/loading.svg" alt="loading"/>
+    <h1>Loading...</h1>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'callback',
+    name: 'LoadingSpinner',
     props: [],
     data () {
       return {

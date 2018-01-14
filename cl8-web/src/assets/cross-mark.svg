@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="92px" height="93px" viewBox="0 0 92 93" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M59.2802424,46.3618932 L91.6469505,78.7286013 L78.2119216,92.1636301 L45.8452136,59.796922 L12.8266415,92.8154942 L-0.608387387,79.3804653 L32.4101847,46.3618932 L-0.276931083,13.6747774 L13.1580978,0.23974855 L45.8452136,32.9268644 L77.8804653,0.891612613 L91.3154942,14.3266415 L59.2802424,46.3618932 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Combined-Shape">
+            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+            <path stroke="#979797" stroke-width="1" d="M90.6083874,14.3266415 L77.8804653,1.59871939 L45.8452136,33.6339711 L13.1580978,0.946855331 L0.430175698,13.6747774 L33.1172915,46.3618932 L0.0987193947,79.3804653 L12.8266415,92.1083874 L45.8452136,59.0898153 L78.2119216,91.4565233 L90.9398437,78.7286013 L58.5731356,46.3618932 L90.6083874,14.3266415 Z"></path>
+        </g>
+    </g>
+</svg>

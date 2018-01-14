@@ -17,7 +17,7 @@
                   class="gravatar b--light-silver ba" />
 
                 <div class="ma2">
-                    <input class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
+                    <input tabindex="1" class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
                     <label for="yes">Visible</label>
                     <br>
                     <input class="ma2" type="radio" id="no" value="no" v-model="profile.fields.visible">
@@ -36,7 +36,7 @@
               <div class="fl w-75 mt0 pt0">
                 <ul class="list mt0 pt0">
                   <li class="list f3 name mt2">
-                    <label class="f4" for="">name: </label>
+                    <label class="f4" for="">name</label>
                     <input class="w-100 pa2"  v-model="profile.fields.name" />
                   </li>
 
@@ -56,11 +56,11 @@
 
                 <ul class="list mt0 pt0">
                   <li class="list f3 twitter">
-                    <label class="f4" for="">twitter: </label>
+                    <label class="f4" for="">twitter</label>
                     <input class="w-100 pa2"  v-model="profile.fields.twitter" />
                   </li>
                   <li class="list f3 facebook mt2">
-                    <label class="f4 " for="">facebook: </label>
+                    <label class="f4 " for="">facebook</label>
                     <input class="w-100 pa2" v-model="profile.fields.facebook" />
                   </li>
                   <li class="list f3 linkedin mt2">
@@ -115,7 +115,6 @@ import debugLib from 'debug'
 import fbase from '@/fbase'
 
 const debug = debugLib('cl8.EditProfileComponent')
-
 
 export default {
   name: 'EditProfileComponent',

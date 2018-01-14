@@ -1,11 +1,10 @@
 <template>
-  <div id="app" class="cf debug">
+  <div id="app" class="cf">
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-/* eslint-disable */
 import debugLib from 'debug'
 
 import fbase from './fbase'

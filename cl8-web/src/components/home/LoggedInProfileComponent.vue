@@ -1,33 +1,36 @@
 <template>
-<div class="cf bg-white bg-network">
-  <nav-header @myProfile="setUserProfile"></nav-header>
-
-  <div class="profile-holder fl w-two-thirds pa br b--light-silver">
-    <profile-component></profile-component>
-  </div>
-  <div class="side-column fl w-third pa2">
-
-    <div class="tag-list ba b--light-silver">
-      <p>
-        <span v-for="tag in activeTags"
-              @click="toggleTag"
-              class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red"
-              >
-              {{ tag }}
-              <i class="remove_icon"></i>
-        </span>
-      </p>
+  <div class="cf bg-white bg-network">
+    <div v-if="loading">
+      <div class="spinner">
+      <img src="../../assets/loading.svg" alt="loading"/>
     </div>
-
-    <ul class="list ml0 pl0">
-      <search-view-component
-        v-for="item in methodResults"
-        v-bind:item="item"
-        v-bind:key="item.id"
-        v-on:profileChosen="showProfile">
-      </search-view-component>
-    </ul>
-
+    </div> 
+    <div v-else>
+    
+      <nav-header @myProfile="setUserProfile"></nav-header>
+  
+      <div class="profile-holder fl w-two-thirds pa br b--light-silver">
+        <profile-component></profile-component>
+      </div>
+      <div class="side-column fl w-third pa2">
+    
+        <div class="tag-list ba b--light-silver">
+          <p>
+            <span v-for="tag in activeTags" v-bind:key="tag" @click="toggleTag" class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red">
+                  {{ tag }}
+                  <i class="remove_icon"></i>
+            </span>
+          </p>
+        </div>
+    
+        <ul class="list ml0 pl0">
+          <search-view-component v-for="item in methodResults" v-bind:item="item" v-bind:key="item.id" v-on:profileChosen="showProfile">
+          </search-view-component>
+        </ul>
+    
+      </div>
+    </div>
+  
   </div>
 
 </div>
@@ -59,15 +62,17 @@ export default {
   },
   firebase: {
     fbpeeps: {
-      source: fbase.database().ref('userlist'),
-      readyCallback: function () {
-        debug('data retrieved from fbase')
-        this.setUserProfile()
+      source: fbase.database().ref("userlist"),
+      readyCallback: function() {
+        debug("data retrieved from fbase");
+        this.setUserProfile();
+        this.loading = false
       }
     }
   },
   data () {
     return {
+      loading: true,
       items: [],
       fetchedItems: [],
       tagList: [],

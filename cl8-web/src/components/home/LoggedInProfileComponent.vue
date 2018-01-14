@@ -16,10 +16,9 @@
     
         <div class="tag-list ba b--light-silver">
           <p>
-            <span v-for="tag in activeTags" v-bind:key="tag" @click="toggleTag" class="list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red">
+            <button v-for="tag in activeTags" v-bind:key="tag" @click.stop.prevent="toggleTag" class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red">
                   {{ tag }}
-                  <i class="remove_icon"></i>
-            </span>
+            </button>                  
           </p>
         </div>
     
@@ -203,4 +202,13 @@ p span.list {
 .profile-holder {
   box-shadow: 5px 0px 20px #ddd;
 }
+
+button.remove-tag {
+  background-image: url(../../assets/cross-mark.svg);
+  background-size: 0.75em;
+  background-repeat: no-repeat;
+  background-position: top 0.5em right 0.5em;
+  padding-right: 1.5em;
+}
+
 </style>

@@ -56,8 +56,8 @@
       <ul class='list tags ml0 pl0'>
         <li
           v-for="tag in profile.fields.tags"
-          class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-washed-red"
-          :class="{ 'bg-dark-red white': isActive(tag.name) }"
+          class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white"
+          :class="{ 'bg-dark-blue white': isActive(tag.name) }"
           @click="toggleTag">
           {{ tag.name }}
         </li>

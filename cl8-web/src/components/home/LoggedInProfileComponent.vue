@@ -16,7 +16,7 @@
     
         <div class="tag-list ba b--light-silver">
           <p>
-            <button v-for="tag in activeTags" v-bind:key="tag" @click.stop.prevent="toggleTag" class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-red white relative bg-animate hover-bg-light-red">
+            <button v-for="tag in activeTags" v-bind:key="tag" @click.stop.prevent="toggleTag" class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-blue white relative bg-animate hover-bg-light-blue">
                   {{ tag }}
             </button>                  
           </p>

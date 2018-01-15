@@ -66,7 +66,7 @@
       </ul>
     </div>
 
-    <div v-if="canEdit">
+    <div v-if="canEdit()">
       <hr>
         <router-link :to="{ name: 'editProfile' }"
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
@@ -122,8 +122,8 @@ export default {
   },
   methods: {
     canEdit: function () {
-      debug(this.profile, this.user)
-      return this.profile.id === this.user
+      debug("can edit?", this.profile.id, this.user.uid)
+      return this.profile.id == this.user.uid
     },
     toggleTag: function (ev) {
       let tag = ev.target.textContent.trim()

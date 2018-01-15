@@ -33,20 +33,22 @@
         </ul>
 
         <ul class="list">
-          <li class="list f5 website">{{ profile.fields.website }}</li>
+          <li class="list f5 website">
+            <a :href="websiteLink">{{ profile.fields.website }}</a>
+            </li>
         </ul>
 
         <ul class="list">
           <li class="list f5 twitter dib mr1">
-            <a :href="profile.fields.twitter">Twitter</a>
+            <a :href="twitterLink">Twitter</a>
             </li>
             |
           <li class="list f5 linkedin dib mr1">
-            <a :href="profile.fields.linkedin">LinkedIn</a>
+            <a :href="facebookLink">LinkedIn</a>
             </li>
             |
           <li class="list f5 twitter dib mr1">
-            <a :href="profile.fields.facebook">Facebook</a>
+            <a :href="linkedinLink">Facebook</a>
             </li>
         </ul>
       </div>
@@ -96,6 +98,18 @@ export default {
     return {}
   },
   computed: {
+    websiteLink() {
+      return this.profile.fields.website ? `http://${this.profile.fields.website}` : this.profile.fields.website
+    },
+    twitterLink() {
+      return this.profile.fields.twitter ? `http://twitter.com/${this.profile.fields.twitter}` : this.profile.fields.twitter
+    },
+    facebookLink () {
+      return this.profile.fields.facebook ? `http://twitter.com/${this.profile.fields.facebook}`: this.profile.fields.facebook
+    },
+    linkedinLink () {
+      return this.profile.fields.linkedin ? `http://twitter.com/${this.profile.fields.linkin}` : this.profile.fields.linkedin
+    },
     user() {
       return this.$store.getters.currentUser
     },

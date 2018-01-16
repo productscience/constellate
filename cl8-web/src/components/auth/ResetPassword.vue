@@ -38,7 +38,7 @@
           </div>
 
           <div class="mt2">
-            <button class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2" :class="{'bg-light-green pointer grow': formValid}" :disabled="!formValid" type="submit" name="button">
+            <button class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2" :class="{'bg-green pointer grow': formValid}" :disabled="!formValid" type="submit" name="button">
                 Reset Password
               </button>
           </div>
@@ -69,8 +69,8 @@ export default {
     sendPasswordReset: function () {
       debug('reset password for ', this.email)
       this.$store.dispatch('resetPassword', this.email)
+      this.announcement = `OK. Password reset for ${this.email} requested. Please check your email.`
       this.email = ""
-      this.announcement = "Password reset requested. Please check your email"
     },
     checkForValidFormSubmission: function() {
       let validation = {

@@ -105,10 +105,10 @@ export default {
       return this.profile.fields.twitter ? `http://twitter.com/${this.profile.fields.twitter}` : this.profile.fields.twitter
     },
     facebookLink () {
-      return this.profile.fields.facebook ? `http://twitter.com/${this.profile.fields.facebook}`: this.profile.fields.facebook
+      return this.profile.fields.facebook ? `http://facebook.com/${this.profile.fields.facebook}`: this.profile.fields.facebook
     },
     linkedinLink () {
-      return this.profile.fields.linkedin ? `http://twitter.com/${this.profile.fields.linkin}` : this.profile.fields.linkedin
+      return this.profile.fields.linkedin ? `http://linkedin.com/${this.profile.fields.linkin}` : this.profile.fields.linkedin
     },
     user() {
       return this.$store.getters.currentUser

@@ -44,11 +44,11 @@
             </li>
             |
           <li class="list f5 linkedin dib mr1">
-            <a :href="facebookLink">LinkedIn</a>
+            <a :href="facebookLink">Facebook</a>
             </li>
             |
           <li class="list f5 twitter dib mr1">
-            <a :href="linkedinLink">Facebook</a>
+            <a :href="linkedinLink">LinkedIn</a>
             </li>
         </ul>
       </div>
@@ -102,13 +102,13 @@ export default {
       return this.profile.fields.website ? `http://${this.profile.fields.website}` : this.profile.fields.website
     },
     twitterLink() {
-      return this.profile.fields.twitter ? `http://twitter.com/${this.profile.fields.twitter}` : this.profile.fields.twitter
+      return this.profile.fields.twitter ? `http://twitter.com/${this.profile.fields.twitter}` : null
     },
     facebookLink () {
-      return this.profile.fields.facebook ? `http://facebook.com/${this.profile.fields.facebook}`: this.profile.fields.facebook
+      return this.profile.fields.facebook ? `http://facebook.com/${this.profile.fields.facebook}`: null
     },
     linkedinLink () {
-      return this.profile.fields.linkedin ? `http://linkedin.com/${this.profile.fields.linkin}` : this.profile.fields.linkedin
+      return this.profile.fields.linkedin ? `http://linkedin.com/in/${this.profile.fields.linkedin}` : null
     },
     user() {
       return this.$store.getters.currentUser

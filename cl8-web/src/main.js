@@ -26,7 +26,7 @@ Vue.use(VueFuse)
 Vue.use(VueFire)
 
 Vue.use(VueAnalytics, {
-  id: 'UA-54202409-2',
+  id: process.env.GOOGLE_ANALYTICS_UA,
   router
 })
 

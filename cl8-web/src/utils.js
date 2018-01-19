@@ -6,9 +6,9 @@ function linkify (url, prefix) {
   }
 
   if (prefix) {
-    return `http://${prefix}/${url}`
+    return `${prefix}/${url}`
   } // looks like we need to add it outselves. We can't assume https
-
+  
   return `http://${url}`
 }
 

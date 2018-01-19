@@ -1,8 +1,8 @@
-function linkify(url) {
+function linkify (url) {
   // check if link already starts with 'http:', return if so
-  let pattern = RegExp(/https?\:/)
+  let pattern = RegExp(/https?:/)
   if (pattern.test(url)) {
-    return url;
+    return url
   }
 
   // looks like we need to add it outselves. We can't assume https
@@ -11,4 +11,4 @@ function linkify(url) {
   return newUrl
 }
 
-export default linkify;
+export default linkify

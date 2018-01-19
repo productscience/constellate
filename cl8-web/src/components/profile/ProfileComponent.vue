@@ -15,13 +15,6 @@
             class="gravatar b--light-silver ba" />
 
           <div v-if="canEdit()">
-            <div v-if="isVisible()"
-            class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green w-80 ma2 tc">
-                Visible
-            </div>
-            <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red w-80 tc ma2">
-              Invisible
-            </div>
               <div v-if="isVisible()"
               class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green w-80 ma2 tc">
                   Visible
@@ -79,7 +72,6 @@
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
           Edit profile
         </router-link>
-      </p>
     </div>
 
     <div class="referred-by f6 gray">

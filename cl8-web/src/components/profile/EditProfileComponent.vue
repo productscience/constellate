@@ -34,38 +34,38 @@
               </div>
 
               <div class="fl w-75 mt0 pt0">
-                <ul class="list mt0 pt0">
-                  <li class="list f3 name mt2">
-                    <label class="f4" for="">name</label>
-                    <input class="w-100 pa2"  v-model="profile.fields.name" />
+                <ul class="list mt0 pt0 f4">
+                  <li class="list name">
+                    <label class="f5" for="">name</label>
+                    <input class="w-100 mt1 pa1"  v-model="profile.fields.name" />
                   </li>
 
-                  <li class="list f3 email mt2">
-                    <label class="f4" for="">email</label>
-                    <input class="w-100 pa2 bg-light-gray light-silver" :value="profile.fields.email" readonly />
+                  <li class="list email mt2">
+                    <label class="f5" for="">email</label>
+                    <input class="w-100 mt1 pa1 bg-light-gray light-silver" :value="profile.fields.email" readonly />
                   </li>
-                  <li class="list f3 phone mt2">
-                    <label class="f4" for="">phone </label>
-                    <input class="w-100 pa2"  v-model="profile.fields.phone" />
+                  <li class="list phone mt2">
+                    <label class="f5 mb2" for="">phone </label>
+                    <input class="w-100 mt1 pa1"  v-model="profile.fields.phone" />
                   </li>
-                  <li class="list f3 website mt2">
-                    <label class="f4" for="">website</label>
-                    <input class="w-100 pa2"  v-model="profile.fields.website" />
+                  <li class="list website mt2">
+                    <label class="f5" for="">website <small>(http:// is added automatically)</small></label>
+                    <input class="w-100 mt1 pa1" v-model="profile.fields.website" />
                   </li>
                 </ul>
 
                 <ul class="list mt0 pt0">
-                  <li class="list f3 twitter">
-                    <label class="f4" for="">twitter</label>
-                    <input class="w-100 pa2"  v-model="profile.fields.twitter" />
+                  <li class="list twitter">
+                    <label class="f5" for="">twitter <small>(just add your @username)</small></label>
+                    <input class="w-100 mt1 pa1"  v-model="profile.fields.twitter" />
                   </li>
-                  <li class="list f3 facebook mt2">
-                    <label class="f4 " for="">facebook</label>
-                    <input class="w-100 pa2" v-model="profile.fields.facebook" />
+                  <li class="list facebook mt2">
+                    <label class="f5" for="">facebook <small>(ditto for facebook)</small></label>
+                    <input class="w-100 mt1 pa1" v-model="profile.fields.facebook" />
                   </li>
-                  <li class="list f3 linkedin mt2">
-                    <label class="f4" for="">linkedin: </label>
-                    <input class="w-100 pa2"  v-model="profile.fields.linkedin" />
+                  <li class="list linkedin mt2">
+                    <label class="f5" for="">linkedin <small>(just the bit after http://www.linked.com/in/)</small></label>
+                    <input class="w-100 mt1 pa1"  v-model="profile.fields.linkedin" />
                   </li>
                 </ul>
 

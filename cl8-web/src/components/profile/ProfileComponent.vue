@@ -35,7 +35,7 @@
         </ul>
 
         <ul class="list">
-          <li class="list f5 website">
+          <li v-if="!!profile.fields.website" class="list f5 website">
             <a :href="websiteLink">{{ profile.fields.website }}</a>
             </li>
         </ul>

@@ -35,7 +35,7 @@
         </ul>
 
         <ul class="list">
-          <li v-if="!!profile.fields.website" class="list f5 website">
+          <li v-if="profile.fields.website" class="list f5 website">
             <a :href="websiteLink">{{ profile.fields.website }}</a>
             </li>
         </ul>
@@ -90,6 +90,8 @@ import debugLib from 'debug'
 const debug = debugLib('cl8.ProfileComponent')
 Vue.component('v-gravatar', Gravatar)
 
+import linkify from '../../utils'
+
 export default {
   name: 'ProfileComponent',
   components: {
@@ -101,7 +103,7 @@ export default {
   },
   computed: {
     websiteLink() {
-      return this.profile.fields.website ? `http://${this.profile.fields.website}` : this.profile.fields.website
+      return this.profile.fields.website ? linkify(this.profile.fields.website) : null
     },
     twitterLink() {
       return this.profile.fields.twitter ? `http://twitter.com/${this.profile.fields.twitter}` : null

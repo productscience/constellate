@@ -9,6 +9,7 @@ import VeeValidate from 'vee-validate'
 import VueFire from 'vuefire'
 import VueFuse from 'vue-fuse'
 import fbase from './fbase'
+import VueAnalytics from 'vue-analytics'
 
 import debugLib from 'debug'
 const debug = debugLib('cl8.main.js');
@@ -23,6 +24,11 @@ const vvConfig = {
 Vue.use(VeeValidate, vvConfig)
 Vue.use(VueFuse)
 Vue.use(VueFire)
+
+Vue.use(VueAnalytics, {
+  id: 'UA-54202409-2',
+  router
+})
 
 
 /* eslint-disable no-new */

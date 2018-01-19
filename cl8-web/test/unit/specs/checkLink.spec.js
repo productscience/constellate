@@ -17,3 +17,26 @@ describe('Linkify', () => {
     expect(newUrl).toBe('https://domain.com')
   })
 })
+
+describe('Linkify with social media prefixes', () => {
+  it('leaves links that already have the url in them alone', () => {
+    let url = 'http://twitter.com/username'
+    let prefix = 'twitter.com'
+    let newUrl = linkify(url, prefix)
+    expect(newUrl).toBe('http://twitter.com/username')
+  })
+  it('leaves links that already have the url in them alone', () => {
+    let url = 'https://twitter.com/username'
+    let prefix = 'twitter.com'
+    let newUrl = linkify(url, prefix)
+    expect(newUrl).toBe('https://twitter.com/username')
+  })
+  it('adds domains prefix if it is are missing', () => {
+    ('username')
+    let url = 'username'
+    let prefix = 'twitter.com'
+    let newUrl = linkify(url, prefix)
+    expect(newUrl).toBe('http://twitter.com/username')
+  })
+  
+})

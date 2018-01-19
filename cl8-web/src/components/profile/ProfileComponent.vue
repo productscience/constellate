@@ -107,13 +107,13 @@ export default {
       return this.profile.fields.website ? linkify(this.profile.fields.website) : null
     },
     twitterLink() {
-      return this.profile.fields.twitter ? `http://twitter.com/${this.profile.fields.twitter}` : null
+      return this.profile.fields.twitter ? linkify(this.profile.fields.twitter, 'http://twitter.com') : null
     },
     facebookLink () {
-      return this.profile.fields.facebook ? `http://facebook.com/${this.profile.fields.facebook}`: null
+      return this.profile.fields.facebook ? linkify(this.profile.fields.facebook, 'http://facebook.com'): null
     },
     linkedinLink () {
-      return this.profile.fields.linkedin ? `http://linkedin.com/in/${this.profile.fields.linkedin}` : null
+      return this.profile.fields.linkedin ? linkify(this.profile.fields.linkedin, 'http://linkedin.com/in/') : null
     },
     user() {
       return this.$store.getters.currentUser

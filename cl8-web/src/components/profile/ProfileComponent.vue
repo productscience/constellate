@@ -75,7 +75,7 @@
     </div>
 
     <div class="referred-by f6 gray">
-      <p>Referred by: Gavin Starks</p>
+      <p>Referred to the DGen Constellation by: Gavin Starks</p>
     </div>
     </div>
 
@@ -113,7 +113,7 @@ export default {
       return this.profile.fields.facebook ? linkify(this.profile.fields.facebook, 'https://facebook.com'): null
     },
     linkedinLink () {
-      return this.profile.fields.linkedin ? linkify(this.profile.fields.linkedin, 'https://linkedin.com/in/') : null
+      return this.profile.fields.linkedin ? linkify(this.profile.fields.linkedin, 'https://linkedin.com/in') : null
     },
     user() {
       return this.$store.getters.currentUser

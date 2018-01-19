@@ -11,11 +11,8 @@
       class="gravatar fl b--light-silver ba" />
 
     <div class="fl w60">
-      <ul class="list pt0 mt0 ml0 pl1">
+      <ul class="list pt2 mt0 ml0 pl1">
         <li class="name b">{{ item.fields.name }}</li>
-        <li class="email">{{ item.fields.email }}</li>
-        <li class="phone">{{ item.fields.phone }}</li>
-        <li class="website">{{ item.fields.website }}</li>
       </ul>
     </div>
   </li>

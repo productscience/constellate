@@ -47,14 +47,12 @@
             </li>
         </ul>
 
-        <ul class="list">
+        <ul class="list social-links">
           <li v-if="this.profile.fields.twitter" class="list f5 twitter dib mr1">
             <a :href="twitterLink" >Twitter</a>
-            |
             </li>
           <li v-if="this.profile.fields.facebook" class="list f5 linkedin dib mr1">
             <a :href="facebookLink" >Facebook</a>
-            |
             </li>
           <li v-if="this.profile.fields.linkedin" class="list f5 twitter dib mr1">
             <a :href="linkedinLink">LinkedIn</a>
@@ -79,12 +77,16 @@
       <hr>
         <router-link :to="{ name: 'editProfile' }"
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-          Edit
+          Edit profile
         </router-link>
       </p>
     </div>
 
+    <div class="referred-by f6 gray">
+      <p>Referred by: Gavin Starks</p>
     </div>
+    </div>
+
 </div>
 </template>
 
@@ -177,4 +179,11 @@ export default {
   img.gravatar {
     box-shadow: 3px 3px 3px #ddd;
   }
+
+  /* this only shows a border when we have two or more links in a row */
+  .social-links li+li { 
+    border-left: 1px solid #000000;
+    padding-left: 1em
+    }
+
 </style>

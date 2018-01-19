@@ -39,15 +39,15 @@
         </ul>
 
         <ul class="list">
-          <li class="list f5 twitter dib mr1">
-            <a :href="twitterLink">Twitter</a>
-            </li>
+          <li v-if="this.profile.fields.twitter" class="list f5 twitter dib mr1">
+            <a :href="twitterLink" >Twitter</a>
             |
-          <li class="list f5 linkedin dib mr1">
-            <a :href="facebookLink">Facebook</a>
             </li>
+          <li v-if="this.profile.fields.facebook" class="list f5 linkedin dib mr1">
+            <a :href="facebookLink" >Facebook</a>
             |
-          <li class="list f5 twitter dib mr1">
+            </li>
+          <li v-if="this.profile.fields.linkedin" class="list f5 twitter dib mr1">
             <a :href="linkedinLink">LinkedIn</a>
             </li>
         </ul>
@@ -139,6 +139,7 @@ export default {
       return this.profile.fields.visible === 'yes'
     },
     hasPhoto () {
+      // console.log(this)
       if (typeof this.profile.fields === 'undefined') {
         return false
       }

@@ -59,11 +59,11 @@
     <div class="cf pt2">
       <ul class='list tags ml0 pl0'>
         <li
-          v-for="tag in profile.fields.tags"
+          v-for="tag in profile.fields.tags" v-bind:key="tag.name"
           class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white"
           :class="{ 'bg-dark-blue white': isActive(tag.name) }"
           @click="toggleTag">
-          {{ tag.name }}
+          {{ tag.name.toLowerCase().trim() }}
         </li>
       </ul>
     </div>

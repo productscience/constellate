@@ -1,17 +1,30 @@
 const Airtable = require('airtable')
 
-module.exports = AirTableWrapper
-
 function AirTableWrapper (apiKey, apiBase) {
-  // console.log(apiKey, apiBase)
-  // const base = new Airtable({apiKey: apiKey}).base(apiBase)
-  const airtable = new Airtable({apiKey: apiKey}).base(apiBase)
+  const airtable = new Airtable({
+    apiKey: apiKey
+  }).base(apiBase)
 
+  /**
+   * Fetches a full set of records from the table `tablename`.
+   * Accepts an optional formula to filter by, as defined on airtables own site:
+   *
+   * https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference
+   *
+   *
+   * @param {string} tableName
+   * @param {any} filterFormula
+   * @returns Array of Airtable Records
+   */
   function fetchRecords (tableName, filterFormula) {
     let results = airtable(tableName)
 
-    if (typeof filterFormula !== 'undefined'){
-      return results.select({filterByFormula: filterFormula}).all()
+    if (typeof filterFormula !== 'undefined') {
+      return results
+        .select({
+          filterByFormula: filterFormula
+        })
+        .all()
     } else {
       return results.select().all()
     }
@@ -26,13 +39,12 @@ function AirTableWrapper (apiKey, apiBase) {
     return fetchRecords('Peeps', "NOT({email} = '')")
   }
 
-  
-
   return {
-    fetchRecords : fetchRecords,
+    fetchRecords: fetchRecords,
     getUsers: getUsers,
     getTags: getTags,
     airtable: airtable
   }
-
 }
+
+module.exports = AirTableWrapper

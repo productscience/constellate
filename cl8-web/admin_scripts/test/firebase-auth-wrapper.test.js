@@ -1,7 +1,11 @@
-const serviceAccount = require('../' + process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
+const serviceAccount = require('../' +
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
 const databaseURL = process.env.FIREBASE_DATABASE_URL_TEST
 
-const wrapper = require('../../functions/src/firebase-auth-wrapper.js')(serviceAccount, databaseURL)
+const wrapper = require('../../functions/src/firebase-auth-wrapper.js')(
+  serviceAccount,
+  databaseURL
+)
 const admin = wrapper.admin
 
 const _ = require('lodash')
@@ -34,26 +38,32 @@ describe('create or delete a user', () => {
       email: testUser.fields.email
     }
 
-    return admin.auth().createUser(u)
+    return admin
+      .auth()
+      .createUser(u)
       .then(newUser => {
-      // then call our delete method
+        // then call our delete method
         let airtableUser = {
           id: newUser.uid,
           fields: {
             email: newUser.email
           }
         }
-        return wrapper.deleteUser(airtableUser)
-          .then(() => {
-            return admin.auth().listUsers().then(returnedUsers => {
+        return wrapper.deleteUser(airtableUser).then(() => {
+          return admin
+            .auth()
+            .listUsers()
+            .then(returnedUsers => {
               expect(returnedUsers.users.length).toBe(0)
             })
-          })
+        })
       })
   })
 
   afterEach(() => {
-    return admin.auth().deleteUser(testUser.uid)
+    return admin
+      .auth()
+      .deleteUser(testUser.uid)
       .catch(err => {
         if (err.errorInfo.code == 'auth/user-not-found') {
           return
@@ -86,11 +96,17 @@ describe('create or edit users in realtime database', () => {
         website: 'oldsite.com'
       }
     }
-    return wrapper.admin.database().ref('userlist').set(null)
+    return wrapper.admin
+      .database()
+      .ref('userlist')
+      .set(null)
   })
 
   test('getUserList', () => {
-    return wrapper.admin.database().ref('userlist').push(testUser)
+    return wrapper.admin
+      .database()
+      .ref('userlist')
+      .push(testUser)
 
     return wrapper.getUserList().then(records => {
       // check if we can pull out the key
@@ -116,7 +132,10 @@ describe('create or edit users in realtime database', () => {
 describe('importing users', () => {
   beforeEach(() => {
     // clear the userlist
-    return wrapper.admin.database().ref('userlist').set(null)
+    return wrapper.admin
+      .database()
+      .ref('userlist')
+      .set(null)
   })
 
   test('addUserToUserList - user already exists', () => {

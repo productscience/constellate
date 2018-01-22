@@ -1,21 +1,19 @@
 const AirTableWrapper = require('./airtable-wrapper')
 const FireBaseWrapper = require('./firebase-auth-wrapper')
-const Auth0Wrapper = require('./auth0-wrapper')
 const _ = require('lodash')
-const debug = require('debug')('cl8-importer')
+const debug = require('debug')('cl8.importer')
 
 module.exports = Cl8Importer
 
 function Cl8Importer (importerCredentials) {
   const atbl = AirTableWrapper(importerCredentials.airTableCreds[0], importerCredentials.airTableCreds[1])
   const fbase = FireBaseWrapper(importerCredentials.fbaseCreds[0], importerCredentials.fbaseCreds[1])
-  const auth0 = Auth0Wrapper(importerCredentials.auth0Creds[0], importerCredentials.auth0Creds[1])
 
   function importUsersAndTags () {
-    // once we have all the bits
+    // once we have all the bits,
     let collectedData = fetchAllDataforSyncing()
 
-    // , we can
+    // we can
     // 1) built an nice datastructure each person
     // - buld our datastructure to represent peeps with tags
     let enrichedPeeps = buildEnrichedPeeps(collectedData.peeps, collectedData.tags)
@@ -126,13 +124,13 @@ function Cl8Importer (importerCredentials) {
         let params = {
           firebaseUrl: peep.id
         }
-        return auth0.getOrCreateUser(peep.fields.email, params)
+        // return auth0.getOrCreateUser(peep.fields.email, params)
       }
       let airtableIDAddedtoAuth0 = () => {
         let params = {
           firebaseUrl: peep.id
         }
-        return auth0.addAirtableAPIToUserByEmail(peep.fields.email, params)
+        // return auth0.addAirtableAPIToUserByEmail(peep.fields.email, params)
       }
         //
       listOfPromises.push(createdfbaseUser)
@@ -183,15 +181,6 @@ function Cl8Importer (importerCredentials) {
             .then(fbUsers => {
               let newPayload = _.cloneDeep(payload)
               newPayload.fbUsers = fbUsers
-              return newPayload
-            })
-        })
-        // // and fetch all the users from Auth0
-        .then(payload => {
-          return auth0.getUsers()
-            .then(auth0Users => {
-              let newPayload = _.cloneDeep(payload)
-              newPayload.auth0users = auth0Users
               return newPayload
             })
         }).catch(err => {
@@ -284,7 +273,6 @@ function Cl8Importer (importerCredentials) {
   return {
     atbl: atbl,
     fbase: fbase,
-    auth0: auth0,
     enrichPeep: enrichPeep,
     buildEnrichedPeeps: buildEnrichedPeeps,
     importUsersAndTags: importUsersAndTags,

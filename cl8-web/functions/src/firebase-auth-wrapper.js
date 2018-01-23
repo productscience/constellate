@@ -21,9 +21,26 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
     credential: fbadmin.credential.cert(serviceAccount),
     databaseURL: dbUrl
   })
-
+  /**
+   * Fetches the first 1000 users in an account.
+   * We assume we don't have more than 1000 users, and instead return the user array
+   *
+   * https://firebase.google.com/docs/reference/admin/node/admin.auth.Auth#listUsers
+   * https://firebase.google.com/docs/reference/admin/node/admin.auth.ListUsersResult
+   *
+   *
+   * @returns Array of user objects
+   */
   function getUsers () {
-    return admin.auth().listUsers()
+    return admin
+      .auth()
+      .listUsers()
+      .then(result => {
+        return result.users
+      })
+      .catch(err => {
+        debug(err)
+      })
   }
 
   function deleteUser (user) {
@@ -195,7 +212,8 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
     return returnedUser
   }
 
-  function removeUserfromUserList (user) {}
+  // TODO: implement this, when we need it
+  // function removeUserfromUserList (user) {}
 
   function updateUserInUserList (user) {
     return getUserList(admin).then(function (userlist) {

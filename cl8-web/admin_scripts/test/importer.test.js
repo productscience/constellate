@@ -72,9 +72,10 @@ describe('helper functions', () => {
     let testUser = testUsers[0]
     expect.assertions(5)
     let enrichedPeep = importer.enrichPeep(testUser, testTags)
+    expect(enrichedPeep.fields.tags.length).toBe(2)
+
     let firstTag = enrichedPeep.fields.tags[0]
     let secondTag = enrichedPeep.fields.tags[1]
-    expect(enrichedPeep.fields.tags.length).toBe(2)
     expect(firstTag).toHaveProperty('id', 'rec8AoQ0MPMJQxYKK')
     expect(firstTag).toHaveProperty('name', 'Open Data')
     expect(secondTag).toHaveProperty('id', 'rec0E1cKWxINp13lg')
@@ -83,8 +84,9 @@ describe('helper functions', () => {
 
   test('buildEnrichedPeeps', () => {
     let enrichedPeeps = importer.buildEnrichedPeeps(testUsers, testTags)
-    let tag = enrichedPeeps[0].fields.tags[0]
     expect(enrichedPeeps.length).toBe(2)
+
+    let tag = enrichedPeeps[0].fields.tags[0]
     expect(tag).toHaveProperty('id', 'rec8AoQ0MPMJQxYKK')
     expect(tag).toHaveProperty('name', 'Open Data')
   })
@@ -114,7 +116,18 @@ describe('finding new users to import', () => {
 
   beforeEach(async () => {
     const noStaleTestUsers = "{email} = 'importme@example.com'"
-    const usersToNuke = await importer.atbl.fetchRecords('peeps', noStaleTestUsers)
+    const usersToNuke = await importer.atbl.fetchRecords(
+      'peeps',
+      noStaleTestUsers
+    )
+
+    // clear any users in the test account
+    const userAccountsToClear = await importer.fbase.getUsers()
+    debug(`fetched ${userAccountsToClear.length} user accounts`)
+    userAccountsToClear.forEach(async account => {
+      debug('deleting', account)
+      await importer.fbase.admin.deleteUser(account.uid)
+    })
 
     await usersToNuke.forEach(async peep => {
       debug('nuking peep from airtable: ', peep.id)
@@ -127,8 +140,11 @@ describe('finding new users to import', () => {
       }
     })
 
-    // we don't use this later o, so we don't assign it to to a value
-    await importer.fbase.admin.database().ref('userlist').set(null)
+    // we don't use this later on, so we don't assign it to to a value
+    await importer.fbase.admin
+      .database()
+      .ref('userlist')
+      .set(null)
 
     const tags = await importer.atbl.getTags()
     const peeps = await importer.atbl.getUsers()
@@ -141,15 +157,19 @@ describe('finding new users to import', () => {
       const resp = await importer.fbase.addUserToUserList(userObj)
       debug('addUser result:', resp)
     })
+    // fetch the up to date list of users
     const fbaseUserList = await importer.fbase.getUserList()
-  
+
     payload.peeps = peeps
     payload.tags = tags
     payload.fbUserList = fbaseUserList
   })
 
-  test.only ('filterOutPeepsToImport - none to import', async () => {
-    const enrichedPeeps = importer.buildEnrichedPeeps(payload.peeps, payload.tags)
+  test('filterOutPeepsToImport - none to import', async () => {
+    const enrichedPeeps = importer.buildEnrichedPeeps(
+      payload.peeps,
+      payload.tags
+    )
     const usersToImport = importer.filterOutPeepsToImport(
       enrichedPeeps,
       payload.fbUserList

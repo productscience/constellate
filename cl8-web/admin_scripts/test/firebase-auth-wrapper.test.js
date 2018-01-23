@@ -16,7 +16,8 @@ describe('create or delete a user', () => {
     testUser = {
       id: 'someRandom',
       fields: {
-        email: 'mail@chrisadams.me.uk'
+        email: 'mail@chrisadams.me.uk',
+        tags: ['foo', 'bar']
       }
     }
     return wrapper.deleteUser(testUser)
@@ -93,7 +94,8 @@ describe('create or edit users in realtime database', () => {
       fields: {
         name: 'Dan',
         email: 'totallynew@domain.com',
-        website: 'oldsite.com'
+        website: 'oldsite.com',
+        tags: ['foo', 'bar']
       }
     }
     return wrapper.admin
@@ -102,35 +104,76 @@ describe('create or edit users in realtime database', () => {
       .set(null)
   })
 
-  test('getUserList', () => {
-    return wrapper.admin
+  test('getUserList - no users', async () => {
+    const userList = await wrapper.getUserList()
+
+    // we can check if a object is an Array like so:
+    // userList.constructor === Array
+    // but this doesn't work:
+    // expect(userList.constructor).toEqual('Array')
+
+    expect(userList.length).toBe(0)
+  })
+
+  test('getUserList - at least one user', async () => {
+    const addedUserlist = await wrapper.admin
       .database()
       .ref('userlist')
       .push(testUser)
 
-    return wrapper.getUserList().then(records => {
+    const userList = await wrapper.getUserList()
+
+    // check we have an Array returned
+    // expect(userList).
+
+    userList.forEach(user => {
+      // check we're dealing with a plain ol' js object
+      expect(typeof user).toBe('object')
+
       // check if we can pull out the key
-      records.forEach(user => {
-        expect(user.val()).toHaveProperty('id')
-        expect(user.val()).toHaveProperty('fields.email')
-        expect(user.val()).toHaveProperty('fields.name')
-        // not every user has tags now
-        expect(user.val()).toHaveProperty('fields.tags')
-      })
+      expect(user).toHaveProperty('id')
+      expect(user).toHaveProperty('fields.email')
+      expect(user).toHaveProperty('fields.name')
+      expect(user).toHaveProperty('fields.tags')
     })
   })
 
-  test('addUserToUserList', () => {
-    expect.assertions(2)
-    return wrapper.addUserToUserList(testUser).then(newUser => {
-      expect(newUser.id).toBe(testUser.id)
-      expect(newUser.fields.email).toBe(testUser.fields.email)
-    })
+  test('addUserToUserList - not in list yet', async () => {
+    // check we have a bigger list of users
+    // check the new user has the info we expect
+    // check the
+    const initialUserList = await wrapper.getUserList()
+    const addUserReq = await wrapper.addUserToUserList(testUser, initialUserList)
+
+    const updatedUserList = await wrapper.getUserList()
+
+    expect(initialUserList.length).toBe(0)
+    expect(updatedUserList.length).toBe(1)
+    expect(addUserReq.found).toBe(false)
+    expect(addUserReq.user.fields.email).toBe(testUser.fields.email)
+  })
+
+  test('addUserToUserList - one in list yet', async () => {
+    // check we have a bigger list of users
+    // check the new user has the info we expect
+
+    await wrapper.admin.database().ref('userlist').push(testUser)
+
+    const initialUserList = await wrapper.getUserList()
+    const addUserReq = await wrapper.addUserToUserList(testUser, initialUserList)
+    const updatedUserList = await wrapper.getUserList()
+
+    expect(initialUserList.length).toBe(1)
+    expect(updatedUserList.length).toBe(1)
+    expect(addUserReq.found).toBe(true)
+    expect(addUserReq.user.fields.email).toBe(testUser.fields.email)
   })
 })
 
 describe('importing users', () => {
   beforeEach(() => {
+
+    testUser = { id: 'recXXXXXXXXXXXXXX', fields: { name: 'Dan', email: 'totallynew@domain.com', website: 'oldsite.com', tags: ['foo', 'bar'] } }
     // clear the userlist
     return wrapper.admin
       .database()
@@ -138,19 +181,31 @@ describe('importing users', () => {
       .set(null)
   })
 
-  test('addUserToUserList - user already exists', () => {
-    expect.assertions(3)
-    // this user looks different as it's from airtable
+  test('addUserToUserList - user already exists, do not update info', async () => {
 
     let updatedUser = _.cloneDeep(testUser)
     updatedUser.fields.website = 'newsite.com'
 
-    return wrapper.addUserToUserList(testUser).then(returnedUser => {
-      return wrapper.updateUserInUserList(updatedUser).then(newUser => {
-        expect(newUser.id).toBe(testUser.id)
-        expect(newUser.fields.email).toBe(testUser.fields.email)
-        expect(newUser.fields.website).toBe('oldsite.com')
-      })
-    })
+    const initialUserList = await wrapper.getUserList()
+    const addTestUserReq = await wrapper.addUserToUserList(testUser, initialUserList)
+
+    const updatedUserList = await wrapper.getUserList()
+    const secondAddTestUserReq = await wrapper.addUserToUserList(updatedUser, updatedUserList)
+
+  
+    expect(updatedUserList.length).toBe(1)
+
+    // check that we have the initially imported data
+    expect(addTestUserReq.found).toBe(false)
+    expect(addTestUserReq.user.id).toBe(testUser.id)
+    expect(addTestUserReq.user.fields.email).toBe(testUser.fields.email)
+    expect(addTestUserReq.user.fields.website).toBe('oldsite.com')
+
+    // check that adding the user twice will not overwrite the data
+    expect(secondAddTestUserReq.found).toBe(true)
+    expect(secondAddTestUserReq.user.id).toBe(testUser.id)
+    expect(secondAddTestUserReq.user.fields.email).toBe(testUser.fields.email)
+    expect(secondAddTestUserReq.user.fields.website).toBe('oldsite.com')
+
   })
 })

@@ -110,7 +110,6 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
             .createUser(u)
             .then(function (newUser) {
               debug('Successfully created new user:', u.uid, u.email)
-              // debugger
               return newUser
             })
             .catch(err => {
@@ -161,7 +160,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
 
     if (filteredUsers.length > 0) {
       // we have our user, return early
-      debug('Found our user in the list')
+      debug('getOrCreateUserinUserList: Found our user in the list')
       return { found: true, user: filteredUsers[0] }
     }
 
@@ -184,7 +183,10 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
     try {
       const createdUser = await userListRef.push(user)
       const userResult = await createdUser.once('value')
-      debug('returning newly added user', userResult.toJSON())
+      debug(
+        'createUserInUserList: returning newly added user',
+        userResult.toJSON().id
+      )
 
       return { found: false, user: userResult.toJSON() }
     } catch (e) {
@@ -204,7 +206,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
       throw Error("I couldn't see an userList provided, please provide one")
     }
 
-    debug('adding user to firebase database:')
+    debug('addUserToUserList: adding user to firebase database:')
 
     // adds a user to the userlist data structure in firebase
     const returnedUser = await getOrCreateUserinUserList(user, userList)

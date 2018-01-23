@@ -93,36 +93,37 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
    * @param {any} user
    * @returns
    */
-  function getOrCreateUser (user) {
-    return checkForUser(user)
-      .then(function (newUser) {
-        // debug('found user:', newUser)
+  async function getOrCreateUser (user) {
+    try {
+      const fetchedUser = await checkForUser(user)
+      return fetchedUser
+    } catch (error) {
+      debug('getOrCreateUser: no user, making one')
+
+      let u = {
+        uid: user.id,
+        displayName: user.fields.name,
+        email: user.fields.email,
+        emailVerified: true
+      }
+
+      try {
+        const newUser = await admin.auth().createUser(u)
         return newUser
-      })
-      .catch(function (error) {
-        if (error.errorInfo.code == 'auth/user-not-found') {
-          let u = {
-            uid: user.id,
-            email: user.fields.email
-          }
-          return admin
-            .auth()
-            .createUser(u)
-            .then(function (newUser) {
-              debug('Successfully created new user:', u.uid, u.email)
-              return newUser
-            })
-            .catch(err => {
-              if (err.errorInfo.code == '"auth/uid-already-exists"') {
-                return newUser
-              }
-            })
-        }
-        if (error.errorInfo.code == 'auth/email-already-exists') {
-          debug(error.errorInfo.message, user.email)
+      } catch (err) {
+        if (err.errorInfo.code == '"auth/uid-already-exists"') {
+          debug(error.errorInfo.message, user.id, user.email)
           return user
         }
-      })
+        if (err.errorInfo.code == 'auth/email-already-exists') {
+          debug(error.errorInfo.message, user.id, user.email)
+          return user
+        }
+      }
+    }
+
+    if (error.errorInfo.code == 'auth/user-not-found') {
+    }
   }
 
   /**
@@ -165,7 +166,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
     }
 
     // looks like we have no user, so create one
-    debug('Creating our user for this list')
+    debug(`Creating our user for this list: ${user.id}`)
     const createdUser = await createUserInUserList(user)
     return createdUser
   }
@@ -180,8 +181,15 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
   async function createUserInUserList (user) {
     const userListRef = await admin.database().ref('userlist')
 
+    // Firebase will error if we send along an airtable object
+    // TODO decide if we should convert ALL airtable entries in the wrapper
+    const userObj = {
+      id: user.id,
+      fields: user.fields
+    }
+
     try {
-      const createdUser = await userListRef.push(user)
+      const createdUser = await userListRef.push(userObj)
       const userResult = await createdUser.once('value')
       debug(
         'createUserInUserList: returning newly added user',
@@ -199,14 +207,14 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
    *
    * @param {any} user
    * @param {Array|null} userList
-   * @returns {Objject}
+   * @returns {Object}
    */
   async function addUserToUserList (user, userList) {
     if (typeof userList === 'undefined') {
       throw Error("I couldn't see an userList provided, please provide one")
     }
 
-    debug('addUserToUserList: adding user to firebase database:')
+    debug(`addUserToUserList: adding user to firebase database: ${user.id}`)
 
     // adds a user to the userlist data structure in firebase
     const returnedUser = await getOrCreateUserinUserList(user, userList)
@@ -232,7 +240,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
   return {
     getUsers: getUsers,
     deleteUser: deleteUser,
-    checkForUser: deleteUser,
+    checkForUser: checkForUser,
     getOrCreateUser: getOrCreateUser,
     getUserList: getUserList,
     addUserToUserList: addUserToUserList,

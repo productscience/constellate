@@ -67,7 +67,6 @@ describe('create or delete a user', () => {
       .deleteUser(testUser.uid)
       .catch(err => {
         if (err.errorInfo.code == 'auth/user-not-found') {
-          return
         }
       })
   })
@@ -143,7 +142,10 @@ describe('create or edit users in realtime database', () => {
     // check the new user has the info we expect
     // check the
     const initialUserList = await wrapper.getUserList()
-    const addUserReq = await wrapper.addUserToUserList(testUser, initialUserList)
+    const addUserReq = await wrapper.addUserToUserList(
+      testUser,
+      initialUserList
+    )
 
     const updatedUserList = await wrapper.getUserList()
 
@@ -157,10 +159,16 @@ describe('create or edit users in realtime database', () => {
     // check we have a bigger list of users
     // check the new user has the info we expect
 
-    await wrapper.admin.database().ref('userlist').push(testUser)
+    await wrapper.admin
+      .database()
+      .ref('userlist')
+      .push(testUser)
 
     const initialUserList = await wrapper.getUserList()
-    const addUserReq = await wrapper.addUserToUserList(testUser, initialUserList)
+    const addUserReq = await wrapper.addUserToUserList(
+      testUser,
+      initialUserList
+    )
     const updatedUserList = await wrapper.getUserList()
 
     expect(initialUserList.length).toBe(1)
@@ -172,8 +180,15 @@ describe('create or edit users in realtime database', () => {
 
 describe('importing users', () => {
   beforeEach(() => {
-
-    testUser = { id: 'recXXXXXXXXXXXXXX', fields: { name: 'Dan', email: 'totallynew@domain.com', website: 'oldsite.com', tags: ['foo', 'bar'] } }
+    testUser = {
+      id: 'recXXXXXXXXXXXXXX',
+      fields: {
+        name: 'Dan',
+        email: 'totallynew@domain.com',
+        website: 'oldsite.com',
+        tags: ['foo', 'bar']
+      }
+    }
     // clear the userlist
     return wrapper.admin
       .database()
@@ -182,17 +197,21 @@ describe('importing users', () => {
   })
 
   test('addUserToUserList - user already exists, do not update info', async () => {
-
     let updatedUser = _.cloneDeep(testUser)
     updatedUser.fields.website = 'newsite.com'
 
     const initialUserList = await wrapper.getUserList()
-    const addTestUserReq = await wrapper.addUserToUserList(testUser, initialUserList)
+    const addTestUserReq = await wrapper.addUserToUserList(
+      testUser,
+      initialUserList
+    )
 
     const updatedUserList = await wrapper.getUserList()
-    const secondAddTestUserReq = await wrapper.addUserToUserList(updatedUser, updatedUserList)
+    const secondAddTestUserReq = await wrapper.addUserToUserList(
+      updatedUser,
+      updatedUserList
+    )
 
-  
     expect(updatedUserList.length).toBe(1)
 
     // check that we have the initially imported data
@@ -206,6 +225,5 @@ describe('importing users', () => {
     expect(secondAddTestUserReq.user.id).toBe(testUser.id)
     expect(secondAddTestUserReq.user.fields.email).toBe(testUser.fields.email)
     expect(secondAddTestUserReq.user.fields.website).toBe('oldsite.com')
-
   })
 })

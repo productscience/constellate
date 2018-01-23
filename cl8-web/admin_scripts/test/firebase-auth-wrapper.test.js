@@ -9,6 +9,8 @@ const wrapper = require('../../functions/src/firebase-auth-wrapper.js')(
 const admin = wrapper.admin
 
 const _ = require('lodash')
+const debug = require('debug')('cl8.firebase.wrapper.test')
+
 let testUser
 
 describe('create or delete a user', () => {
@@ -72,15 +74,43 @@ describe('create or delete a user', () => {
   })
 })
 
-describe('fetching actual user records', () => {
+describe('fetching actual user accounts', () => {
+  const testUserAccount = {
+    email: 'mail@chrisadams.me.uk',
+    displayName: 'Chris adams',
+    emailVerified: true,
+    uid: 'xxxxxxxxxxxx'
+  }
+
+  beforeEach(async () => {
+    const listOfUsers = await admin.auth().listUsers()
+
+    await listOfUsers.users.forEach(async u => {
+      debug(`deleting user account ${u.uid}`)
+      await admin.auth().deleteUser(u.uid)
+    })
+
+    debug(`creating test user account: ${testUserAccount.uid}`)
+    await wrapper.admin.auth().createUser(testUserAccount)
+  })
+
   test('getUsers', () => {
     return wrapper.getUsers().then(records => {
-      // let record = records.users[0]
-      records.users.forEach(record => {
+      expect(records.length).toBe(1)
+      records.forEach(record => {
         expect(record).toHaveProperty('uid')
         expect(record).toHaveProperty('email')
         expect(record).toHaveProperty('emailVerified')
       })
+    })
+  })
+
+  afterEach(async () => {
+    const listOfUsers = await admin.auth().listUsers()
+
+    await listOfUsers.users.forEach(async u => {
+      debug(`deleting user account ${u.uid}`)
+      await admin.auth().deleteUser(u.uid)
     })
   })
 })

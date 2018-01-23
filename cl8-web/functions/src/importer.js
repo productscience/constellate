@@ -4,22 +4,40 @@ const _ = require('lodash')
 const debug = require('debug')('cl8.importer')
 
 module.exports = Cl8Importer
-
+/**
+ * Wrapper around the SDK wrapper, to allow us to run imports on the command line,
+ * and call import functions from code, in a cloud function
+ *
+ * @param {Object} importerCredentials, with keys with credentials
+ * for Airtable and Firebase
+ * @returns {Object} with methods to run the import scripts
+ */
 function Cl8Importer (importerCredentials) {
-  const atbl = AirTableWrapper(importerCredentials.airTableCreds[0], importerCredentials.airTableCreds[1])
-  const fbase = FireBaseWrapper(importerCredentials.fbaseCreds[0], importerCredentials.fbaseCreds[1])
+  const atbl = AirTableWrapper(
+    importerCredentials.airTableCreds[0],
+    importerCredentials.airTableCreds[1]
+  )
+  const fbase = FireBaseWrapper(
+    importerCredentials.fbaseCreds[0],
+    importerCredentials.fbaseCreds[1]
+  )
 
   function importUsersAndTags () {
-    // once we have all the bits,
-    let collectedData = fetchAllDataforSyncing()
+    const collectedData = fetchAllDataforSyncing()
 
     // we can
     // 1) built an nice datastructure each person
     // - buld our datastructure to represent peeps with tags
-    let enrichedPeeps = buildEnrichedPeeps(collectedData.peeps, collectedData.tags)
+    let enrichedPeeps = buildEnrichedPeeps(
+      collectedData.peeps,
+      collectedData.tags
+    )
 
     // 2) find ones who don't already exist in the realtime user list already
-    let peepsToImport = filterOutPeepsToImport(enrichedPeeps, collectedData.fbUserList)
+    let peepsToImport = filterOutPeepsToImport(
+      enrichedPeeps,
+      collectedData.fbUserList
+    )
 
     // 3) import each of the new Peeps:
     // - add them to the Firebase RTB with the airtable ID as the key
@@ -90,17 +108,15 @@ function Cl8Importer (importerCredentials) {
     // // remove users from:
     // let listOfPromises = []
     // _.each(peepsToImport, peep => {
-
-      // firebase
-      // let peepRemovedFromFbaseUserList (peep) => {}
-      // let peepRemovedFromFbaseUsers = (peep) => {}
-
-      // TODO right now, removing here would clear them from ALL constellations
-      // because it there is no real notion of multipl constellations in auth0
-      // although we'd could key on the connection id in an auth0 user
-      // let peepRemovedFromAuth0 = (peep) => {
-      //    return auth0.removeUser(peep.fields.email)
-      // }
+    // firebase
+    // let peepRemovedFromFbaseUserList (peep) => {}
+    // let peepRemovedFromFbaseUsers = (peep) => {}
+    // TODO right now, removing here would clear them from ALL constellations
+    // because it there is no real notion of multipl constellations in auth0
+    // although we'd could key on the connection id in an auth0 user
+    // let peepRemovedFromAuth0 = (peep) => {
+    //    return auth0.removeUser(peep.fields.email)
+    // }
     // })
   }
 
@@ -109,7 +125,7 @@ function Cl8Importer (importerCredentials) {
     let listOfPromises = []
     _.each(peepsToImport, peep => {
       debug(peep.fields)
-        // create list of promises here, to then pass into the resolving function
+      // create list of promises here, to then pass into the resolving function
       let userAddedtofbList = () => {
         let userObj = {
           id: peep.id,
@@ -132,7 +148,7 @@ function Cl8Importer (importerCredentials) {
         }
         // return auth0.addAirtableAPIToUserByEmail(peep.fields.email, params)
       }
-        //
+      //
       listOfPromises.push(createdfbaseUser)
       listOfPromises.push(userAddedtofbList)
       listOfPromises.push(createdauth0User)
@@ -142,114 +158,129 @@ function Cl8Importer (importerCredentials) {
       debug(err)
     })
   }
-    // How would you test this? Is it worth it?
+  // How would you test this? Is it worth it?
   function executeSequentally (promises) {
-      // accepts a list of promises, and executes them in order, appending
-      // each promise to the chain until it's done
+    // accepts a list of promises, and executes them in order, appending
+    // each promise to the chain until it's done
     var result = Promise.resolve()
     promises.forEach(function (promiseFactory) {
       result = result.then(promiseFactory)
     })
     return result
   }
-
+  /**
+   * Fetches data from the third party services, and represents them as plain
+   * ol' json objects, so we can run checks locally, then make the API calls to
+   * import users that need to be imported or updated
+   *
+   * @returns {Object} with keyed with data structures to represent users from
+   * Airtable, and Firebase.
+   */
   function fetchAllDataforSyncing () {
-      // fetch all the airtable records to save all the round generatFireBaseAirTableIdPromises
-    return atbl.getUsers()
+    return (
+      atbl
+        .getUsers()
         // then fetch the tags
         .then(peeps => {
-          return atbl.getTags()
-            .then(tags => {
-              return {
-                peeps: peeps,
-                tags: tags
-              }
-            })
+          return atbl.getTags().then(tags => {
+            return {
+              peeps: peeps,
+              tags: tags
+            }
+          })
         })
         // then fetch the user list from Firebase RTB so we can make comparisons about them being in the system
         .then(payload => {
-          return fbase.getUserList()
-            .then(fbUserList => {
-              let newPayload = _.cloneDeep(payload)
-              newPayload.fbUserList = fbUserList
-              return newPayload
-            })
+          return fbase.getUserList().then(fbUserList => {
+            let newPayload = _.cloneDeep(payload)
+            newPayload.fbUserList = fbUserList
+            return newPayload
+          })
         })
         // then then fetch the user list from Firebase Auth
         .then(payload => {
-          return fbase.getUsers()
-            .then(fbUsers => {
-              let newPayload = _.cloneDeep(payload)
-              newPayload.fbUsers = fbUsers
-              return newPayload
-            })
-        }).catch(err => {
+          return fbase.getUsers().then(fbUsers => {
+            let newPayload = _.cloneDeep(payload)
+            newPayload.fbUsers = fbUsers
+            return newPayload
+          })
+        })
+        .catch(err => {
           debug(err)
         })
+    )
   }
 
   function filterOutPeepsToImport (enrichedPeeps, firebaseUserList) {
-      // accepts a list of airtable user objects, and a firebase database
-      // reference, then returns the list of users
-
+    /**
+     * accepts a list of airtable user objects, and a firebase database
+     * reference, then returns the list of users
+     *
+     * @param enrichedPeeps array of Airtable Records
+     * @param firebaseUserList array of user objects
+     * @returns array of users to import
+     */
     function pulloutEmails (list) {
-      return _.map(_.values(list), (rec) => {
+      return _.map(_.values(list), rec => {
         if (typeof rec.id !== 'undefined') {
-          debug(rec.id)
-          debug(rec.fields)
+          debug(rec.id, rec.fields.email)
           return rec.fields.email
         }
       })
     }
-      // we call val() to fetch the data, not the function with
-    let fbaseUserListData = firebaseUserList.val()
-    let fbUserEmails = pulloutEmails(fbaseUserListData)
 
-      // making a clone to avoid changing the original
+    let fbUserEmails = pulloutEmails(firebaseUserList)
+
+    // making a clone to avoid changing the original
     let enrichedEmails = pulloutEmails(enrichedPeeps)
     let airtableUserEmails = _.cloneDeep(enrichedEmails)
 
-      // make a lisr of emails that only exist in the airtable list of users
+    // make a list of emails that only exist in the airtable list of users
     fbUserEmails.forEach(key => {
       _.pull(airtableUserEmails, key)
     })
 
-      // build the list of users to import based on the email address list
-      // we just created
+    // build the list of users to import based on the email address list
+    // we just created
     debug('fbUserEmails', fbUserEmails)
     debug('enrichedEmails', enrichedEmails)
     debug('airtableUserEmails', airtableUserEmails)
     let usersToImport = []
-      // once we have the list of ids pull out
-    airtableUserEmails.forEach((key) => {
+    // once we have the list of ids pull out
+    airtableUserEmails.forEach(key => {
       let userToImport = enrichedPeeps.filter(peep => {
         return peep.fields.email === key
       })
       if (userToImport.length === 1) {
-          // debug(userToImport)
+        // debug(userToImport)
         usersToImport.push(userToImport[0])
       }
     })
 
-      // debug(usersToImport)
+    // debug(usersToImport)
     return usersToImport
   }
 
   function buildEnrichedPeeps (peepsList, fullTagList) {
-      // debug(peepsList)
-      // debug(fullTagList)
+    if (!peepsList) {
+      throw new Error(`No list of users provided - peepsList: ${peepsList}`)
+    }
+    if (!fullTagList) {
+      throw new Error(`No list of tags provided - fullTagList: ${fullTagList}`)
+    }
+
     let enrichedPeeps = []
     peepsList.forEach(function (peep) {
-        // debug("peep", peep)
+      // debug("peep", peep)
       let newPeep = enrichPeep(peep, fullTagList)
-        // debug("newpeep", newPeep)
+      // debug("newpeep", newPeep)
       enrichedPeeps.push(newPeep)
     })
     return enrichedPeeps
   }
 
   function enrichPeep (peep, tagsList) {
-      // debug(peep)
+    // debug(peep)
     let enrichedTags = []
 
     function enrichTag (tagname) {
@@ -260,10 +291,10 @@ function Cl8Importer (importerCredentials) {
     if (typeof peep.fields.tags !== 'undefined') {
       peep.fields.tags = peep.fields.tags.map(function (peepTag) {
         let etag = enrichTag(peepTag)[0]
-          // debug(etag)
+        // debug(etag)
         return {
-          'id': etag.id,
-          'name': etag.fields.name
+          id: etag.id,
+          name: etag.fields.name
         }
       })
     }

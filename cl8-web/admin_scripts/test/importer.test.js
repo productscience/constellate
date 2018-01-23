@@ -111,34 +111,65 @@ describe('3rd party API functions', () => {
   )
 })
 
-describe('finding new users to import', () => {
+describe.only('finding new users to import', () => {
   let payload = {}
 
-  beforeEach(async () => {
+  async function clearAirtable () {
+    debug('clearAirtable: clearing airtable')
     const noStaleTestUsers = "{email} = 'importme@example.com'"
     const usersToNuke = await importer.atbl.fetchRecords(
       'peeps',
       noStaleTestUsers
     )
 
-    // clear any users in the test account
-    const userAccountsToClear = await importer.fbase.getUsers()
-    debug(`fetched ${userAccountsToClear.length} user accounts`)
-    userAccountsToClear.forEach(async account => {
-      debug('deleting', account)
-      await importer.fbase.admin.deleteUser(account.uid)
-    })
-
     await usersToNuke.forEach(async peep => {
-      debug('nuking peep from airtable: ', peep.id)
+      debug('deleting peep from airtable: ', peep.id)
       try {
         const nukedUser = await importer.atbl.airtable('peeps').destroy(peep.id)
-        debug('nuked pee airtablep: ', nukedUser.id)
+        debug('deleted airtable peep: ', nukedUser.id)
       } catch (e) {
         debug('problem nuking user from airtable:', peep.id)
         debug(e)
       }
     })
+    debug('clearAirtable: cleared airtable')
+  }
+
+  async function clearFirebaseAccounts () {
+    debug('clearFirebaseAccounts: clearing firebase accounts')
+    // clear any users in the test account
+    const userAccountsToClear = await importer.fbase.getUsers()
+    debug(`fetched ${userAccountsToClear.length} user accounts`)
+    userAccountsToClear.forEach(async account => {
+      debug('deleting', account)
+      try {
+        await importer.fbase.admin.deleteUser(account.uid)
+      } catch (e) {
+        debug(`error deleting account: ${account.uid}`)
+        debug(e)
+      }
+    })
+    debug('clearFirebaseAccounts: cleared firebase accounts')
+  }
+
+  async function addPeepsToFireBaseUserList (peeps, tags) {
+    debug('addPeepsToFireBaseUserList: add to userlist')
+    const initialUserList = await importer.fbase.getUserList()
+
+    await peeps.forEach(async peep => {
+      const userObj = { id: peep.id, fields: peep.fields }
+      const resp = await importer.fbase.addUserToUserList(
+        userObj,
+        initialUserList
+      )
+      debug('addUser result:', resp.found, resp.user.id)
+    })
+    debug('addPeepsToFireBaseUserList: added to userlist')
+  }
+
+  beforeEach(async () => {
+    await clearAirtable()
+    await clearFirebaseAccounts()
 
     // we don't use this later on, so we don't assign it to to a value
     await importer.fbase.admin
@@ -152,86 +183,74 @@ describe('finding new users to import', () => {
     debug('before: peeps.length: ', peeps.length)
     debug('before: tags.length: ', tags.length)
 
-    await peeps.forEach(async peep => {
-      const userObj = { id: peep.id, fields: peep.fields }
-      const resp = await importer.fbase.addUserToUserList(userObj)
-      debug('addUser result:', resp)
-    })
+    await addPeepsToFireBaseUserList(peeps, tags)
+
     // fetch the up to date list of users
     const fbaseUserList = await importer.fbase.getUserList()
 
     payload.peeps = peeps
     payload.tags = tags
     payload.fbUserList = fbaseUserList
-  })
+  }, 15000)
 
-  test('filterOutPeepsToImport - none to import', async () => {
-    const enrichedPeeps = importer.buildEnrichedPeeps(
-      payload.peeps,
-      payload.tags
-    )
+  test(
+    'filterOutPeepsToImport - none to import',
+    async () => {
+      const enrichedPeeps = importer.buildEnrichedPeeps(
+        payload.peeps,
+        payload.tags
+      )
+      const usersToImport = importer.filterOutPeepsToImport(
+        enrichedPeeps,
+        payload.fbUserList
+      )
+      expect(enrichedPeeps.length).toBe(6)
+      expect(payload.fbUserList.length).toBe(6)
+      expect(usersToImport.length).toBe(0)
+    },
+    15000
+  )
+
+  test.only('filterOutPeepsToImport - one to import', async () => {
+    const newAirtableUserPayload = {
+      name: 'Person to import',
+      email: 'importme@example.com',
+      visible: 'yes',
+      admin: 'false',
+      tags: []
+    }
+
+    const newAirtableUser = await importer.atbl
+      .airtable(peepTable)
+      .create(newAirtableUserPayload)
+
+    const updatedPeeps = await importer.atbl.getUsers()
+    const updatedTags = await importer.atbl.getTags()
+
+    const enrichedPeeps = importer.buildEnrichedPeeps(updatedPeeps, updatedTags)
+
     const usersToImport = importer.filterOutPeepsToImport(
       enrichedPeeps,
       payload.fbUserList
     )
+
+    // test we have the right number of people to import
+    expect(usersToImport.length).toBe(1)
+
+    // test the user has the structure we expect it to
+    const importUser = usersToImport[0]
+    expect(importUser).toHaveProperty('id')
+    expect(importUser.id).toEqual(newAirtableUser.id)
+
+    // test imported users have the properties we expect
+
+    expect(importUser).toHaveProperty('fields.email')
+    expect(importUser.fields.email).toEqual(newAirtableUser.fields.email)
+    expect(importUser).toHaveProperty('fields.name')
+    expect(importUser.fields.name).toEqual(newAirtableUser.fields.name)
   })
 
-  test('filterOutPeepsToImport - one to import', () => {
-    return importer.atbl
-      .airtable(peepTable)
-      .create({
-        name: 'Person to import',
-        email: 'importme@example.com',
-        visible: 'yes',
-        admin: 'false'
-      })
-      .then(peep => {
-        debug('created user: ', peep.id)
-        tempPeep = peep
-        payload.peepToImport = peep
-        return payload
-      })
-      .then(payload => {
-        return importer.atbl.getTags().then(tags => {
-          return importer.atbl.getUsers().then(peeps => {
-            payload.tags = tags
-            payload.peeps = peeps
-            return payload
-          })
-          expect.assertions(4)
-          let enrichedPeeps = importer.buildEnrichedPeeps(
-            payload.peeps,
-            payload.tags
-          )
-          let usersToImport = importer.filterOutPeepsToImport(
-            enrichedPeeps,
-            payload.fbUserList
-          )
-
-          let userArray = _.values(userList.val())
-          expect(userArray.length).toBe(6)
-
-          expect(usersToImport.length).toBe(1)
-          expect(usersToImport[0]).toHaveProperty('id')
-          expect(usersToImport[0]).toHaveProperty('fields.email')
-          expect(usersToImport[0]).toHaveProperty('fields.name')
-        })
-      })
-  })
-
-  afterEach(() => {
-    if (typeof tempPeep !== 'undefined') {
-      return importer.atbl
-        .airtable(peepTable)
-        .destroy(tempPeep.id)
-        .then(peep => {
-          debug('destroyed: ', peep.id)
-        })
-        .catch(err => {
-          debug(err)
-        })
-    }
-  })
+  afterEach(() => {})
 })
 
 // describe('importing users', () => {

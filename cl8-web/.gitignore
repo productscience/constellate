@@ -1,5 +1,7 @@
 .DS_Store
 node_modules/
+admin_scripts/node_modules/
+
 /dist/
 npm-debug.log*
 yarn-debug.log*
@@ -19,6 +21,7 @@ selenium-debug.log
 
 # keep credentials out of source code
 .env
+.envs
 
 # for google cloud functions
 .runtimeconfig.json

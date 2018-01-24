@@ -4,10 +4,6 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: process.env.NODE_ENV_DEV,
-  AUTH0_CLIENTID: process.env.AUTH0_CLIENTID_DEV,
-  AUTH0_DOMAIN: process.env.AUTH0_DOMAIN_DEV,
-  AUTH0_REDIRECTURI: process.env.AUTH0_REDIRECTURI_DEV,
-  AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE_DEV,
 
   FIREBASE_APIKEY: process.env.FIREBASE_APIKEY_DEV,
   FIREBASE_AUTHDOMAIN: process.env.FIREBASE_AUTHDOMAIN_DEV,

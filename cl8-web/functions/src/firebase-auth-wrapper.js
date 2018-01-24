@@ -140,7 +140,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
       .once('value')
 
     if (userListRef.val()) {
-      return Object.values(userListRef.val())
+      return _.values(userListRef.val())
     } else {
       return []
     }

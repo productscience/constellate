@@ -22,6 +22,10 @@ selenium-debug.log
 # keep credentials out of source code
 .env
 .envs
+*/service-accounts/*
+
+# functions
+functions/dist/*
 
 # for google cloud functions
 .runtimeconfig.json

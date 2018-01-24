@@ -206,7 +206,22 @@ describe('create or edit users in realtime database', () => {
     expect(addUserReq.found).toBe(true)
     expect(addUserReq.user.fields.email).toBe(testUser.fields.email)
   })
+
+  test.only('delete by field - email', async () => {
+    const initialUserList = await wrapper.getUserList()
+    await wrapper.addUserToUserList(testUser, initialUserList)
+
+    const updatedUserList = await wrapper.getUserList()
+    expect(updatedUserList.length).toBe(1)
+
+    await wrapper.deleteByfield('email', 'totallynew@domain.com')
+
+    const postDeleteUserList = await wrapper.getUserList()
+    expect(postDeleteUserList.length).toBe(0)
+  })
 })
+
+describe('delete users from realtime database', () => {})
 
 describe('importing users', () => {
   beforeEach(() => {

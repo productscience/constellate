@@ -71,6 +71,28 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
         // debug(error)
       })
   }
+  /**
+   * Search for users matching a given field's value and delete.
+   *
+   * @param {String} field
+   * @param {String} value
+   * @returns {Promise}
+   */
+  function deleteByfield (field, value) {
+    debug(`query for field: ${field} with value: ${value}`)
+
+    return admin
+      .database()
+      .ref('userlist')
+      .orderByChild(`fields/${field}`)
+      .equalTo(value)
+      .once('value', peep => {
+        peep.forEach(u => {
+          debug(`found user: ${u.val().fields.email}`)
+          return u.ref.remove()
+        })
+      })
+  }
 
   function checkForUser (user) {
     return admin
@@ -240,6 +262,7 @@ function FireBaseAuthWrapper (serviceAccount, dbUrl) {
   return {
     getUsers: getUsers,
     deleteUser: deleteUser,
+    deleteByfield: deleteByfield,
     checkForUser: checkForUser,
     getOrCreateUser: getOrCreateUser,
     getUserList: getUserList,

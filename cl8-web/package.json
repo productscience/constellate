@@ -5,7 +5,8 @@
   "author": "Chris Adams <chris@productscience.co.uk>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev":
+      "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest test/unit/specs --coverage",
     "e2e": "node test/e2e/runner.js",
@@ -22,14 +23,17 @@
     "firebase": "^4.7.0",
     "marked": "^0.3.7",
     "tachyons": "^4.9.0",
-    "vee-validate": "^2.0.0",
+    "vee-validate": "^2.0.2",
     "vue": "^2.5.9",
+    "vue-analytics": "^5.8.0",
     "vue-fuse": "^1.2.1",
     "vue-gravatar": "^1.1.3",
+    "vue-linkify": "^1.0.1",
     "vue-multiselect": "^2.0.6",
     "vue-router": "^3.0.1",
     "vue-test-utils": "^1.0.0-beta.5",
     "vuefire": "^1.4.4",
+    "vuex": "^3.0.1",
     "webpack-sources": "1.0.1",
     "webpack-visualizer-plugin": "^0.1.11"
   },
@@ -39,6 +43,7 @@
     "babel-eslint": "^7.1.1",
     "babel-jest": "^21.2.0",
     "babel-loader": "^7.1.1",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.22.0",
     "babel-preset-env": "^1.3.2",
     "babel-preset-stage-2": "^6.22.0",
@@ -55,14 +60,17 @@
     "eslint-plugin-html": "^3.0.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-prettier": "^2.4.0",
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^3.0.1",
+    "eslint-plugin-vue": "^4.2.0",
     "eventsource-polyfill": "^0.9.6",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "html-webpack-plugin": "^2.30.1",
     "jest": "^21.2.1",
+    "jest-serializer-vue": "^0.3.0",
     "nightwatch": "^0.9.12",
     "node-notifier": "^5.1.2",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
@@ -70,6 +78,8 @@
     "portfinder": "^1.0.13",
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
+    "prettier": "^1.10.2",
+    "prettier-eslint": "^8.7.4",
     "rimraf": "^2.6.0",
     "selenium-server": "^3.0.1",
     "semver": "^5.3.0",
@@ -86,21 +96,16 @@
     "webpack-merge": "^4.1.0"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
+    "moduleFileExtensions": ["js", "json", "vue"],
+    "transformIgnorePatterns": ["/node_modules/(?!EventEmitter).+\\.js$"],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
     "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
-      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
+      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     },
-    "setupFiles": [
-      "<rootDir>/test/unit/setup"
-    ],
+    "setupFiles": ["<rootDir>/test/unit/setup"],
     "mapCoverage": true,
     "coverageDirectory": "<rootDir>/test/unit/coverage",
     "collectCoverageFrom": [
@@ -108,15 +113,12 @@
       "!src/main.js",
       "!src/router/index.js",
       "!**/node_modules/**"
-    ]
+    ],
+    "snapshotSerializers": ["<rootDir>/node_modules/jest-serializer-vue"]
   },
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
 }

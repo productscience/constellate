@@ -52,9 +52,10 @@
       </div>
     </div>
 
-  <div class="blurb lh-copy measure-wide">
-      <div v-html="blurbOutput"></div>      
-    </div>
+  
+    <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
+        <div v-html="blurbOutput"></div>      
+      </div>
 
 
     <div class="cf pt2">
@@ -137,7 +138,9 @@ export default {
       return this.$store.getters.activeTags;
     },
     blurbOutput() {
-      return marked(this.profile.fields.blurb, { sanitize: true });
+      return this.profile.fields.blurb
+        ? marked(this.profile.fields.blurb, { sanitize: true })
+        : nul;
     }
   },
   methods: {

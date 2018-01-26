@@ -4,7 +4,6 @@
     <div class="cf" style="min-height:11em;">
       <div class="fl w-20">
 
-
           <img v-if="hasPhoto()"
             :src="profile.fields.photo[0].thumbnails.large.url"
             class="supplied-photo b--light-silver ba" />
@@ -23,7 +22,6 @@
                 Invisible
               </div>
           </div>
-
 
       </div>
 
@@ -54,6 +52,11 @@
       </div>
     </div>
 
+  <div class="blurb lh-copy measure-wide">
+      <div v-html="blurbOutput"></div>      
+    </div>
+
+
     <div class="cf pt2">
       <ul class='list tags ml0 pl0'>
         <li
@@ -66,6 +69,7 @@
       </ul>
     </div>
 
+  
     <div v-if="canEdit()">
       <hr>
         <router-link :to="{ name: 'editProfile' }"
@@ -84,98 +88,105 @@
 
 <script>
 /* eslint-disable */
-import Vue from 'vue'
-import Gravatar from 'vue-gravatar'
-import marked from 'marked'
-import debugLib from 'debug'
-const debug = debugLib('cl8.ProfileComponent')
-Vue.component('v-gravatar', Gravatar)
+import Vue from "vue";
+import Gravatar from "vue-gravatar";
+import marked from "marked";
+import debugLib from "debug";
+const debug = debugLib("cl8.ProfileComponent");
+Vue.component("v-gravatar", Gravatar);
 
-import linkify from '../../utils'
+import linkify from "../../utils";
 
 export default {
-  name: 'ProfileComponent',
+  name: "ProfileComponent",
   components: {
     Gravatar
   },
-  props: ['auth', 'currentUser', 'fbtagList'],
+  props: ["auth", "currentUser", "fbtagList"],
   data() {
-    return {}
+    return {};
   },
   computed: {
     websiteLink() {
-      return this.profile.fields.website ? linkify(this.profile.fields.website) : null
+      return this.profile.fields.website
+        ? linkify(this.profile.fields.website)
+        : null;
     },
     twitterLink() {
-      return this.profile.fields.twitter ? linkify(this.profile.fields.twitter, 'https://twitter.com') : null
+      return this.profile.fields.twitter
+        ? linkify(this.profile.fields.twitter, "https://twitter.com")
+        : null;
     },
-    facebookLink () {
-      return this.profile.fields.facebook ? linkify(this.profile.fields.facebook, 'https://facebook.com'): null
+    facebookLink() {
+      return this.profile.fields.facebook
+        ? linkify(this.profile.fields.facebook, "https://facebook.com")
+        : null;
     },
-    linkedinLink () {
-      return this.profile.fields.linkedin ? linkify(this.profile.fields.linkedin, 'https://linkedin.com/in') : null
+    linkedinLink() {
+      return this.profile.fields.linkedin
+        ? linkify(this.profile.fields.linkedin, "https://linkedin.com/in")
+        : null;
     },
     user() {
-      return this.$store.getters.currentUser
+      return this.$store.getters.currentUser;
     },
-    profile () {
-      return this.$store.getters.profile
+    profile() {
+      return this.$store.getters.profile;
     },
-    activeTags () {
-      return this.$store.getters.activeTags
+    activeTags() {
+      return this.$store.getters.activeTags;
+    },
+    blurbOutput() {
+      return marked(this.profile.fields.blurb, { sanitize: true });
     }
   },
   methods: {
-    canEdit: function () {
-      debug("can edit?", this.profile.id, this.user.uid)
-      return this.profile.id == this.user.uid
+    canEdit: function() {
+      debug("can edit?", this.profile.id, this.user.uid);
+      return this.profile.id == this.user.uid;
     },
-    toggleTag: function (ev) {
-      let tag = ev.target.textContent.trim()
-      this.$store.dispatch('updateActiveTags', tag)
+    toggleTag: function(ev) {
+      let tag = ev.target.textContent.trim();
+      this.$store.dispatch("updateActiveTags", tag);
     },
-    isActive: function (term) {
-      if (typeof this.activeTags !== 'undefined') {
-          let matchesActiveTag = this.activeTags.indexOf(term) !== -1
-          return matchesActiveTag
-        }
-    },
-    isVisible: function () {
-      return this.profile.fields.visible === 'yes'
-    },
-    hasPhoto () {
-      // console.log(this)
-      if (typeof this.profile.fields === 'undefined') {
-        return false
+    isActive: function(term) {
+      if (typeof this.activeTags !== "undefined") {
+        let matchesActiveTag = this.activeTags.indexOf(term) !== -1;
+        return matchesActiveTag;
       }
-      if (typeof this.profile.fields.photo === 'undefined') {
-        return false
+    },
+    isVisible: function() {
+      return this.profile.fields.visible === "yes";
+    },
+    hasPhoto() {
+      // console.log(this)
+      if (typeof this.profile.fields === "undefined") {
+        return false;
+      }
+      if (typeof this.profile.fields.photo === "undefined") {
+        return false;
       }
       if (this.profile.fields.photo.length > 0) {
-        return true
+        return true;
       }
       // otherwise just return false
-      return false
+      return false;
     }
-  },
-  filters: {
-    marked: marked
   }
-}
+};
 </script>
 
 <style>
-  ul.tags li.list {
-    display:inline-block;
-  }
-  img.gravatar {
-    box-shadow: 3px 3px 3px #ddd;
-  }
+ul.tags li.list {
+  display: inline-block;
+}
+img.gravatar {
+  box-shadow: 3px 3px 3px #ddd;
+}
 
-  /* this only shows a border when we have two or more links in a row */
-  .social-links li+li { 
-    border-left: 1px solid #000000;
-    padding-left: 1em
-    }
-
+/* this only shows a border when we have two or more links in a row */
+.social-links li + li {
+  border-left: 1px solid #000000;
+  padding-left: 1em;
+}
 </style>

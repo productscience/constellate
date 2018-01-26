@@ -67,6 +67,19 @@
                     <label class="f5" for="">linkedin <small>(just the bit after http://www.linked.com/in/)</small></label>
                     <input class="w-100 mt1 pa1"  v-model="profile.fields.linkedin" />
                   </li>
+
+                  <li class="list mt2">
+                    <label class="f5" for="">Summary <small>(Using <a href="https://daringfireball.net/projects/markdown/">markdown</a> for formatting is supported)</small></label>
+                    <textarea 
+                      class="w-100 mt1 pa1 ba b--light-gray"
+                      v-model="profile.fields.blurb"
+                      placeholder="Add a short summary here - 2 paragraphs is plenty"
+                      name="" id="" cols="30" rows="10"></textarea>
+                    
+
+                  </li>
+
+
                 </ul>
 
               </div>

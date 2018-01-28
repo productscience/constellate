@@ -22,6 +22,7 @@ selenium-debug.log
 # keep credentials out of source code
 .env
 .envs
+.env.*.sh
 */service-accounts/*
 
 # functions

@@ -1,5 +1,22 @@
 <template>
   <div class="cf bg-white bg-network">
+
+
+    <div class="should-not-need-this" style="display:none;">
+    <svg id="some-cross"
+    viewBox="0 0 92 93"
+    version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+      <path 
+        stroke="#red"
+        fill="#fff"
+        d="M59.2802424,46.3618932 L91.6469505,78.7286013 L78.2119216,92.1636301 L45.8452136,59.796922 L12.8266415,92.8154942 L-0.608387387,79.3804653 L32.4101847,46.3618932 L-0.276931083,13.6747774 L13.1580978,0.23974855 L45.8452136,32.9268644 L77.8804653,0.891612613 L91.3154942,14.3266415 L59.2802424,46.3618932 Z">
+      </path>
+    </svg>    
+    </div>
+    
+
+
     <div v-if="loading">
       <div class="spinner">
       <img src="../../assets/loading.svg" alt="loading"/>
@@ -17,6 +34,12 @@
         <div class="tag-list ba b--light-silver">
           <p>
             <button v-for="tag in activeTags" v-bind:key="tag" @click.stop.prevent="toggleTag" class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-blue white relative bg-animate hover-bg-light-blue">
+                <svg>
+                  <use xlink:href="#some-cross"></use>
+                </svg>
+                  
+                  
+
                   {{ tag }}
             </button>                  
           </p>
@@ -204,11 +227,16 @@ p span.list {
 }
 
 button.remove-tag {
-  background-image: url(../../assets/cross-mark.svg);
-  background-size: 0.75em;
+  background-image: 0.75em;
   background-repeat: no-repeat;
   background-position: top 0.5em right 0.5em;
-  padding-right: 1.5em;
+  padding-right: 0.5em;
 }
-
+button svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  float: right;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
 </style>

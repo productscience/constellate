@@ -63,7 +63,7 @@
         <li
           v-for="tag in profile.fields.tags" v-bind:key="tag.name"
           class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white"
-          :class="{ 'bg-dark-blue white': isActive(tag.name) }"
+          :class="{ 'bg-dark-blue white': isActive(tag.name.toLowerCase()) }"
           @click="toggleTag">
           {{ tag.name.toLowerCase().trim() }}
         </li>

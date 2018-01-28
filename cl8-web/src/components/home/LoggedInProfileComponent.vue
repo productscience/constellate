@@ -96,14 +96,15 @@ export default {
         return typeof peep.fields.tags !== 'undefined'
       })
       // now reduce the list till we only have people matching all tags
-      terms.forEach(function (term) {
-        peepsWithTags = peepsWithTags.filter(function (peep) {
-          let peepTerms = peep.fields.tags.map(function (tag) {
-            return tag.name
-          })
-          return includes(peepTerms, term)
-        })
-      })
+      terms.forEach(function(term) {
+        peepsWithTags = peepsWithTags.filter(function(peep) {
+          let peepTerms = peep.fields.tags.map(function(tag) {
+            return tag.name.toLowerCase();
+          });
+
+          return includes(peepTerms, term);
+        });
+      });
       let visiblePeeps = peepsWithTags.filter(function(peep) {
         return peep.fields.visible == 'yes'
       })

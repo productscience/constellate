@@ -12,7 +12,10 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "deploy": "firebase deploy --only hosting",
+    "release": "npm run build && npm run deploy",
+    "firebase-cli": "firebase"
   },
   "dependencies": {
     "EventEmitter": "^1.0.0",
@@ -67,6 +70,7 @@
     "eventsource-polyfill": "^0.9.6",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
+    "firebase-tools": "^3.17.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "html-webpack-plugin": "^2.30.1",
     "jest": "^21.2.1",

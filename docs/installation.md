@@ -130,7 +130,7 @@ cd admin_scripts/
 node ./importUsersAndTags.js
 ```
 
-Depending how many users you have to import this will take a few minutes to run, as it loops through the users in airtable, and create firebase accounts for them, and builds a datastructure for the app to search through.
+Depending how many users you have to import this will take a few minutes to run, as it loops through the users in airtable, and create firebase accounts for them, and builds a data structure for the app to search through.
 
 ### Running locally
 
@@ -147,8 +147,16 @@ http://localhost:8080
 
 ### Deploying somewhere others can see it
 
-Once you see it working, likely you'll want others to be able to see it too. You can deploy the app by calling the npm command below when in `cl8-web`.
+Once you see it working, likely you'll want others to be able to see it too.
+
+You can deploy the app by calling the npm command below when in the `cl8-web` directory.
 
 ```
 npm run release
 ```
+
+This will make a smaller, compiled version of the javascript for production, then create a new release, which will be visible at:
+
+[http://YOUR_PROJECT_NAME.firebaseapp.com](http://YOUR_PROJECT_NAME.firebaseapp.com)
+
+

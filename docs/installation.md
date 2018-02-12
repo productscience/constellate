@@ -91,6 +91,18 @@ Copy the credentials to your clipboard and copy the two sample env files `.envs`
 
 Now, add the corresponding credentials these newly created env files, so for `FIREBASE_DATABASEURL_DEV` you'd add whatever was matched by the `databaseURL` in the project settings, and so on.
 
+For airtable, you'll need data the name of the airtable base, and your API key.
+
+Visit https://airtable.com/api to see a list of the airtables you can programatically access - you can see the base key in the url when you visit any of the options, and it still start with `app` followed by an alphanumeric string.
+
+You'll need your API key from your account page, at:
+
+https://airtable.com/account
+
+
+export AIRTABLE_BASE_DEV="appzxxxxxxxxxxxxx"
+export AIRTABLE_API_KEY_DEV="keyxxxxxxxxxxxxxx"
+
 #### Fetching the service account for firebase
 
 You'll likely want to be able to run admin commands, like importing the initial set of users, and so on. You can do this by downloading a service account key, from the admin section too.

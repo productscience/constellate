@@ -23,7 +23,7 @@ https://console.firebase.google.com/project/YOUR_PROJECT_NAME/settings/general/
 
 You may also want to update the password reset email text, at:
 
-https://console.firebase.google.com/project/test-install-run/authentication/emails
+https://console.firebase.google.com/project/YOUR_PROJECT_NAME/authentication/emails
 
 #### Making sure people can sign in 
 
@@ -111,7 +111,7 @@ You'll next need the credentials for either running a local version for developm
 
 #### Fetching the credentials from firebase:
 
-Go to [project overview > project settings](https://console.firebase.google.com/project/munster-setup/settings/general/)
+Go to [project overview > project settings](https://console.firebase.google.com/project/YOUR_PROJECT_NAME/settings/general/)
 
 click "Add firebase to your web app"
 
@@ -140,7 +140,7 @@ export AIRTABLE_API_KEY_DEV="keyxxxxxxxxxxxxxx"
 
 You'll likely want to be able to run admin commands, like importing the initial set of users, and so on. You can do this by downloading a service account key, from the admin section.
 
-Go to [project overview > project settings > service accounts](https://console.firebase.google.com/project/munster-setup/settings/serviceaccounts/adminsdk). 
+Go to [project overview > project settings > service accounts](https://console.firebase.google.com/project/YOUR_PROJECT_NAME/settings/serviceaccounts/adminsdk). 
 
 You can also reach this at the link below:
 
@@ -249,10 +249,10 @@ Once this is working, if you want a different domain name other than `YOUR_PROJE
 
 You can do this in the hosting section -> Connect Domain:
 
-https://console.firebase.google.com/project/munster-setup/hosting/main
+https://console.firebase.google.com/project/YOUR_PROJECT_NAME/hosting/main
 
 You can also set the domain email comes from too, in the email authentication section:
 
-https://console.firebase.google.com/project/munster-setup/authentication/emails
+https://console.firebase.google.com/project/YOUR_PROJECT_NAME/authentication/emails
 
 In both cases follow the steps in the UI - you will need access to DNS records for your domain name here.

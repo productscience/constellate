@@ -1,6 +1,6 @@
 # Installation
 
-- Setup the project credentials on firebase.com
+- Setup the project on Firebase
 - Checkout the code and install dependencies
 - Setting up your local config 
 - Running it to test it out
@@ -11,7 +11,7 @@
 
 ### Create the project
 
-sign into google firebase, so you're on the dashboard page, at https://console.firebase.google.com/
+Sign into google firebase, so you're on the dashboard page, at https://console.firebase.google.com/
 
 Hit 'add project', giving it a name (referred to as YOUR_PROJECT_NAME from here onwards) , and decide the region/country for this app. 
 
@@ -35,7 +35,7 @@ Remember, to make sure the password reset email message is correct here.
 
 Congrats! First part sorted!
 
-## Fetching code and dependencies
+## Checkout the code and install dependencies
 
 ### Clone the project code
 
@@ -61,7 +61,7 @@ If you don't have firebase installed, install it with:
 npm install firebase-tools -g
 ```
 
-## Signing into firebase on the terminal 
+## Setting up your local config 
 
 Once you have the code and dependencies, sure you need to associate it with the project you just created, by running a few commands in the terminal
 
@@ -158,9 +158,7 @@ And the same for the `.envs/prod.sh`:
 export FIREBASE_SERVICE_ACCOUNT_PATH_PROD='trying-this-out-service-account.json'
 ```
 
-## Importing users
-
-Now, when 
+## Running it to test it out
 
 Before you can see anything you need to import users into firebase. The fastest way to do this is to run one of the admin scripts for importing users on your own machine.
 
@@ -188,7 +186,7 @@ This will spin up a development server, typically running locally on port 8080. 
 http://localhost:8080 
 
 
-### Deploying somewhere others can see it
+## Deploying somewhere others can see it
 
 Once you see it working, likely you'll want others to be able to see it too.
 
@@ -245,7 +243,7 @@ Similarly, you can check what environment variables are set by calling `env` on 
 env | grep _DEV
 ```
 
-#### Setting a domain
+## Changing the domain
 
 Once this is working, if you want a different domain name other than `YOUR_PROJECT_NAME.firebaseapp.com` you will need to add an domain entry on firebase then set A-records to point the domain at firebase's servers.
 

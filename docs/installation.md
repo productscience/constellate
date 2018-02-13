@@ -126,15 +126,16 @@ Now, add the corresponding credentials these newly created env files, so for `FI
 
 For airtable, you'll need data the name of the airtable base, and your API key.
 
-Visit https://airtable.com/api to see a list of the airtables you can programatically access - you can see the base key in the url when you visit any of the options, and it still start with `app` followed by an alphanumeric string.
+Visit https://airtable.com/api to see a list of the airtables you can programatically access - you can see the base key in the url when you visit any of the options, and it will start with `app` followed by an alphanumeric string.
 
 You'll also need your API key from your account page, at:
 
 https://airtable.com/account
 
-
+```
 export AIRTABLE_BASE_DEV="appzxxxxxxxxxxxxx"
 export AIRTABLE_API_KEY_DEV="keyxxxxxxxxxxxxxx"
+```
 
 #### Fetching the service account for firebase
 

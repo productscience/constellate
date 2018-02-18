@@ -151,7 +151,11 @@ function Cl8Importer (importerCredentials) {
         // can result in one of the calues of list here being `undefined` which crashes the importer
         // are empty, without even ids.
         if (typeof rec !== 'undefined') {
-          if (typeof rec.id !== 'undefined') {
+          if (
+            typeof rec.id !== 'undefined' &&
+            typeof rec.fields !== 'undefined' &&
+            typeof rec.fields.email !== 'undefined'
+          ) {
             debug(rec.id, rec.fields.email)
             return rec.fields.email
           }

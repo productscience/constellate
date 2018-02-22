@@ -49,25 +49,14 @@ async function clearFirebaseAccounts () {
 // - remove all the user accounts
 // - clear the realtime database
 
-// debug('clearing accounts: starting')
-
-// debug('clearing accounts: done')
-
-// process.exit()
-return new Promise(resolve => {
+async function main () {
   debug('clearing accounts and data:')
-  // return console.log(devBase, devKey, serviceAccount, databaseURL)
+
   debug('clearing data: starting')
-  const accountResult = clearFirebaseAccounts()
-  const databaseResult = clearFirebaseUserList()
-  resolve([accountResult, databaseResult])
-})
-  .then(message => {
-    debug('Deleted users and the firebase data')
-    return process.exit()
-  })
-  .catch(err => {
-    // we always want to show an error
-    console.log(err)
-    return process.exit()
-  })
+  await clearFirebaseAccounts()
+  await clearFirebaseUserList()
+
+  process.exit()
+}
+
+main()

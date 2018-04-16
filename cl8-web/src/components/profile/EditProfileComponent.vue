@@ -7,6 +7,18 @@
           <form class="">
             <div class="cf" style="min-height:11em;">
               <div class="fl w-20 ">
+                <div>
+                  <input type="file"
+                  @change="updatePhoto($event)"
+                  class="ma2"
+                  accept="image/*">
+
+                </div>
+                
+                <img
+                  :src="this.localPhoto"
+                  class="supplied-photo b--light-silver ba" />
+
                 <img v-if="hasPhoto()"
                   :src="profile.fields.photo[0].thumbnails.large.url"
                   class="supplied-photo b--light-silver ba" />
@@ -149,6 +161,7 @@ export default {
       items: [], // this needs to be the list from firebase
       tagList: [],
       unsyncedTags: [],
+      localPhoto: null
     }
   },
   computed: {
@@ -199,6 +212,18 @@ export default {
       debug('updating profile', this.profile)
       this.$store.dispatch('updateProfile', this.profile)
     },
+    updatePhoto (ev) {
+      debug("image added")
+      // assign the photo
+      debug(ev.target.files)
+      if (ev.target.files.length === 1){
+        let newPhoto = ev.target.files[0]
+        this.localPhoto =  window.URL.createObjectURL(newPhoto)
+        let payload = { profile: this.profile, photo: newPhoto}
+        this.$store.dispatch('updateProfilePhoto', payload)
+      }
+      
+    },
     hasPhoto () {
       if (typeof this.profile.fields === 'undefined') {
         return false
@@ -211,6 +236,22 @@ export default {
       }
       // otherwise jjust return false
       return false
+    },
+    showPhoto () {
+      if (this.hasPhoto()) {
+        return false
+      }
+      let photo = this.profile.fields.photo[0]
+      if (typeof photo.thumbnails === 'undefined') {
+        return false
+      }
+      // if we have a airtable pic, fetch that
+      if (photo.thumbnails.large) {
+        return photo.thumbnails.large.url
+      }
+
+      // if we have a user provided photo, use that instead
+
     }
   },
   created () {

@@ -15,10 +15,6 @@
 
                 </div>
                 
-                <img
-                  :src="this.localPhoto"
-                  class="supplied-photo b--light-silver ba" />
-
                 <img v-if="hasPhoto()"
                   :src="profile.fields.photo[0].thumbnails.large.url"
                   class="supplied-photo b--light-silver ba" />

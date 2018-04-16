@@ -69,7 +69,7 @@ export default new Vuex.Store({
     },
     setProfilePhoto: function(state, payload) {
       debug('setProfilePhoto', payload)
-      state.profilePhoto = payload
+      state.profile.fields.photo = [payload]
     }
   },
   actions: {
@@ -153,7 +153,7 @@ export default new Vuex.Store({
           debug('Saving profile: ', payload, 'failed', error)
         })
     },
-    updateProfilePhoto: function (context, payload) {
+    updateProfilePhoto: function(context, payload) {
       debug('sending photo update to Firebase', payload)
       let profileId = payload.profile.id
       var metadata = {
@@ -178,11 +178,7 @@ export default new Vuex.Store({
               }
             }
           }
-          payload.profile.fields.photo = [returnedPhoto]
-          // TODO ,use a different mutator so we don't need to 
-          // save the file to see the updated photo
-          context.commit('setProfile', payload.profile)
-          // context.dispatch('updateProfile', payload.profile)
+          context.commit('setProfilePhoto', returnedPhoto)
         })
         .catch(error => {
           debug('Saving uploaded photo: ', payload, 'failed', error)

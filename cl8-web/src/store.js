@@ -162,7 +162,8 @@ export default new Vuex.Store({
       fbase
         .storage()
         .ref()
-        .child(`profilePhotos/${profileId}`)
+        // we add the timestamp so photos are unique in buckets
+        .child(`profilePhotos/${profileId}-${Date.now()}`)
         .put(payload.photo, metadata)
         .then(snapshot => {
           debug('Succesfully uploaded photo', snapshot)

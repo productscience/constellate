@@ -35,8 +35,8 @@ function ThumbnailGenerator (object) {
   const tempFilePath = path.join(os.tmpdir(), fileName)
   const smallThumbnailPath = `${tempFilePath}-36x36`
   const largeThumbnailPath = `${tempFilePath}-200x200`
-  const smallThumbnailName = `${fileName}-36x36`
-  const largeThumbnailName = `${fileName}-200x200`
+  const smallThumbnailName = `thumb_${fileName}-36x36`
+  const largeThumbnailName = `thumb_${fileName}-200x200`
   const metadata = {
     contentType: contentType
   }

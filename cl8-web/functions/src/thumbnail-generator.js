@@ -1,8 +1,14 @@
-const gcs = require('@google-cloud/storage')()
+// we need the service account creds to generate signed urls, to add to profiles
+
+
 const spawn = require('child-process-promise').spawn
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
+
+const admin = require('firebase-admin')
+admin.initializeApp()
+const gcs = admin.storage()
 
 module.exports = ThumbnailGenerator
 
@@ -23,9 +29,12 @@ function ThumbnailGenerator (object) {
     return null
   }
 
+  // check if this is a profile photos, with a profile id
+  console.log('Profile filename ', fileName.split('-'))
+
   // Download file from bucket.
   const bucket = gcs.bucket(fileBucket)
-  
+
   const tempFilePath = path.join(os.tmpdir(), fileName)
   const smallThumbnailPath = `${tempFilePath}-36x36`
   const largeThumbnailPath = `${tempFilePath}-200x200`
@@ -90,9 +99,26 @@ function ThumbnailGenerator (object) {
         ])
       })
       .then(results => {
+        // return signed urls to add to an image
         const largeUpload = results[0]
         const smallUpload = results[1]
+        //
+        const config = {
+          action: 'read',
+          expires: '03-01-2500'
+        }
+
         console.log(largeUpload, smallUpload)
+
+        return Promise.all([
+          largeUpload.getSignedUrl(config),
+          smallUpload.getSignedUrl(config)
+        ])
+      })
+      .then(results => {
+        // is this a user profile? if so, lets update the details to fetch this info
+        console.log(results)
+        // admin.database().ref('')
       })
       // Once the thumbnail has been uploaded delete the local file to free up disk space.
       .then(() => fs.unlinkSync(tempFilePath))

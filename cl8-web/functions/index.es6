@@ -9,10 +9,10 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 })
 
 // this is only used to generate a realistic objectMetaData
-// exports.generateSampleData = functions.storage.object().onFinalize(object => {
-//   console.log('data looks like this')
-//   console.log(object)
-// })
+exports.generateSampleData = functions.storage.object().onFinalize(object => {
+  console.log('data looks like this')
+  console.log(object)
+})
 
 exports.generateThumbnail = functions.storage.object().onFinalize(object => {
   return ThumbnailGenerator(object)

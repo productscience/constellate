@@ -3,13 +3,14 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "serve": "firebase serve --only functions",
-    "shell": "firebase experimental:functions:shell",
+    "shell": "npm run build && firebase experimental:functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "build": "babel src --out-dir dist && babel index.es6 --out-file index.js",
     "release": "npm run build && npm run deploy",
-    "firebase-cli": "firebase"
+    "firebase-cli": "firebase",
+    "boop": "node boop.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^0.4.0",
@@ -26,6 +27,6 @@
     "babel-cli": "^6.26.0",
     "eslint": "^4.13.1",
     "eslint-plugin-promise": "^3.6.0",
-    "firebase-tools": "^3.17.3"
+    "firebase-tools": "^3.1.3"
   }
 }

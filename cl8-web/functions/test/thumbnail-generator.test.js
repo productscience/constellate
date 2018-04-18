@@ -5,6 +5,10 @@ const testData = require('./testdata.json')
 const fs = require('fs')
 
 describe('thumbnailGenerator', () => {
+  const fileName = 'test_pic.png'
+  const smallThumbFileName = 'thumb_test_pic-36x36.png'
+  const largeThumbFileName = 'thumb_test_pic-200x200.png'
+
   const thumbGen = ThumbnailGenerator(
     { serviceAccount: serviceAccount },
     testData
@@ -31,17 +35,12 @@ describe('thumbnailGenerator', () => {
   })
 
   test('makeThumbnails', async () => {
-  
-    const fetchRequest = thumbGen.makeThumbnails('./test/test_pic.png')
-    await expect(fetchRequest).resolves.toContain(
-      'thumb_test_pic-36x36.png'
-    )
-    await expect(fetchRequest).resolves.toContain(
-      'thumb_test_pic-200x200.png'
-    )
+    const fetchRequest = thumbGen.makeThumbnails(`./test/${fileName}`)
+    await expect(fetchRequest).resolves.toContain(smallThumbFileName)
+    await expect(fetchRequest).resolves.toContain(largeThumbFileName)
   })
   test('saveThumb', async () => {
-    const thumbPaths = 'thumb_test_img_download-36x36.png'
+    const thumbPaths = smallThumbFileName
     const uploadRequest = thumbGen.saveThumb(thumbPaths)
     await expect(uploadRequest).resolves.toMatch(
       'https://storage.googleapis.com/munster-setup.appspot.com/'
@@ -50,8 +49,8 @@ describe('thumbnailGenerator', () => {
 
   test('saveThumbs', async () => {
     const thumbPaths = [
-      'thumb_test_img_download-36x36.png',
-      'thumb_test_img_download-200x200.png'
+      smallThumbFileName,
+      largeThumbFileName
     ]
     const uploadRequest = thumbGen.saveThumbs(thumbPaths)
     await expect(uploadRequest).resolves.toHaveLength(2)

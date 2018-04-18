@@ -1,130 +1,239 @@
 // we need the service account creds to generate signed urls, to add to profiles
 
-
 const spawn = require('child-process-promise').spawn
 const path = require('path')
 const os = require('os')
-const fs = require('fs')
-
 const admin = require('firebase-admin')
-admin.initializeApp()
-const gcs = admin.storage()
+
+const debug = require('debug')('cl8.thumbnail-generator')
 
 module.exports = ThumbnailGenerator
-
-function ThumbnailGenerator (object) {
-  const fileBucket = object.bucket // The Storage bucket that contains the file.
-  const filePath = object.name // File path in the bucket.
+/**
+ * Thumbnail generator. For generating thumbnails of uploaded photos, using
+ * ImageMagick.
+ * Intended for use in a cloud function
+ *
+ *
+ * @param {Object} config, config object with keys for accessing google cloud services
+ * @param {Object} fileObject, an metadata object representing a file just uploaded
+ *
+ * @returns {Object} with methods to run the import scripts
+ */
+function ThumbnailGenerator (config, fileObject) {
+  const fileBucket = fileObject.bucket // The Storage bucket that contains the file.
+  const filePath = fileObject.name // File path in the bucket.
   const fileName = path.basename(filePath)
-  const contentType = object.contentType // File content type.
+  const contentType = fileObject.contentType // File content type.
 
-  // Exit if this is triggered on a file that is not an image.
-  if (!contentType.startsWith('image/')) {
-    console.log('This is not an image.')
-    return null
-  }
-  // Exit if the image is already a thumbnail.
-  if (fileName.startsWith('thumb_')) {
-    console.log('Already a Thumbnail.')
-    return null
-  }
+  const tmpDir = os.tmpdir()
+  const tempFilePath = path.join(tmpDir, fileName)
 
-  // check if this is a profile photos, with a profile id
-  console.log('Profile filename ', fileName.split('-'))
+  const THUMB_SMALL = '36x36'
+  const THUMB_LARGE = '200x200'
 
-  // Download file from bucket.
+  admin.initializeApp({
+    credential: admin.credential.cert(config.serviceAccount)
+  })
+  const gcs = admin.storage()
   const bucket = gcs.bucket(fileBucket)
 
-  const tempFilePath = path.join(os.tmpdir(), fileName)
-  const smallThumbnailPath = `${tempFilePath}-36x36`
-  const largeThumbnailPath = `${tempFilePath}-200x200`
+  // check if this is a profile photos, with a profile id
+  debug('Profile filename ', fileName.split('-'))
 
-  const smallThumbnailName = `thumb_${fileName}-36x36`
-  const largeThumbnailName = `thumb_${fileName}-200x200`
+  /**
+   * Checks that our file is a image suitable for generating
+   * thumbnails from
+   *
+   * @returns {Boolean} True/false based on if whether the objject is suitable for
+   * making a thumbnail
+   */
+  function validateObject () {
+    // Exit if this is triggered on a file that is not an image.
+    if (!contentType.startsWith('image/')) {
+      debug('This is not an image.')
+      return false
+    }
+    // Exit if the image is already a thumbnail.
+    if (fileName.startsWith('thumb_')) {
+      debug('Already a Thumbnail.')
+      return false
+    }
+    return true
+  }
 
-  return (
-    bucket
-      .file(filePath)
+  /**
+   * Fetches the image referred to by the metaData, and saves it to
+   * the provided path,
+   * @param {String} destPath the intendedPath to download to
+   * @returns {Promise} downloadFile returns the local path to the objectx
+   */
+  function fetchImage (fetchPath, destPath) {
+    // debug('Object deets', fileObject)
+    debug('Fetching image', fetchPath, 'to put at', destPath)
+
+    let downloadPath
+    if (fetchPath) {
+      downloadPath = fetchPath
+    } else {
+      downloadPath = filePath
+    }
+    return bucket
+      .file(downloadPath)
       .download({
-        destination: tempFilePath
+        destination: destPath
       })
       .then(() => {
-        console.log('Image downloaded locally to', tempFilePath)
-        // Generate a thumbnail using ImageMagick.
-        console.log('making thumbnails for', tempFilePath)
+        debug('Image downloaded locally to', destPath)
+        return destPath
+      })
+      .catch(err => {
+        debug(err)
+        return err
+      })
+  }
 
-        return Promise.all([
-          spawn('convert', [
-            tempFilePath,
-            '-thumbnail',
-            '36x36>',
-            smallThumbnailPath
-          ]),
-          spawn('convert', [
-            tempFilePath,
-            '-thumbnail',
-            '200x200>',
-            largeThumbnailPath
-          ])
-        ])
-      })
+  /**
+   * Generates thumbnails locally from the file at the path passed in
+   *
+   * @param {string} origPath where the original file is
+   * @returns {Promise} which resolves to exit code of the thumbnail code
+   * returns the local path to the newly created thumbnails
+   */
+  function makeThumbnails (origPath) {
+    const ext = path.extname(origPath)
+    const baseName = path.basename(origPath, '.png')
+
+    const smallThumbnailPath = `thumb_${baseName}-${THUMB_SMALL}${ext}`
+    const largeThumbnailPath = `thumb_${baseName}-${THUMB_LARGE}${ext}`
+    // Generate a thumbnail using ImageMagick.
+    debug('making thumbnails for', tempFilePath)
+
+    return Promise.all([
+      spawn('convert', [
+        origPath,
+        '-thumbnail',
+        `${THUMB_SMALL}>`,
+        smallThumbnailPath
+      ]),
+      spawn('convert', [
+        origPath,
+        '-thumbnail',
+        `${THUMB_LARGE}>`,
+        largeThumbnailPath
+      ])
+    ])
       .then(results => {
-        // Uploading the thumbnail.
-        console.log('Thumbnails created at:', [
-          smallThumbnailPath,
-          largeThumbnailPath
-        ])
-        const largeUploadThumb = path.join(
-          path.dirname(filePath),
-          'thumbnails',
-          largeThumbnailName
-        )
-        const smallUploadThumb = path.join(
-          path.dirname(filePath),
-          'thumbnails',
-          smallThumbnailName
-        )
-        const metadata = {
-          contentType: contentType
-        }
-        return Promise.all([
-          bucket.upload(smallThumbnailPath, {
-            destination: smallUploadThumb,
-            metadata: metadata
-          }),
-          bucket.upload(largeThumbnailPath, {
-            destination: largeUploadThumb,
-            metadata: metadata
-          })
-        ])
+        debug('thumbnails created ', results.map(res => res.code))
+        return [smallThumbnailPath, largeThumbnailPath]
       })
-      .then(results => {
-        // return signed urls to add to an image
-        const largeUpload = results[0]
-        const smallUpload = results[1]
-        //
-        const config = {
+      .catch(err => {
+        debug(err)
+        return err
+      })
+  }
+
+  /**
+   * Accepts a path, and uploads the file at that path, returning the HTTP url
+   * the files are accessible at
+   *
+   * @param {String} Path of paths of files
+   * @returns {Promise} of signed urls where the uploaded file can be accessed
+   */
+
+  function saveThumb (thumbPath) {
+    // construct path on cloud storage
+    const cloudThumbPath = path.join(filePath, 'thumbnails', thumbPath)
+    const metadata = {
+      contentType: contentType
+    }
+
+    // upload
+    return bucket
+      .upload(thumbPath, {
+        destination: cloudThumbPath,
+        metadata: metadata
+      })
+      .then(uploadResponse => {
+        // debug('file uploaded', uploadResponse[0].metadata.mediaLink)
+        // return the signedUrl
+        const signedUrlconfig = {
           action: 'read',
           expires: '03-01-2500'
         }
-
-        console.log(largeUpload, smallUpload)
-
-        return Promise.all([
-          largeUpload.getSignedUrl(config),
-          smallUpload.getSignedUrl(config)
-        ])
+        return uploadResponse[0].getSignedUrl(signedUrlconfig).then(res => {
+          // getSignedUrl, returns a string in an Array, like ["somestring"]
+          // and we only want the string
+          return res[0]
+        })
       })
-      .then(results => {
-        // is this a user profile? if so, lets update the details to fetch this info
-        console.log(results)
-        // admin.database().ref('')
+      .catch(err => {
+        debug(err)
+        return err
       })
-      // Once the thumbnail has been uploaded delete the local file to free up disk space.
-      .then(() => fs.unlinkSync(tempFilePath))
-      .then(() => fs.unlinkSync(smallThumbnailPath))
-      .then(() => fs.unlinkSync(largeThumbnailPath))
-  )
-  // [END thumbnailGeneration]
+  }
+
+  /**
+   * Accepts a list of files, and uploaded them, returning the HTTP urls
+   * the files are accessible at
+   *
+   * @param {Array} Array of paths of files
+   * @returns {Promise} of signed urls where the uploaded file can be accessed
+   */
+  function saveThumbs (pathArray) {
+    // make our fetching promises, so we can use Promise.all to wait for the
+    // results to come back
+    const pathPromises = pathArray.map(thumbPath => {
+      return saveThumb(thumbPath)
+    })
+
+    return Promise.all(pathPromises).then(results => {
+      debug(results)
+      return results.map(res => res[0])
+    })
+  }
+
+  /**
+   * Accept a profile id for a user, and the photo, creates thumbnails then up dates
+   * thumbnail pics for the user
+   *
+   * @param {any} profileId
+   * @param {any} photo
+   */
+  function createThumbsForProfile (fetchPath, destPath) {
+    // do we have a valid object to work with?
+    if (!validateObject()) {
+      return null
+    }
+    // begin processing
+    return fetchImage(fetchPath, destPath)
+      .then(destPath => {
+        debug('image fetched', fetchPath)
+        return destPath
+      })
+      .then(destPath => {
+        debug('making thumbnails for', destPath)
+        return makeThumbnails(destPath)
+      })
+      .then(thumbs => {
+        debug('uploading thumbs', fetchPath)
+        return saveThumbs(thumbs)
+      })
+      .then(thumbUrls => {
+        debug('thumbnails saved, at', thumbUrls)
+        return thumbUrls
+      })
+      .catch(err => {
+        debug('error')
+        return err
+      })
+  }
+
+  return {
+    validateObject,
+    fetchImage,
+    makeThumbnails,
+    saveThumb,
+    saveThumbs,
+    createThumbsForProfile
+  }
 }
-// [END generateThumbnail]

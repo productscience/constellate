@@ -1,0 +1,27 @@
+{
+  "bucket": "munster-setup.appspot.com",
+  "contentDisposition":
+    "inline; filename*=utf-8''recj0EMy3sWHhdove-1523955717393",
+  "contentType": "image/jpeg",
+  "crc32c": "5fwXsA==",
+  "etag": "CPOA+br5wNoCEAE=",
+  "generation": "1523955720405107",
+  "id":
+    "munster-setup.appspot.com/profilePhotos/recj0EMy3sWHhdove-1523955717393/1523955720405107",
+  "kind": "storage#object",
+  "md5Hash": "lCQARkgCjBqowNTL3U+izw==",
+  "mediaLink":
+    "https://www.googleapis.com/download/storage/v1/b/munster-setup.appspot.com/o/profilePhotos%2Frecj0EMy3sWHhdove-1523955717393?generation=1523955720405107&alt=media",
+  "metadata": {
+    "firebaseStorageDownloadTokens": "a700bd38-0518-4df5-b8bd-2c7a8404d67e"
+  },
+  "metageneration": "1",
+  "name": "profilePhotos/recj0EMy3sWHhdove-1523955717393",
+  "selfLink":
+    "https://www.googleapis.com/storage/v1/b/munster-setup.appspot.com/o/profilePhotos%2Frecj0EMy3sWHhdove-1523955717393",
+  "size": "276574",
+  "storageClass": "STANDARD",
+  "timeCreated": "2018-04-17T09:02:00.370Z",
+  "timeStorageClassUpdated": "2018-04-17T09:02:00.370Z",
+  "updated": "2018-04-17T09:02:00.370Z"
+}

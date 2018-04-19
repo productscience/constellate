@@ -1,11 +1,9 @@
-// we need the service account creds to generate signed urls, to add to profiles
-
 const spawn = require('child-process-promise').spawn
 const path = require('path')
 const os = require('os')
-const admin = require('firebase-admin')
 
 const debug = require('debug')('cl8.thumbnail-generator')
+const admin = require('firebase-admin')
 
 module.exports = ThumbnailGenerator
 /**
@@ -31,9 +29,19 @@ function ThumbnailGenerator (config, fileObject) {
   const THUMB_SMALL = '36x36'
   const THUMB_LARGE = '200x200'
 
+  // this definitely has a project ID
+  debug('config.serviceAccount.project_id', config.serviceAccount.project_id)
+  // sanity check
+  if (typeof config.serviceAccount.project_id !== 'string') {
+    throw new Error(`Service Account has no project ID`)
+  }
+
   admin.initializeApp({
-    credential: admin.credential.cert(config.serviceAccount)
+    serviceAccount: config.serviceAccount,
+    databaseURL: 'https://munster-setup.firebaseio.com'
   })
+
+  // this bucket here, if it's using the admin thing above - SURELY has a project ID, right?
   const gcs = admin.storage()
   const bucket = gcs.bucket(fileBucket)
 

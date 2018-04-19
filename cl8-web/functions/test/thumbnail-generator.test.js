@@ -3,16 +3,24 @@ const debug = require('debug')('cl8.thumbnail-generator.test')
 const serviceAccount = require('../service-account.json')
 const testData = require('./testdata.json')
 const fs = require('fs')
+const admin = require('firebase-admin')
 
 describe('thumbnailGenerator', () => {
   const fileName = 'test_pic.png'
   const smallThumbFileName = 'thumb_test_pic-36x36.png'
   const largeThumbFileName = 'thumb_test_pic-200x200.png'
 
+  // const initialisedApp = admin.initializeApp({
+  //   serviceAccount: serviceAccount,
+  //   databaseURL: 'https://munster-setup.firebaseio.com'
+  // })
   const thumbGen = ThumbnailGenerator(
     { serviceAccount: serviceAccount },
     testData
   )
+
+  debug(thumbGen)
+  // const thumbGen = ThumbnailGenerator(admin, testData)
 
   test('validateObject', () => {
     debug(thumbGen)
@@ -48,15 +56,13 @@ describe('thumbnailGenerator', () => {
   })
 
   test('saveThumbs', async () => {
-    const thumbPaths = [
-      smallThumbFileName,
-      largeThumbFileName
-    ]
+    const thumbPaths = [smallThumbFileName, largeThumbFileName]
     const uploadRequest = thumbGen.saveThumbs(thumbPaths)
     await expect(uploadRequest).resolves.toHaveLength(2)
   })
 
-  test('createThumbsForProfile', async () => {
+  test.only('createThumbsForProfile', async () => {
+    debug(thumbGen.createThumbsForProfile)
     const thumbGenerateRequest = thumbGen.createThumbsForProfile(
       'profilePhotos/recj0EMy3sWHhdove-1523955717393',
       'some-outfile.png'

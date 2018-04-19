@@ -61,12 +61,12 @@ describe('thumbnailGenerator', () => {
     await expect(uploadRequest).resolves.toHaveLength(2)
   })
 
-  test.only('createThumbsForProfile', async () => {
+  test('createThumbsForProfile', async () => {
     debug(thumbGen.createThumbsForProfile)
     const thumbGenerateRequest = thumbGen.createThumbsForProfile(
       'profilePhotos/recj0EMy3sWHhdove-1523955717393',
       'some-outfile.png'
     )
     await expect(thumbGenerateRequest).resolves.toHaveLength(2)
-  })
+  }, 10000)
 })

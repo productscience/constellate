@@ -1,4 +1,5 @@
 const ProfileThumbnailer = require('../../functions/src/profile-thumbnailer.js')
+const ThumbnailGenerator = require('../../functions/src/thumbnail-generator.js')
 const debug = require('debug')('cl8.profile-thumbnailer.test')
 
 const serviceAccount = require('../service-account.json')
@@ -11,15 +12,11 @@ const initialisedApp = admin.initializeApp({
   databaseURL: 'https://munster-setup.firebaseio.com'
 })
 
+debug(serviceAccount)
+
 describe('profileThumbnailer', () => {
   const profileId = 'recj0EMy3sWHhdove'
-
-  // pseudo code
-  // const prof = await fetchProfile(profileId)
-  // const thumbnailUrls = generateThumbs(photoPath)
-  // savedProf = addPhotoUrls(prof)
-  // debug(serviceAccount)
-  const profThumber = ProfileThumbnailer(initialisedApp, testData)
+  const profThumber = ProfileThumbnailer(admin, testData)
 
   test.skip('updateProfile - existing user', () => {})
   test.skip('updateProfile - no user', () => {})
@@ -44,21 +41,52 @@ describe('profileThumbnailer', () => {
     expect(profile.val().fields.photo).toHaveLength(1)
   })
 
-  test.only('addPhotoUrls - existing user', async () => {
+  test('addPhotoUrls - existing user', async () => {
     const profileKey = await profThumber.lookupProfile('id', profileId)
     const profile = await profThumber.fetchProfile(profileKey)
+    debug('profile', profile.val())
 
     const photoUrls = {
       large: 'http://someurl.com/large.jpg',
       small: 'http://someurl.com/medium.jpg'
     }
 
-    debug('profile', profile.val())
     await profThumber.addPhotoUrls(profile, photoUrls)
-    // debug('updatedPhoto', updatedPhoto)
+
     const newProfile = await profThumber.fetchProfile(profileKey)
     debug('newProfile', newProfile.val())
+
     expect(newProfile.val()).toHaveProperty('photo.large', photoUrls.large)
     expect(newProfile.val()).toHaveProperty('photo.small', photoUrls.small)
   })
+
+  test(
+    'addPhotoUrls - actual generator',
+    async () => {
+      const profileKey = await profThumber.lookupProfile('id', profileId)
+      const profile = await profThumber.fetchProfile(profileKey)
+      debug('profile', profile.val())
+
+      const thumbgen = ThumbnailGenerator(initialisedApp, testData)
+
+      const photoUrls = await thumbgen.createThumbsForProfile(
+        'profilePhotos/recj0EMy3sWHhdove-1523955717393',
+        'some-outfile.png'
+      )
+
+      debug(photoUrls)
+
+      await profThumber.addPhotoUrls(profile, {
+        small: photoUrls[0],
+        large: photoUrls[1]
+      })
+
+      const newProfile = await profThumber.fetchProfile(profileKey)
+      debug('newProfile', newProfile.val())
+
+      expect(newProfile.val()).toHaveProperty('photo.small', photoUrls[0])
+      expect(newProfile.val()).toHaveProperty('photo.large', photoUrls[1])
+    },
+    10000
+  )
 })

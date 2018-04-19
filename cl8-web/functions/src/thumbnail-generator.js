@@ -4,6 +4,10 @@ const os = require('os')
 
 const debug = require('debug')('cl8.thumbnail-generator')
 const admin = require('firebase-admin')
+const gcs = require('@google-cloud/storage')({
+  projectId: 'munster-setup',
+  keyFilename: './service-account.json'
+})
 
 module.exports = ThumbnailGenerator
 /**
@@ -17,7 +21,7 @@ module.exports = ThumbnailGenerator
  *
  * @returns {Object} with methods to run the import scripts
  */
-function ThumbnailGenerator (config, fileObject) {
+function ThumbnailGenerator (admin, fileObject) {
   const fileBucket = fileObject.bucket // The Storage bucket that contains the file.
   const filePath = fileObject.name // File path in the bucket.
   const fileName = path.basename(filePath)
@@ -29,20 +33,16 @@ function ThumbnailGenerator (config, fileObject) {
   const THUMB_SMALL = '36x36'
   const THUMB_LARGE = '200x200'
 
-  // this definitely has a project ID
-  debug('config.serviceAccount.project_id', config.serviceAccount.project_id)
-  // sanity check
-  if (typeof config.serviceAccount.project_id !== 'string') {
-    throw new Error(`Service Account has no project ID`)
-  }
+  // // this definitely has a project ID
+  // debug('config.serviceAccount.project_id', config.serviceAccount.project_id)
+  // // sanity check
+  // if (typeof config.serviceAccount.project_id !== 'string') {
+  //   throw new Error(`Service Account has no project ID`)
+  // }
 
-  admin.initializeApp({
-    serviceAccount: config.serviceAccount,
-    databaseURL: 'https://munster-setup.firebaseio.com'
-  })
 
   // this bucket here, if it's using the admin thing above - SURELY has a project ID, right?
-  const gcs = admin.storage()
+  // const gcs = admin.storage()
   const bucket = gcs.bucket(fileBucket)
 
   // check if this is a profile photos, with a profile id
@@ -168,6 +168,10 @@ function ThumbnailGenerator (config, fileObject) {
           action: 'read',
           expires: '03-01-2500'
         }
+        // if this is from the bucket, and I can *download* files, fine,
+        // why would the project not be set?
+        // debug(uploadResponse[0])
+
         return uploadResponse[0].getSignedUrl(signedUrlconfig).then(res => {
           // getSignedUrl, returns a string in an Array, like ["somestring"]
           // and we only want the string
@@ -196,7 +200,7 @@ function ThumbnailGenerator (config, fileObject) {
 
     return Promise.all(pathPromises).then(results => {
       debug(results)
-      return results.map(res => res[0])
+      return results
     })
   }
 

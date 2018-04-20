@@ -3,7 +3,7 @@
   v-if="hasfields()">
 
     <img v-if="hasPhoto()"
-      :src="item.fields.photo[0].thumbnails.small.url"
+      :src="showPhoto('small')"
       class="supplied-photo fl b--light-silver ba" />
 
     <v-gravatar v-else
@@ -52,8 +52,11 @@ export default {
       if (this.item.fields.photo.length > 0) {
         return true
       }
-      // otherwise jjust return false
+      // otherwise just return false
       return false
+    },
+    showPhoto (size) {
+      return this.item.fields.photo[0].thumbnails[size].url
     }
   },
   components: {

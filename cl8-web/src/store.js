@@ -170,14 +170,7 @@ export default new Vuex.Store({
           // build the photo array to pass in with the profile
           let returnedPhoto = {
             url: snapshot.downloadURL,
-            thumbnails: {
-              large: {
-                url: snapshot.downloadURL
-              },
-              small: {
-                url: snapshot.downloadURL
-              }
-            }
+            thumbnails: {}
           }
           context.commit('setProfilePhoto', returnedPhoto)
         })

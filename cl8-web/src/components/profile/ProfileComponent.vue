@@ -5,7 +5,7 @@
       <div class="fl w-20">
 
           <img v-if="hasPhoto()"
-            :src="profile.fields.photo[0].thumbnails.large.url"
+            :src="showPhoto('large')"
             class="supplied-photo b--light-silver ba" />
 
           <v-gravatar v-else
@@ -140,7 +140,7 @@ export default {
     blurbOutput() {
       return this.profile.fields.blurb
         ? marked(this.profile.fields.blurb, { sanitize: true })
-        : nul;
+        : null;
     }
   },
   methods: {
@@ -174,6 +174,9 @@ export default {
       }
       // otherwise just return false
       return false;
+    },
+    showPhoto (size) {
+      return this.profile.fields.photo[0].thumbnails[size].url
     }
   }
 };

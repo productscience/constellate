@@ -1,26 +1,27 @@
 const ThumbnailGenerator = require('../../functions/src/thumbnail-generator.js')
-const debug = require('debug')('cl8.thumbnail-generator.test')
-const serviceAccount = require('../service-account.json')
 const testData = require('./testdata.json')
 const fs = require('fs')
 const admin = require('firebase-admin')
+const debug = require('debug')('cl8.thumbnail-generator.test')
 
 describe('thumbnailGenerator', () => {
   const fileName = 'test_pic.png'
   const smallThumbFileName = 'thumb_test_pic-36x36.png'
   const largeThumbFileName = 'thumb_test_pic-200x200.png'
+  const alreadyUploadedFile = 'profilePhotos/recj0EMy3sWHhdove-1523955717393'
+  const projectId = ''
 
-  // const initialisedApp = admin.initializeApp({
-  //   serviceAccount: serviceAccount,
-  //   databaseURL: 'https://munster-setup.firebaseio.com'
-  // })
+  const serviceAccountPath = process.env.FIREBASE_CONFIG
+    ? process.env.FIREBASE_CONFIG
+    : '../service-account.json'
+  const serviceAccount = require(serviceAccountPath)
+
   const thumbGen = ThumbnailGenerator(
     { serviceAccount: serviceAccount },
     testData
   )
 
   debug(thumbGen)
-  // const thumbGen = ThumbnailGenerator(admin, testData)
 
   test('validateObject', () => {
     debug(thumbGen)
@@ -28,16 +29,11 @@ describe('thumbnailGenerator', () => {
   })
 
   test('fetchImage with nested path', async () => {
-    // TODO nuke this to make sure we don't need to fetch it each time
-
     if (fs.existsSync('outfile.png')) {
       fs.unlinkSync('outfile.png')
     }
 
-    const fetchRequest = thumbGen.fetchImage(
-      'profilePhotos/recj0EMy3sWHhdove-1523955717393',
-      'outfile.png'
-    )
+    const fetchRequest = thumbGen.fetchImage(alreadyUploadedFile, 'outfile.png')
     await expect(fetchRequest).resolves.toBe('outfile.png')
     expect(fs.existsSync('outfile.png')).toBe(true)
   })
@@ -51,7 +47,7 @@ describe('thumbnailGenerator', () => {
     const thumbPaths = smallThumbFileName
     const uploadRequest = thumbGen.saveThumb(thumbPaths)
     await expect(uploadRequest).resolves.toMatch(
-      'https://storage.googleapis.com/munster-setup.appspot.com/'
+      'https://storage.googleapis.com/'
     )
   })
 
@@ -61,12 +57,16 @@ describe('thumbnailGenerator', () => {
     await expect(uploadRequest).resolves.toHaveLength(2)
   })
 
-  test('createThumbsForProfile', async () => {
-    debug(thumbGen.createThumbsForProfile)
-    const thumbGenerateRequest = thumbGen.createThumbsForProfile(
-      'profilePhotos/recj0EMy3sWHhdove-1523955717393',
-      'some-outfile.png'
-    )
-    await expect(thumbGenerateRequest).resolves.toHaveLength(2)
-  }, 10000)
+  test(
+    'createThumbsForProfile',
+    async () => {
+      debug(thumbGen.createThumbsForProfile)
+      const thumbGenerateRequest = thumbGen.createThumbsForProfile(
+        alreadyUploadedFile,
+        'some-outfile.png'
+      )
+      await expect(thumbGenerateRequest).resolves.toHaveLength(2)
+    },
+    10000
+  )
 })

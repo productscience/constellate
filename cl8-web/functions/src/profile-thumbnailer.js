@@ -3,6 +3,8 @@ const path = require('path')
 const os = require('os')
 const debug = require('debug')('cl8.profiler-thumbnailer')
 
+const ThumbnailGenerator = require('./thumbnail-generator.js')
+
 const _ = require('lodash')
 module.exports = ProfileThumbnailer
 
@@ -71,13 +73,19 @@ function ProfileThumbnailer (admin, profileId, photoPath) {
    *
    */
   async function addPhotoUrls (profile, photoObject) {
-    // debug(profile)
-    const photos = await profile.child('photo')
+    debug('addPhotoUrls')
+    debug('addPhotoUrls:profile', profile.val())
+    const photos = await profile.child('fields/photo')
 
-    // debug('photos ref', photos.ref)
-    const updatedPhotos = await photos.ref.set(photoObject)
+    debug('addPhotoUrls:profile.fields.photo', profile.val().fields.photo)
+    debug('addPhotoUrls:photos', photos.val())
 
-    return updatedPhotos
+    const newPhotoObj = _.merge(profile.val().fields.photo, photoObject)
+
+    // we use set to overritw the array of photos, as we're not tracking previous ones
+    await photos.ref.set(newPhotoObj)
+
+    return newPhotoObj
   }
 
   return {

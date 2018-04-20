@@ -60,7 +60,7 @@ describe('profileThumbnailer', () => {
     expect(newProfile.val()).toHaveProperty('photo.small', photoUrls.small)
   })
 
-  test(
+  test.only(
     'addPhotoUrls - actual generator',
     async () => {
       const profileKey = await profThumber.lookupProfile('id', profileId)
@@ -76,17 +76,30 @@ describe('profileThumbnailer', () => {
 
       debug(photoUrls)
 
-      await profThumber.addPhotoUrls(profile, {
-        small: photoUrls[0],
-        large: photoUrls[1]
-      })
+      // item.fields.photo[0].thumbnails.small.url
+      const photoObject = [
+        {
+          thumbnails: {
+            small: {
+              url: photoUrls[0]
+            },
+            large: {
+              url: photoUrls[1]
+            }
+          }
+        }
+      ]
+      await profThumber.addPhotoUrls(profile, photoObject)
 
       const newProfile = await profThumber.fetchProfile(profileKey)
-      debug('newProfile', newProfile.val())
+      // debug('newProfile', newProfile.val())
+      expect(newProfile.val()).toHaveProperty('fields.photo')
+      expect(newProfile.val().fields.photo).toHaveLength(1)
 
-      expect(newProfile.val()).toHaveProperty('photo.small', photoUrls[0])
-      expect(newProfile.val()).toHaveProperty('photo.large', photoUrls[1])
+      const profilePhotoObj = newProfile.val().fields.photo[0]
+      expect(profilePhotoObj).toHaveProperty('thumbnails.small.url')
+      expect(profilePhotoObj).toHaveProperty('thumbnails.large.url')
     },
-    10000
+    15000
   )
 })

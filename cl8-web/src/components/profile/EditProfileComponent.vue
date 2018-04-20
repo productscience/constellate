@@ -16,7 +16,7 @@
                 </div>
                 
                 <img v-if="hasPhoto()"
-                  :src="profile.fields.photo[0].thumbnails.large.url"
+                  :src="profile.photo.large"
                   class="supplied-photo b--light-silver ba" />
 
                 <v-gravatar v-else

@@ -1,19 +1,11 @@
 <template>
   <div class="cf bg-white">
-    <nav-header></nav-header>
-    <div class="fl w-two-thirds pa2">
-      <div class="pa3 center w-80 cf">
+    <div class="fl pa2">
+      <div class="pa3 center cf">
         <div>
           <form class="">
             <div class="cf" style="min-height:11em;">
-              <div class="fl w-20 ">
-                <div>
-                  <input type="file"
-                  @change="updatePhoto($event)"
-                  class="ma2"
-                  accept="image/*">
-
-                </div>
+              <div class="fl">
                 
                 <img v-if="hasPhoto()"
                   :src="profile.photo.large"
@@ -24,7 +16,7 @@
                   :size="200"
                   class="gravatar b--light-silver ba" />
 
-                <div class="ma2">
+                <div class="">
                     <input tabindex="1" class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
                     <label for="yes">Visible</label>
                     <br>
@@ -41,8 +33,8 @@
                 </div>
               </div>
 
-              <div class="fl w-75 mt0 pt0">
-                <ul class="list mt0 pt0 f4">
+              <div class="fl mt0 pt0">
+                <ul class="list mt0 pt0 f4 pl0 ml0">
                   <li class="list name">
                     <label class="f5" for="">name</label>
                     <input class="w-100 mt1 pa1"  v-model="profile.fields.name" />
@@ -62,7 +54,7 @@
                   </li>
                 </ul>
 
-                <ul class="list mt0 pt0">
+                <ul class="list mt0 pt0  pl0 ml0">
                   <li class="list twitter">
                     <label class="f5" for="">twitter <small>(just add your @username)</small></label>
                     <input class="w-100 mt1 pa1"  v-model="profile.fields.twitter" />
@@ -107,6 +99,15 @@
                 @tag="addTag"></multiselect>
             </div>
 
+            <ul class='list tags ml0 pl0'>
+        <li
+          v-for="tag in profile.fields.tags" :key="tag.name"
+          class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white">
+          {{ tag.name }}
+        </li>
+      </ul>
+
+
             <p class="f6">
               <em>
                 Email gavin@dgen.net to remove your account
@@ -142,17 +143,18 @@ export default {
   components: {
     Multiselect
   },
-  firebase: function () {
+  firebase: function() {
     return {
       fbpeeps: {
         source: fbase.database().ref('userlist'),
-        readyCallback: function () {
+        readyCallback: function() {
           debug('data retrieved from fbase')
+          this.setUserProfile()
         }
       }
     }
   },
-  data () {
+  data() {
     return {
       items: [], // this needs to be the list from firebase
       tagList: [],
@@ -161,18 +163,23 @@ export default {
     }
   },
   computed: {
-    profile () {
+    user() {
+      return this.$store.getters.currentUser
+        ? this.$store.getters.currentUser
+        : false
+    },
+    profile() {
       return this.$store.getters.profile
     },
-    profileTags: function () {
+    profileTags: function() {
       let tagList = []
 
       if (this.items.length > 0) {
-        this.items.forEach(function (peep) {
+        this.items.forEach(function(peep) {
           if (typeof peep.fields !== 'undefined') {
             if (typeof peep.fields.tags !== 'undefined') {
-              peep.fields.tags.forEach(function (t) {
-                let tagListNames = tagList.map(function (tt) {
+              peep.fields.tags.forEach(function(t) {
+                let tagListNames = tagList.map(function(tt) {
                   return tt.name
                 })
                 if (!includes(tagListNames, t.name)) {
@@ -184,7 +191,7 @@ export default {
         })
       }
       if (this.unsyncedTags.length > 0) {
-        this.unsyncedTags.forEach(function (t) {
+        this.unsyncedTags.forEach(function(t) {
           tagList.push(t)
         })
       }
@@ -192,10 +199,9 @@ export default {
     }
   },
   methods: {
-    addTag (newTag) {
-      let tempVal = newTag.substring(0, 2) + Math.floor(
-        (Math.random() * 10000000)
-      )
+    addTag(newTag) {
+      let tempVal =
+        newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
       const tag = {
         name: newTag,
         code: tempVal,
@@ -204,23 +210,22 @@ export default {
       this.profile.fields.tags.push(tag)
       this.unsyncedTags.push(tag)
     },
-    onSubmit: function (item) {
+    onSubmit: function(item) {
       debug('updating profile', this.profile)
       this.$store.dispatch('updateProfile', this.profile)
     },
-    updatePhoto (ev) {
-      debug("image added")
+    updatePhoto(ev) {
+      debug('image added')
       // assign the photo
       debug(ev.target.files)
-      if (ev.target.files.length === 1){
+      if (ev.target.files.length === 1) {
         let newPhoto = ev.target.files[0]
-        this.localPhoto =  window.URL.createObjectURL(newPhoto)
-        let payload = { profile: this.profile, photo: newPhoto}
+        this.localPhoto = window.URL.createObjectURL(newPhoto)
+        let payload = { profile: this.profile, photo: newPhoto }
         this.$store.dispatch('updateProfilePhoto', payload)
       }
-      
     },
-    hasPhoto () {
+    hasPhoto() {
       if (typeof this.profile.fields === 'undefined') {
         return false
       }
@@ -233,7 +238,7 @@ export default {
       // otherwise jjust return false
       return false
     },
-    showPhoto () {
+    showPhoto() {
       if (this.hasPhoto()) {
         return false
       }
@@ -247,11 +252,28 @@ export default {
       }
 
       // if we have a user provided photo, use that instead
-
+    },
+    setUserProfile() {
+      debug('setting own profile for ', this.user)
+      let user = this.user
+      let matchingProfiles = this.items.filter(function(peep) {
+        return peep.id === user.uid
+      })
+      if (matchingProfiles.length > 0) {
+        debug('We have a match!', matchingProfiles[0])
+        this.$store.commit('setProfile', matchingProfiles[0])
+      } else {
+        debug('No matches', matchingProfiles)
+      }
     }
   },
-  created () {
+  created() {
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
+    debug('checking for a user:')
+    debug(this.$store.getters.profile)
+    debug(fbase.auth().currentUser)
+    // this.$store.commit('setFBUser', fbase.auth().currentUser)
+    // debug('profile', this.$store.getters.profile)
   }
 }
 </script>
@@ -259,8 +281,17 @@ export default {
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style media="screen">
-p span.list{
+@import '../../../node_modules/tachyons/css/tachyons.css';
+p span.list {
   display: inline-block;
 }
 
+.new-pic-upload input.file {
+  /* // invisible but it's there! */
+  opacity: 1;
+  /* width: 100%; */
+  height: 100px;
+  position: absolute;
+  cursor: pointer;
+}
 </style>

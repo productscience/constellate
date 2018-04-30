@@ -1,35 +1,37 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import store from './store'
-
 import LoginComponent from '@/components/auth/LoginComponent'
 import ResetPassword from '@/components/auth/ResetPassword'
 // import Callback from '@/components/auth/Callback'
 import LoggedInProfileComponent from '@/components/home/LoggedInProfileComponent'
 import EditProfileComponent from '@/components/profile/EditProfileComponent'
+import ProfilePhotoComponent from '@/components/profile/ProfilePhotoComponent'
+
+// const debug = require('debug')('cl8.route')
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/home',
       name: 'home',
       component: LoggedInProfileComponent,
-      beforeEnter (to, from, next) {
-        if (store.state.user) {
-          next()
-        } else {
-          next('/signin')
-        }
-      }
+      meta: { requiresAuth: true }
     },
     {
       path: '/edit',
       name: 'editProfile',
-      component: EditProfileComponent
+      component: EditProfileComponent,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/photo',
+      name: 'editProfilePhoto',
+      component: ProfilePhotoComponent,
+      meta: { requiresAuth: true }
     },
     {
       path: '/signin',
@@ -42,8 +44,10 @@ export default new Router({
       component: ResetPassword
     },
     {
-      path: '/',
-      redirect: '/signin'
+      path: '*',
+      redirect: 'home'
     }
   ]
 })
+
+export default router

@@ -15,7 +15,8 @@ export default new Vuex.Store({
     searchTerm: '',
     searchTags: [],
     profile: null,
-    profilePhoto: null
+    profilePhoto: null,
+    requestUrl: null
   },
   getters: {
     currentUser: function(state) {
@@ -37,6 +38,9 @@ export default new Vuex.Store({
     //
     profilePhoto: function(state) {
       return state.profilePhoto
+    },
+    requestUrl: function(state) {
+      return state.requestUrl
     }
   },
   mutations: {
@@ -48,7 +52,7 @@ export default new Vuex.Store({
       const user = fbase.auth().currentUser
       if (user) {
         state.user = user.toJSON()
-        debug('setFBUser - state user', state.user)
+        debug('setFBUser - state user', state.user.displayName, state.user)
       }
     },
     clearFBUser: function(state) {
@@ -70,14 +74,13 @@ export default new Vuex.Store({
     setProfilePhoto: function(state, payload) {
       debug('setProfilePhoto', payload)
       state.profile.fields.photo = [payload]
+    },
+    setRequestUrl: function(state, payload) {
+      debug('setrequestUrl', payload)
+      state.requestUrl = payload
     }
   },
   actions: {
-    autoLogin: function(context) {
-      context.commit('setFBUser')
-      // check if firebase has a user when we intialise it.
-      debug('autoLogin', context.state)
-    },
     // otherwise log user in here
     login: function(context, payload) {
       debug(payload)
@@ -86,8 +89,17 @@ export default new Vuex.Store({
         .signInWithEmailAndPassword(payload.email, payload.password)
         .then(
           user => {
+            debug('we can log in now')
             debug(user)
             context.commit('setFBUser', user)
+            // if there's no previous url, send them to home
+            if (context.getters.requestUrl) {
+              debug('pushing to original req url: ', context.getters.requestUrl)
+              router.push(context.getters.requestUrl)
+            } else {
+              debug('pushing to home')
+              router.push('home')
+            }
           },
           error => {
             alert(error.message)
@@ -101,6 +113,7 @@ export default new Vuex.Store({
         .then(function() {
           // Sign-out successful.
           context.commit('clearFBUser')
+          router.push('signin')
         })
         .catch(function(error) {
           // An error happened

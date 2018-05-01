@@ -1,6 +1,6 @@
 <template>
   <div class="pa3 center w-80 cf" v-if="!!profile">
-
+    
     <div class="cf" style="min-height:11em;">
       <div class="fl w-20">
 
@@ -89,97 +89,97 @@
 
 <script>
 /* eslint-disable */
-import Vue from "vue";
-import Gravatar from "vue-gravatar";
-import marked from "marked";
-import debugLib from "debug";
-const debug = debugLib("cl8.ProfileComponent");
-Vue.component("v-gravatar", Gravatar);
+import Vue from 'vue'
+import Gravatar from 'vue-gravatar'
+import marked from 'marked'
+import debugLib from 'debug'
+const debug = debugLib('cl8ProfileDetail')
 
-import linkify from "../../utils";
+Vue.component('v-gravatar', Gravatar)
+
+import linkify from '../../utils'
 
 export default {
-  name: "ProfileComponent",
+  name: 'ProfileDetail',
   components: {
     Gravatar
   },
-  props: ["auth", "currentUser", "fbtagList"],
+  props: ['auth', 'currentUser', 'fbtagList'],
   data() {
-    return {};
+    return {}
   },
   computed: {
     websiteLink() {
       return this.profile.fields.website
         ? linkify(this.profile.fields.website)
-        : null;
+        : null
     },
     twitterLink() {
       return this.profile.fields.twitter
-        ? linkify(this.profile.fields.twitter, "https://twitter.com")
-        : null;
+        ? linkify(this.profile.fields.twitter, 'https://twitter.com')
+        : null
     },
     facebookLink() {
       return this.profile.fields.facebook
-        ? linkify(this.profile.fields.facebook, "https://facebook.com")
-        : null;
+        ? linkify(this.profile.fields.facebook, 'https://facebook.com')
+        : null
     },
     linkedinLink() {
       return this.profile.fields.linkedin
-        ? linkify(this.profile.fields.linkedin, "https://linkedin.com/in")
-        : null;
+        ? linkify(this.profile.fields.linkedin, 'https://linkedin.com/in')
+        : null
     },
     user() {
-      return this.$store.getters.currentUser;
+      return this.$store.getters.currentUser
     },
     profile() {
-      return this.$store.getters.profile;
+      return this.$store.getters.profile
     },
     activeTags() {
-      return this.$store.getters.activeTags;
+      return this.$store.getters.activeTags
     },
     blurbOutput() {
       return this.profile.fields.blurb
         ? marked(this.profile.fields.blurb, { sanitize: true })
-        : null;
+        : null
     }
   },
   methods: {
     canEdit: function() {
-      debug("can edit?", this.profile.id, this.user.uid);
-      return this.profile.id == this.user.uid;
+      debug('can edit?', this.profile.id, this.user.uid)
+      return this.profile.id == this.user.uid
     },
     toggleTag: function(ev) {
-      let tag = ev.target.textContent.trim();
-      this.$store.dispatch("updateActiveTags", tag);
+      let tag = ev.target.textContent.trim()
+      this.$store.dispatch('updateActiveTags', tag)
     },
     isActive: function(term) {
-      if (typeof this.activeTags !== "undefined") {
-        let matchesActiveTag = this.activeTags.indexOf(term) !== -1;
-        return matchesActiveTag;
+      if (typeof this.activeTags !== 'undefined') {
+        let matchesActiveTag = this.activeTags.indexOf(term) !== -1
+        return matchesActiveTag
       }
     },
     isVisible: function() {
-      return this.profile.fields.visible === "yes";
+      return this.profile.fields.visible === 'yes'
     },
     hasPhoto() {
-      // console.log(this)
-      if (typeof this.profile.fields === "undefined") {
-        return false;
+      if (typeof this.profile.fields === 'undefined') {
+        return false
       }
-      if (typeof this.profile.fields.photo === "undefined") {
-        return false;
+      if (typeof this.profile.fields.photo === 'undefined') {
+        return false
       }
       if (this.profile.fields.photo.length > 0) {
-        return true;
+        return true
       }
       // otherwise just return false
-      return false;
+      return false
     },
-    showPhoto (size) {
+    showPhoto(size) {
       return this.profile.fields.photo[0].thumbnails[size].url
     }
   }
-};
+}
 </script>
 
 <style>

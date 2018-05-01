@@ -136,10 +136,10 @@ import { includes } from 'lodash'
 import debugLib from 'debug'
 import fbase from '@/fbase'
 
-const debug = debugLib('cl8.EditProfileComponent')
+const debug = debugLib('cl8.ProfileEdit')
 
 export default {
-  name: 'EditProfileComponent',
+  name: 'ProfileEdit',
   components: {
     Multiselect
   },
@@ -226,6 +226,9 @@ export default {
       }
     },
     hasPhoto() {
+      if (typeof this.profile === 'undefined') {
+        return false
+      }
       if (typeof this.profile.fields === 'undefined') {
         return false
       }

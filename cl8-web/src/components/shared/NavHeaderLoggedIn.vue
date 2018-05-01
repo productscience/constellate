@@ -24,20 +24,20 @@
 
 <script>
 import debugLib from 'debug'
-const debug = debugLib('cl8.Header')
+const debug = debugLib('cl8.NavHeaderLoggedIn.vue')
 export default {
-  name: 'Header',
+  name: 'NavHeaderLoggedIn',
   methods: {
-    updateSearchTerm (ev) {
+    updateSearchTerm(ev) {
       let term = ev.target.value.trim()
       debug(term)
       this.$store.commit('setTerm', term)
     },
-    logout: function () {
+    logout: function() {
       debug('log out')
       this.$store.dispatch('logout')
     },
-    myProfile: function () {
+    myProfile: function() {
       debug('setting profile back to user')
       this.$emit('myProfile')
     }

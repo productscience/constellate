@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import LoginComponent from '@/components/auth/LoginComponent'
+import Login from '@/components/auth/Login'
 import ResetPassword from '@/components/auth/ResetPassword'
-// import Callback from '@/components/auth/Callback'
-import LoggedInProfileComponent from '@/components/home/LoggedInProfileComponent'
-import EditProfileComponent from '@/components/profile/EditProfileComponent'
-import ProfilePhotoComponent from '@/components/profile/ProfilePhotoComponent'
+
+import TheHomePanel from '@/components/TheHomePanel'
+
+import ProfileEdit from '@/components/profile/ProfileEdit'
+import ProfilePhoto from '@/components/profile/ProfilePhoto'
 
 // const debug = require('debug')('cl8.route')
 
@@ -16,27 +17,27 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '/home',
+      path: '',
       name: 'home',
-      component: LoggedInProfileComponent,
+      component: TheHomePanel,
       meta: { requiresAuth: true }
     },
     {
       path: '/edit',
       name: 'editProfile',
-      component: EditProfileComponent,
+      component: ProfileEdit,
       meta: { requiresAuth: true }
     },
     {
       path: '/photo',
       name: 'editProfilePhoto',
-      component: ProfilePhotoComponent,
+      component: ProfilePhoto,
       meta: { requiresAuth: true }
     },
     {
       path: '/signin',
       name: 'signin',
-      component: LoginComponent
+      component: Login
     },
     {
       path: '/reset-password',

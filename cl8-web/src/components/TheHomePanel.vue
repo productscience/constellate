@@ -3,7 +3,7 @@
 
     <div v-if="loading">
       <div class="spinner">
-      <img src="../../assets/loading.svg" alt="loading"/>
+      <img src="../assets/loading.svg" alt="loading"/>
     </div>
     </div> 
     <div v-else>
@@ -11,7 +11,7 @@
       <nav-header @myProfile="setUserProfile"></nav-header>
   
       <div class="profile-holder fl w-two-thirds pa br b--light-silver">
-        <profile-component></profile-component>
+        <profile-detail></profile-detail>
       </div>
       <div class="side-column fl w-third pa2">
     
@@ -24,8 +24,7 @@
         </div>
     
         <ul class="list ml0 pl0">
-          <search-view-component v-for="item in methodResults" v-bind:item="item" v-bind:key="item.id" v-on:profileChosen="showProfile">
-          </search-view-component>
+          <profile-search-item v-for="item in methodResults" v-bind:item="item" v-bind:key="item.id" v-on:profileChosen="showProfile" />
         </ul>
     
       </div>
@@ -38,15 +37,16 @@
 
 <script>
 /* eslint-disable */
-import ProfileComponent from '@/components/profile/ProfileComponent.vue'
-import SearchViewComponent from './SearchViewComponent.vue'
+import ProfileDetail from '@/components/profile/ProfileDetail.vue'
+import ProfileSearchItem from '@/components/profile/ProfileSearchItem.vue'
+import NavHeaderLoggedIn from '@/components/shared/NavHeaderLoggedIn.vue'
+
 import { includes } from 'lodash'
-import NavHeader from '@/components/Header'
 import debugLib from 'debug'
 import fbase from '@/fbase'
 
-const debug = debugLib('cl8.LoggedInProfileComponent')
-const searchKeys = ["fields.name", "fields.email", "fields.tags.name"]
+const debug = debugLib('cl8.TheHomePanel')
+const searchKeys = ['fields.name', 'fields.email', 'fields.tags.name']
 const searchOptions = {
   keys: searchKeys,
   defaultAll: true,
@@ -54,101 +54,107 @@ const searchOptions = {
 }
 
 export default {
-  name: 'LoggedInProfile',
+  name: 'TheHomePanel',
   components: {
-    NavHeader,
-    ProfileComponent,
-    SearchViewComponent
+    NavHeaderLoggedIn,
+    ProfileDetail,
+    ProfileSearchItem
   },
   firebase: {
     fbpeeps: {
-      source: fbase.database().ref("userlist"),
+      source: fbase.database().ref('userlist'),
       readyCallback: function() {
-        debug("data retrieved from fbase");
-        this.setUserProfile();
+        debug('data retrieved from fbase')
+        this.setUserProfile()
         this.loading = false
       }
     }
   },
-  data () {
+
+  data() {
     return {
       loading: true,
       items: [],
       fetchedItems: [],
-      tagList: [],
+      tagList: []
     }
   },
   computed: {
     user() {
-      return this.$store.getters.currentUser ? this.$store.getters.currentUser : false
+      return this.$store.getters.currentUser
+        ? this.$store.getters.currentUser
+        : false
     },
-    matchingTags: function () {
+    matchingTags: function() {
       let terms = this.activeTags
       if (typeof terms === 'undefined') {
         return this.items
       }
       let matchingPeeps = this.items
       // clear out peeps with NO tags
-      let peepsWithFields = matchingPeeps.filter(function (peep) {
+      let peepsWithFields = matchingPeeps.filter(function(peep) {
         return typeof peep.fields !== 'undefined'
       })
-      let peepsWithTags = peepsWithFields.filter(function (peep) {
+      let peepsWithTags = peepsWithFields.filter(function(peep) {
         return typeof peep.fields.tags !== 'undefined'
       })
       // now reduce the list till we only have people matching all tags
       terms.forEach(function(term) {
         peepsWithTags = peepsWithTags.filter(function(peep) {
           let peepTerms = peep.fields.tags.map(function(tag) {
-            return tag.name.toLowerCase();
-          });
+            return tag.name.toLowerCase()
+          })
 
-          return includes(peepTerms, term);
-        });
-      });
+          return includes(peepTerms, term)
+        })
+      })
       let visiblePeeps = peepsWithTags.filter(function(peep) {
         return peep.fields.visible == 'yes'
       })
       return visiblePeeps
     },
-    term () {
+    term() {
       return this.$store.getters.currentTerm
     },
-    activeTags () {
+    activeTags() {
       return this.$store.getters.activeTags
     }
   },
   watch: {
-    term () {
+    term() {
       debug('watching term', this.term)
-      if (this.term === ""){
+      if (this.term === '') {
         this.methodResults = this.matchingTags
       } else {
-        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
-          this.methodResults = results
-        })
+        this.$search(this.term, this.matchingTags, searchOptions).then(
+          results => {
+            this.methodResults = results
+          }
+        )
       }
     },
-    activeTags () {
+    activeTags() {
       debug('watching activeTags', this.term)
-      if (this.term === ""){
+      if (this.term === '') {
         this.methodResults = this.matchingTags
       } else {
-        this.$search(this.term, this.matchingTags, searchOptions).then(results => {
-          this.methodResults = results
-        })
+        this.$search(this.term, this.matchingTags, searchOptions).then(
+          results => {
+            this.methodResults = results
+          }
+        )
       }
     }
-
   },
   methods: {
-    toggleTag: function (ev) {
+    toggleTag: function(ev) {
       let tag = ev.target.textContent.trim()
       this.$store.dispatch('updateActiveTags', tag)
     },
-    setUserProfile () {
+    setUserProfile() {
       debug('setting own profile for ', this.user)
       let user = this.user
-      let matchingProfiles = this.items.filter(function (peep) {
+      let matchingProfiles = this.items.filter(function(peep) {
         return peep.id === user.uid
       })
       if (matchingProfiles.length > 0) {
@@ -159,17 +165,20 @@ export default {
       }
     }
   },
-  created () {
+  created() {
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
-    this.$bindAsArray('methodResults', this.$firebaseRefs.fbpeeps.orderByChild('fields/visible').equalTo('yes'))
-
+    this.$bindAsArray(
+      'methodResults',
+      this.$firebaseRefs.fbpeeps.orderByChild('fields/visible').equalTo('yes')
+    )
   }
 }
 </script>
 
 
 <style media="screen">
-.side-column{
+@import '../../node_modules/tachyons/css/tachyons.css';
+.side-column {
   height: 100vh;
   overflow: auto;
 }
@@ -183,7 +192,7 @@ p span.list {
 }
 
 .tag-list span i.remove_icon:after {
-  content: "\D7";
+  content: '\D7';
   color: white;
 }
 
@@ -197,7 +206,7 @@ p span.list {
 }
 
 .bg-network {
-  background-image: url(../../assets/network-watermark.png);
+  background-image: url(../assets/network-watermark.png);
   background-repeat: no-repeat;
 }
 
@@ -206,7 +215,7 @@ p span.list {
 }
 
 button.remove-tag {
-  background-image: url(../../assets/cross-mark.svg);
+  background-image: url(../assets/cross-mark.svg);
   background-size: 0.75em;
   background-repeat: no-repeat;
   background-position: top 0.5em right 0.5em;

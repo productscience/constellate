@@ -98,7 +98,7 @@ export default new Vuex.Store({
               router.push(context.getters.requestUrl)
             } else {
               debug('pushing to home')
-              router.push('home')
+              router.push({ name: 'home' })
             }
           },
           error => {
@@ -160,10 +160,10 @@ export default new Vuex.Store({
         .set(newProfile)
         .then(() => {
           debug('Succesfully saved')
-          router.push('/home')
+          router.push({ name: 'home' })
         })
         .catch(error => {
-          debug('Saving profile: ', payload, 'failed', error)
+          debug('Error saving profile: ', payload, 'failed', error)
         })
     },
     updateProfilePhoto: function(context, payload) {

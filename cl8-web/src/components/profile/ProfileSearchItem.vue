@@ -22,27 +22,27 @@
 import Vue from 'vue'
 import Gravatar from 'vue-gravatar'
 import debugLib from 'debug'
-const debug = debugLib('cl8.SearchViewComponent')
+const debug = debugLib('cl8.ProfileSearchItem')
 Vue.component('v-gravatar', Gravatar)
 
 export default {
   props: ['item'],
-  data () {
+  data() {
     return {}
   },
   computed: {},
   methods: {
-    profileChosen () {
+    profileChosen() {
       debug(this.item)
       this.$store.commit('setProfile', this.item)
     },
-    hasfields () {
+    hasfields() {
       if (typeof this.item.fields === 'undefined') {
         return false
       }
       return true
     },
-    hasPhoto () {
+    hasPhoto() {
       if (typeof this.item.fields === 'undefined') {
         return false
       }
@@ -55,7 +55,7 @@ export default {
       // otherwise just return false
       return false
     },
-    showPhoto (size) {
+    showPhoto(size) {
       return this.item.fields.photo[0].thumbnails[size].url
     }
   },

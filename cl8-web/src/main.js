@@ -30,18 +30,17 @@ Vue.use(VueAnalytics, {
   router
 })
 
-let app
 
 router.beforeEach((to, from, next) => {
   debug(to.name, to.from)
   let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   let currentUser = fbase.auth().currentUser
   debug('currentUser:', currentUser)
-
+  
   if (currentUser && to.name === 'signin') {
     next('home')
   }
-
+  
   if (currentUser) {
     debug(`store.commit('setFBUser', ${currentUser})`)
     store.commit('setFBUser', currentUser)
@@ -55,6 +54,7 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+let app
 // wrapping the vue app here forces us to wait til we have the firebase object loaded
 // before we load Vue object
 fbase.auth().onAuthStateChanged(firebaseUser => {

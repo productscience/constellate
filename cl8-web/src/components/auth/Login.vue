@@ -82,18 +82,14 @@
 </template>
 
 <script>
-import LoadingSpinner from '@/components/auth/LoadingSpinner'
 import debugLib from 'debug'
-const debug = debugLib('cl8.LoginComponent')
+const debug = debugLib('cl8.Login')
 debug('sign in page')
 
 export default {
-
-  name: 'LoginComponent',
-  components: {
-    LoadingSpinner
-  },
-  data: function () {
+  name: 'Login',
+  components: {},
+  data: function() {
     return {
       email: '',
       password: null,
@@ -102,7 +98,7 @@ export default {
     }
   },
   methods: {
-    signIn: function () {
+    signIn: function() {
       let user = {
         email: this.email,
         password: this.password
@@ -110,12 +106,13 @@ export default {
       debug(user)
       this.$store.dispatch('login', user)
     },
-    checkForValidFormSubmission: function () {
+    checkForValidFormSubmission: function() {
       let validation = {
         email: this.email,
         password: this.password
       }
-      return this.$validator.validateAll(validation)
+      return this.$validator
+        .validateAll(validation)
         .then(result => {
           if (!result) {
             this.formIsValid = result
@@ -131,10 +128,10 @@ export default {
     }
   },
   computed: {
-    formValid: function () {
+    formValid: function() {
       return this.formIsValid
     },
-    loading: function () {
+    loading: function() {
       return this.$store.getters.isLoading
     }
   }
@@ -154,7 +151,6 @@ export default {
 }
 
 .sign-in-prompt a {
-
   top: 175px;
   left: 145px;
 }
@@ -180,5 +176,5 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  }
+}
 </style>

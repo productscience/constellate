@@ -54,10 +54,10 @@
 <script>
 /* eslint-disable */
 import debugLib from 'debug'
-const debug = debugLib('cl8.ResetPassword')
+const debug = debugLib('cl8.PasswordReset')
 
 export default {
-  name: 'PasswordResetComponent',
+  name: 'PasswordReset',
   data: function() {
     return {
       email: '',
@@ -66,17 +66,20 @@ export default {
     }
   },
   methods: {
-    sendPasswordReset: function () {
+    sendPasswordReset: function() {
       debug('reset password for ', this.email)
       this.$store.dispatch('resetPassword', this.email)
-      this.announcement = `OK. Password reset for ${this.email} requested. Please check your email.`
-      this.email = ""
+      this.announcement = `OK. Password reset for ${
+        this.email
+      } requested. Please check your email.`
+      this.email = ''
     },
     checkForValidFormSubmission: function() {
       let validation = {
         email: this.email
       }
-      return this.$validator.validateAll(validation)
+      return this.$validator
+        .validateAll(validation)
         .then(result => {
           if (!result) {
             this.formIsValid = result
@@ -112,7 +115,6 @@ export default {
 }
 
 .sign-in-prompt a {
-
   top: 175px;
   left: 145px;
 }

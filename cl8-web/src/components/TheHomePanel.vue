@@ -81,7 +81,66 @@ export default {
         ? this.$store.getters.currentUser
         : false
     },
-    matchingTags: function() {
+    term() {
+      return this.$store.getters.currentTerm
+    },
+    activeTags() {
+      return this.$store.getters.activeTags
+    },
+    items() {
+      return this.$store.getters.profileList
+    },
+    methodResults() {
+      return this.$store.getters.visibleProfileList
+    }
+  },
+  watch: {
+    term() {
+      debug('filtering against matching tags:', this.term)
+      this.searchResults = this.matchingTags()
+
+      // if we have a term to search against too
+      if (this.term !== '') {
+        debug('searching against term:', this.term)
+        this.$search(this.term, this.matchingTags(), searchOptions).then(
+          results => {
+            this.searchResults = results
+          }
+        )
+      }
+    },
+    activeTags() {
+      debug('watching activeTags', this.term)
+      if (this.term === '') {
+        this.searchResults = this.matchingTags()
+      } else {
+        this.$search(this.term, this.matchingTags(), searchOptions).then(
+          results => {
+            this.searchResults = results
+          }
+        )
+      }
+    }
+  },
+  methods: {
+    toggleTag: function(ev) {
+      let tag = ev.target.textContent.trim()
+      this.$store.dispatch('updateActiveTags', tag)
+    },
+    setUserProfile() {
+      debug('setting own profile for ', this.user)
+      let user = this.user
+      let matchingProfiles = this.items.filter(function(peep) {
+        return peep.id === user.uid
+      })
+      if (matchingProfiles.length > 0) {
+        debug('We have a match!', matchingProfiles[0])
+        this.$store.commit('setProfile', matchingProfiles[0])
+      } else {
+        debug('No matches', matchingProfiles)
+      }
+    },
+    matchingTags() {
       let terms = this.activeTags
       debug('matchingTags', terms)
       if (typeof terms === 'undefined' || terms == '') {
@@ -109,66 +168,6 @@ export default {
         return peep.fields.visible == 'yes'
       })
       return visiblePeeps
-    },
-    term() {
-      return this.$store.getters.currentTerm
-    },
-    activeTags() {
-      return this.$store.getters.activeTags
-    },
-    items() {
-      return this.$store.getters.profileList
-    },
-    methodResults() {
-      return this.$store.getters.visibleProfileList
-    }
-  },
-  watch: {
-    term() {
-      debug('watching term', this.term)
-      debug('watching term', typeof this.term)
-      if (this.term === '') {
-        debug('filtering against matching tags:', this.term)
-        this.methodResults = this.matchingTags
-      } else {
-        debug('searching against term:', this.term)
-        this.$search(this.term, this.matchingTags, searchOptions).then(
-          results => {
-            this.searchResults = results
-          }
-        )
-      }
-    },
-    activeTags() {
-      debug('watching activeTags', this.term)
-      if (this.term === '') {
-        this.methodResults = this.matchingTags
-      } else {
-        this.$search(this.term, this.matchingTags, searchOptions).then(
-          results => {
-            this.methodResults = results
-          }
-        )
-      }
-    }
-  },
-  methods: {
-    toggleTag: function(ev) {
-      let tag = ev.target.textContent.trim()
-      this.$store.dispatch('updateActiveTags', tag)
-    },
-    setUserProfile() {
-      debug('setting own profile for ', this.user)
-      let user = this.user
-      let matchingProfiles = this.items.filter(function(peep) {
-        return peep.id === user.uid
-      })
-      if (matchingProfiles.length > 0) {
-        debug('We have a match!', matchingProfiles[0])
-        this.$store.commit('setProfile', matchingProfiles[0])
-      } else {
-        debug('No matches', matchingProfiles)
-      }
     }
   },
   created() {

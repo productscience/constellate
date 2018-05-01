@@ -39,7 +39,7 @@ export default {
     },
     myProfile: function() {
       debug('setting profile back to user')
-      this.$emit('myProfile')
+      this.$store.dispatch('fetchProfile', this.$store.getters.currentUser.uid)
     }
   }
 }

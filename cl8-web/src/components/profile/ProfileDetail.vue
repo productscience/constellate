@@ -197,7 +197,7 @@ export default {
     }
   },
   created() {
-    debug('created!')
+    debug('created!', this.profile)
     if (!this.profile) {
       this.loading = true
       debug('no profile seen. Loading profile for user')
@@ -210,6 +210,8 @@ export default {
         .catch(err => {
           debug("couldn't load profile", error)
         })
+    } else {
+      this.loading = false
     }
   }
 }

@@ -64,7 +64,12 @@
         </div>
 
         <div class="mt2">
-          <button class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2" :class="{'bg-green pointer grow': formValid}" :disabled="!formValid" v-bind:id="formValid" type="submit" name="button">
+          <button 
+            class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2"
+            :class="{'bg-green pointer grow': formValid}"
+            :disabled="!formValid" 
+            :id="formValid" type="submit"
+            name="button">
             Sign in
           </button>
         </div>

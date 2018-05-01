@@ -188,6 +188,7 @@ export default new Vuex.Store({
         })
     },
     fetchVisibleProfileList: function(context) {
+      debug('fetching visible profiles')
       return new Promise((resolve, reject) => {
         fbase
           .database()
@@ -200,6 +201,7 @@ export default new Vuex.Store({
             _.each(visibleProfileList.val(), (val, key) => {
               profileArray.push(val)
             })
+
             debug(
               'Successfully fetched visibleProfileList',
               visibleProfileList.val()
@@ -214,20 +216,41 @@ export default new Vuex.Store({
           })
       })
     },
-    // return admin
-    //   .database()
-    //   .ref('userlist')
-    //   .orderByChild(lookupKey)
-    //   .equalTo(lookupValue)
-    //   .limitToFirst(1)
-    //   .once('value')
-    //   .then(snap => {
-    //     return _.keys(snap.val())[0]
-    //   })
-    fetchProfile: function(context, payload) {
-      // fetch the user from the list
-    },
 
+    fetchProfile: function(context, payload) {
+      debug('fetching profile for:', payload)
+      return new Promise((resolve, reject) => {
+        fbase
+          .database()
+          .ref('userlist')
+          .orderByChild('id')
+          .equalTo(payload)
+          .limitToFirst(1)
+          .once('value')
+          .then(snap => {
+            let firebaseKey = _.keys(snap.val())[0]
+            return fbase
+              .database()
+              .ref('userlist')
+              .child(firebaseKey)
+              .once('value')
+              .then(userProfile => {
+                debug(
+                  'successfully fetched profile:',
+                  payload,
+                  firebaseKey,
+                  userProfile
+                )
+                context.commit('setProfile', userProfile.val())
+                resolve()
+              })
+          })
+          .catch(err => {
+            debug('setting user failed for ', payload, err)
+            reject()
+          })
+      })
+    },
     updateProfile: function(context, payload) {
       debug('sending update to Firebase', payload)
 

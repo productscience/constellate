@@ -1,90 +1,98 @@
 <template>
-  <div class="pa3 center w-80 cf" v-if="!!profile">
+  <div class="pa3 center w-80 cf">
     
-    <div class="cf" style="min-height:11em;">
-      <div class="fl w-20">
+    <div v-if="loading">
+      <div class="spinner">
+        <img src="../../assets/loading.svg" alt="loading"/>
+      </div>
+    </div> 
 
-          <img v-if="hasPhoto()"
-            :src="showPhoto('large')"
-            class="supplied-photo b--light-silver ba" />
+    <div v-else>
 
-          <v-gravatar v-else
-            :email="profile.fields.email"
-            :size="200"
-            class="gravatar b--light-silver ba" />
+      <div class="cf" style="min-height:11em;">
+        <div class="fl w-20">
 
-          <div v-if="canEdit()">
-              <div v-if="isVisible()"
-              class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green w-80 ma2 tc">
-                  Visible
-              </div>
-              <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red w-80 tc ma2">
-                Invisible
-              </div>
-          </div>
+            <img v-if="hasPhoto()"
+              :src="showPhoto('large')"
+              class="supplied-photo b--light-silver ba" />
 
+            <v-gravatar v-else
+              :email="profile.fields.email"
+              :size="200"
+              class="gravatar b--light-silver ba" />
+
+            <div v-if="canEdit()">
+                <div v-if="isVisible()"
+                class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green w-80 ma2 tc">
+                    Visible
+                </div>
+                <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red w-80 tc ma2">
+                  Invisible
+                </div>
+            </div>
+
+        </div>
+
+        <div class="fl w-50 mt0 pt0">
+          <ul class="list mt0 pt0">
+            <li class="list f3 name">{{ profile.fields.name }}</li>
+            <li class="list f3 email">{{ profile.fields.email }}</li>
+            <li class="list f3 phone">{{ profile.fields.phone }}</li>
+          </ul>
+
+          <ul class="list">
+            <li v-if="profile.fields.website" class="list f5 website">
+              <a :href="websiteLink">{{ profile.fields.website }}</a>
+              </li>
+          </ul>
+
+          <ul class="list social-links">
+            <li v-if="this.profile.fields.twitter" class="list f5 twitter dib mr1">
+              <a :href="twitterLink" >Twitter</a>
+              </li>
+            <li v-if="this.profile.fields.facebook" class="list f5 linkedin dib mr1">
+              <a :href="facebookLink" >Facebook</a>
+              </li>
+            <li v-if="this.profile.fields.linkedin" class="list f5 twitter dib mr1">
+              <a :href="linkedinLink">LinkedIn</a>
+              </li>
+          </ul>
+        </div>
       </div>
 
-      <div class="fl w-50 mt0 pt0">
-        <ul class="list mt0 pt0">
-          <li class="list f3 name">{{ profile.fields.name }}</li>
-          <li class="list f3 email">{{ profile.fields.email }}</li>
-          <li class="list f3 phone">{{ profile.fields.phone }}</li>
-        </ul>
+    
+      <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
+          <div v-html="blurbOutput"></div>      
+        </div>
 
-        <ul class="list">
-          <li v-if="profile.fields.website" class="list f5 website">
-            <a :href="websiteLink">{{ profile.fields.website }}</a>
-            </li>
-        </ul>
 
-        <ul class="list social-links">
-          <li v-if="this.profile.fields.twitter" class="list f5 twitter dib mr1">
-            <a :href="twitterLink" >Twitter</a>
-            </li>
-          <li v-if="this.profile.fields.facebook" class="list f5 linkedin dib mr1">
-            <a :href="facebookLink" >Facebook</a>
-            </li>
-          <li v-if="this.profile.fields.linkedin" class="list f5 twitter dib mr1">
-            <a :href="linkedinLink">LinkedIn</a>
-            </li>
+      <div class="cf pt2">
+        <ul class='list tags ml0 pl0'>
+          <li
+            v-for="tag in profile.fields.tags" v-bind:key="tag.name"
+            class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white"
+            :class="{ 'bg-dark-blue white': isActive(tag.name.toLowerCase()) }"
+            @click="toggleTag">
+            {{ tag.name.toLowerCase().trim() }}
+          </li>
         </ul>
       </div>
-    </div>
 
-  
-    <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
-        <div v-html="blurbOutput"></div>      
+    
+      <div v-if="canEdit()">
+        <hr>
+          <router-link :to="{ name: 'editProfile' }"
+            class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
+            Edit profile
+          </router-link>
       </div>
 
-
-    <div class="cf pt2">
-      <ul class='list tags ml0 pl0'>
-        <li
-          v-for="tag in profile.fields.tags" v-bind:key="tag.name"
-          class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white"
-          :class="{ 'bg-dark-blue white': isActive(tag.name.toLowerCase()) }"
-          @click="toggleTag">
-          {{ tag.name.toLowerCase().trim() }}
-        </li>
-      </ul>
+      <div class="referred-by f6 gray">
+        <p>Referred by: Gavin Starks</p>
+      </div>
     </div>
+  </div>
 
-  
-    <div v-if="canEdit()">
-      <hr>
-        <router-link :to="{ name: 'editProfile' }"
-          class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-          Edit profile
-        </router-link>
-    </div>
-
-    <div class="referred-by f6 gray">
-      <p>Referred by: Gavin Starks</p>
-    </div>
-    </div>
-
-</div>
 </template>
 
 <script>
@@ -93,7 +101,7 @@ import Vue from 'vue'
 import Gravatar from 'vue-gravatar'
 import marked from 'marked'
 import debugLib from 'debug'
-const debug = debugLib('cl8ProfileDetail')
+const debug = debugLib('cl8.ProfileDetail')
 
 Vue.component('v-gravatar', Gravatar)
 
@@ -106,9 +114,20 @@ export default {
   },
   props: ['auth', 'currentUser', 'fbtagList'],
   data() {
-    return {}
+    return {
+      loading: true
+    }
   },
   computed: {
+    user() {
+      return this.$store.getters.currentUser
+    },
+    profile() {
+      return this.$store.getters.profile
+    },
+    activeTags() {
+      return this.$store.getters.activeTags
+    },
     websiteLink() {
       return this.profile.fields.website
         ? linkify(this.profile.fields.website)
@@ -129,19 +148,17 @@ export default {
         ? linkify(this.profile.fields.linkedin, 'https://linkedin.com/in')
         : null
     },
-    user() {
-      return this.$store.getters.currentUser
-    },
-    profile() {
-      return this.$store.getters.profile
-    },
-    activeTags() {
-      return this.$store.getters.activeTags
-    },
     blurbOutput() {
       return this.profile.fields.blurb
         ? marked(this.profile.fields.blurb, { sanitize: true })
         : null
+    }
+  },
+  watch: {
+    profile() {
+      if (this.profile) {
+        this.loading = false
+      }
     }
   },
   methods: {
@@ -177,6 +194,22 @@ export default {
     },
     showPhoto(size) {
       return this.profile.fields.photo[0].thumbnails[size].url
+    }
+  },
+  created() {
+    debug('created!')
+    if (!this.profile) {
+      this.loading = true
+      debug('no profile seen. Loading profile for user')
+      this.$store
+        .dispatch('fetchProfile', this.user.uid)
+        .then(() => {
+          debug('loaded the user profile')
+          this.loading = false
+        })
+        .catch(err => {
+          debug("couldn't load profile", error)
+        })
     }
   }
 }

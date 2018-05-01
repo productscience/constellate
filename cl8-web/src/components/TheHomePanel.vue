@@ -1,30 +1,34 @@
 <template>
   <div class="cf bg-white bg-network">
-
+    
     <div v-if="loading">
       <div class="spinner">
-      <img src="../assets/loading.svg" alt="loading"/>
-    </div>
+        <img src="../assets/loading.svg" alt="loading"/>
+      </div>
     </div> 
+
     <div v-else>
-    
-      <nav-header @myProfile="setUserProfile"></nav-header>
+      <nav-header-logged-in @myProfile="setUserProfile"></nav-header-logged-in>
   
       <div class="profile-holder fl w-two-thirds pa br b--light-silver">
         <profile-detail></profile-detail>
       </div>
+
       <div class="side-column fl w-third pa2">
     
         <div class="tag-list ba b--light-silver">
           <p>
-            <button v-for="tag in activeTags" v-bind:key="tag" @click.stop.prevent="toggleTag" class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-blue white relative bg-animate hover-bg-light-blue">
+            <button v-for="tag in activeTags" :key="tag" 
+            @click.stop.prevent="toggleTag" 
+            class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-blue white relative bg-animate hover-bg-light-blue">
               {{ tag }}
             </button>                  
           </p>
         </div>
     
         <ul class="list ml0 pl0">
-          <profile-search-item v-for="item in methodResults" v-bind:item="item" v-bind:key="item.id" v-on:profileChosen="showProfile" />
+          <profile-search-item v-for="item in searchResults" :item="item" :key="item.id"
+            @profileChosen="showProfile" />
         </ul>
     
       </div>
@@ -32,7 +36,6 @@
   
   </div>
 
-</div>
 </template>
 
 <script>
@@ -60,26 +63,19 @@ export default {
     ProfileDetail,
     ProfileSearchItem
   },
-  firebase: {
-    fbpeeps: {
-      source: fbase.database().ref('userlist'),
-      readyCallback: function() {
-        debug('data retrieved from fbase')
-        this.setUserProfile()
-        this.loading = false
-      }
-    }
-  },
 
   data() {
     return {
-      loading: true,
       items: [],
       fetchedItems: [],
-      tagList: []
+      tagList: [],
+      searchResults: []
     }
   },
   computed: {
+    loading() {
+      return this.$store.getters.isLoading
+    },
     user() {
       return this.$store.getters.currentUser
         ? this.$store.getters.currentUser
@@ -87,10 +83,11 @@ export default {
     },
     matchingTags: function() {
       let terms = this.activeTags
-      if (typeof terms === 'undefined') {
-        return this.items
+      debug('matchingTags', terms)
+      if (typeof terms === 'undefined' || terms == '') {
+        return this.methodResults
       }
-      let matchingPeeps = this.items
+      let matchingPeeps = this.methodResults
       // clear out peeps with NO tags
       let peepsWithFields = matchingPeeps.filter(function(peep) {
         return typeof peep.fields !== 'undefined'
@@ -118,17 +115,26 @@ export default {
     },
     activeTags() {
       return this.$store.getters.activeTags
+    },
+    items() {
+      return this.$store.getters.profileList
+    },
+    methodResults() {
+      return this.$store.getters.visibleProfileList
     }
   },
   watch: {
     term() {
       debug('watching term', this.term)
+      debug('watching term', typeof this.term)
       if (this.term === '') {
+        debug('filtering against matching tags:', this.term)
         this.methodResults = this.matchingTags
       } else {
+        debug('searching against term:', this.term)
         this.$search(this.term, this.matchingTags, searchOptions).then(
           results => {
-            this.methodResults = results
+            this.searchResults = results
           }
         )
       }
@@ -166,11 +172,19 @@ export default {
     }
   },
   created() {
-    this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
-    this.$bindAsArray(
-      'methodResults',
-      this.$firebaseRefs.fbpeeps.orderByChild('fields/visible').equalTo('yes')
-    )
+    this.$store.commit('startLoading')
+
+    // make a new promise to fetch this stuff, then after they have loaded show the stuff
+    this.$store
+      .dispatch('fetchVisibleProfileList')
+      .then(() => {
+        debug('loaded the profiles in the component')
+        this.$store.commit('stopLoading')
+        this.searchResults = this.methodResults
+      })
+      .catch(err => {
+        debug("couldn't load in the component: ", payload, 'failed', error)
+      })
   }
 }
 </script>

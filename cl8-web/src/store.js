@@ -16,6 +16,8 @@ export default new Vuex.Store({
     searchTags: [],
     profile: null,
     profilePhoto: null,
+    profileList: [],
+    visibleProfileList: [],
     requestUrl: null
   },
   getters: {
@@ -39,6 +41,14 @@ export default new Vuex.Store({
     profilePhoto: function(state) {
       return state.profilePhoto
     },
+    profileList: function(state) {
+      debug('getting profileList')
+      return state.profileList
+    },
+    visibleProfileList: function(state) {
+      debug('getting visibleProfileList')
+      return state.visibleProfileList
+    },
     requestUrl: function(state) {
       return state.requestUrl
     }
@@ -46,6 +56,9 @@ export default new Vuex.Store({
   mutations: {
     stopLoading: function(state) {
       state.loading = false
+    },
+    startLoading: function(state) {
+      state.loading = true
     },
     setFBUser: function(state) {
       debug('setFBUser', state.user)
@@ -61,6 +74,7 @@ export default new Vuex.Store({
     },
     setTerm: function(state, payload) {
       debug('setTerm', payload)
+      debug('setTerm', typeof payload)
       state.searchTerm = payload
     },
     setTags: function(state, payload) {
@@ -74,6 +88,14 @@ export default new Vuex.Store({
     setProfilePhoto: function(state, payload) {
       debug('setProfilePhoto', payload)
       state.profile.fields.photo = [payload]
+    },
+    setProfileList: function(state, payload) {
+      debug('setProfileList', payload)
+      state.profileList = payload
+    },
+    setVisibleProfileList: function(state, payload) {
+      debug('setVisibleProfileList', payload)
+      state.visibleProfileList = payload
     },
     setRequestUrl: function(state, payload) {
       debug('setrequestUrl', payload)
@@ -147,6 +169,65 @@ export default new Vuex.Store({
       }
       context.commit('setTags', tags)
     },
+    fetchProfileList: function(context) {
+      fbase
+        .database()
+        .ref('userlist')
+        .then(profileList => {
+          debug('Successfully fetched profileList', profileList)
+          // if we want to search and iterate through this easily
+          // lets make it an array
+          let profileArray = []
+          _.each(profileList.val(), (val, key) => {
+            profileArray.push(val)
+          })
+          context.commit('setProfileList', profileArray)
+        })
+        .catch(error => {
+          debug('Error fetching profileList', error)
+        })
+    },
+    fetchVisibleProfileList: function(context) {
+      return new Promise((resolve, reject) => {
+        fbase
+          .database()
+          .ref('userlist')
+          .orderByChild('fields/visible')
+          .equalTo('yes')
+          .once('value')
+          .then(visibleProfileList => {
+            let profileArray = []
+            _.each(visibleProfileList.val(), (val, key) => {
+              profileArray.push(val)
+            })
+            debug(
+              'Successfully fetched visibleProfileList',
+              visibleProfileList.val()
+            )
+            // we need to turn this into an array.
+            context.commit('setVisibleProfileList', profileArray)
+            resolve()
+          })
+          .catch(error => {
+            debug('Error fetching profileList', error)
+            reject()
+          })
+      })
+    },
+    // return admin
+    //   .database()
+    //   .ref('userlist')
+    //   .orderByChild(lookupKey)
+    //   .equalTo(lookupValue)
+    //   .limitToFirst(1)
+    //   .once('value')
+    //   .then(snap => {
+    //     return _.keys(snap.val())[0]
+    //   })
+    fetchProfile: function(context, payload) {
+      // fetch the user from the list
+    },
+
     updateProfile: function(context, payload) {
       debug('sending update to Firebase', payload)
 

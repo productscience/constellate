@@ -65,6 +65,21 @@ export default {
     showPhoto(size) {
       return this.profile.fields.photo[0].thumbnails[size].url
     }
+  },
+  created() {
+    this.$store.commit('startLoading')
+
+    Promise.all([
+      // this.$store.dispatch('fetchVisibleProfileList'),
+      this.$store.dispatch('fetchProfile', this.user.uid)
+    ])
+      .then(values => {
+        debug('loaded the profiles in the component')
+        this.$store.commit('stopLoading')
+      })
+      .catch(err => {
+        debug("couldn't load in the component: ", payload, 'failed', error)
+      })
   }
 }
 </script>

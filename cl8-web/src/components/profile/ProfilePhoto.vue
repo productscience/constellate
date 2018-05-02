@@ -94,8 +94,12 @@ export default {
       return false
     },
     showPhoto(size) {
-      return this.profile.fields.photo[0].url
-      // return this.profile.fields.photo[0].thumbnails[size].url
+      try {
+        return this.profile.fields.photo[0].thumbnails[size].url
+      } catch (e) {
+        debug(`error`, e)
+        return false
+      }
     },
     updatePhoto(ev) {
       debug('image added')

@@ -56,11 +56,16 @@ export default {
       return false
     },
     showPhoto(size) {
-      return this.item.fields.photo[0].thumbnails[size].url
-    }
+      try {
+        return this.item.fields.photo[0].thumbnails[size].url
+      } catch (e) {
+        debug(`error`, this.item.fields, e)
+        return false
+      }
+    },
   },
   components: {
-    Gravatar
-  }
+    Gravatar,
+  },
 }
 </script>

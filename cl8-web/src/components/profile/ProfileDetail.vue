@@ -1,15 +1,14 @@
 <template>
   <div class="pa3 center w-80 cf">
-    
+
     <div v-if="loading">
       <div class="spinner">
         <img src="../../assets/loading.svg" alt="loading"/>
       </div>
-    </div> 
+    </div>
 
     <div v-else>
 
-      <div class="cf" style="min-height:11em;">
         <div class="fl w-20">
 
             <img v-if="hasPhoto()"
@@ -60,9 +59,9 @@
         </div>
       </div>
 
-    
+
       <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
-          <div v-html="blurbOutput"></div>      
+          <div v-html="blurbOutput"></div>
         </div>
 
 
@@ -78,7 +77,7 @@
         </ul>
       </div>
 
-    
+
       <div v-if="canEdit()">
         <hr>
           <router-link :to="{ name: 'editProfile' }"
@@ -110,12 +109,12 @@ import linkify from '../../utils'
 export default {
   name: 'ProfileDetail',
   components: {
-    Gravatar
+    Gravatar,
   },
   props: ['auth', 'currentUser', 'fbtagList'],
   data() {
     return {
-      loading: true
+      loading: true,
     }
   },
   computed: {
@@ -152,14 +151,14 @@ export default {
       return this.profile.fields.blurb
         ? marked(this.profile.fields.blurb, { sanitize: true })
         : null
-    }
+    },
   },
   watch: {
     profile() {
       if (this.profile) {
         this.loading = false
       }
-    }
+    },
   },
   methods: {
     canEdit: function() {
@@ -193,8 +192,13 @@ export default {
       return false
     },
     showPhoto(size) {
-      return this.profile.fields.photo[0].thumbnails[size].url
-    }
+      try {
+        return this.profile.fields.photo[0].thumbnails[size].url
+      } catch (e) {
+        debug(`error`, this.profile.fields, e)
+        return false
+      }
+    },
   },
   created() {
     debug('created!', this.profile)
@@ -213,7 +217,7 @@ export default {
     } else {
       this.loading = false
     }
-  }
+  },
 }
 </script>
 

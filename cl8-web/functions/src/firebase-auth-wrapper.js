@@ -16,11 +16,7 @@ module.exports = FireBaseAuthWrapper
  * 'https://constellate-test.firebaseio.com'
  * @returns
  */
-function FireBaseAuthWrapper (serviceAccount, dbUrl) {
-  var admin = fbadmin.initializeApp({
-    credential: fbadmin.credential.cert(serviceAccount),
-    databaseURL: dbUrl
-  })
+function FireBaseAuthWrapper(admin) {
   /**
    * Fetches the first 1000 users in an account.
    * We assume we don't have more than 1000 users, and instead return the user array

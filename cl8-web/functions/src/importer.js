@@ -17,10 +17,7 @@ function Cl8Importer (importerCredentials) {
     importerCredentials.airTableCreds[0],
     importerCredentials.airTableCreds[1]
   )
-  const fbase = FireBaseWrapper(
-    importerCredentials.fbaseCreds[0],
-    importerCredentials.fbaseCreds[1]
-  )
+  const fbase = FireBaseWrapper(importerCredentials.fbaseApp)
 
   /**
    * Fetches the data from the necessary Airtable and Firebase APIs, builds the

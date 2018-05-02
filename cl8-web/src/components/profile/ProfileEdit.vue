@@ -3,18 +3,20 @@
     <div class="fl pa2">
       <div class="pa3 center cf">
         <div>
-          <form class="">
+          <form class="" v-if="profile">
             <div class="cf" style="min-height:11em;">
               <div class="fl">
-                
-                <img v-if="hasPhoto()"
+
+                <router-link :to="{ name: 'editProfilePhoto' }">
+                  <img v-if="hasPhoto()"
                   :src="profile.photo.large"
                   class="supplied-photo b--light-silver ba" />
 
-                <v-gravatar v-else
-                  :email="profile.fields.email"
-                  :size="200"
-                  class="gravatar b--light-silver ba" />
+                  <v-gravatar v-else
+                    :email="profile.fields.email"
+                    :size="200"
+                    class="gravatar b--light-silver ba" />
+                </router-link>
 
                 <div class="">
                     <input tabindex="1" class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
@@ -70,12 +72,12 @@
 
                   <li class="list mt2">
                     <label class="f5" for="">Summary <small>(Using <a href="https://daringfireball.net/projects/markdown/">markdown</a> for formatting is supported)</small></label>
-                    <textarea 
+                    <textarea
                       class="w-100 mt1 pa1 ba b--light-gray"
                       v-model="profile.fields.blurb"
                       placeholder="Add a short summary here - 2 paragraphs is plenty"
                       name="" id="" cols="30" rows="10"></textarea>
-                    
+
 
                   </li>
 
@@ -141,7 +143,7 @@ const debug = debugLib('cl8.ProfileEdit')
 export default {
   name: 'ProfileEdit',
   components: {
-    Multiselect
+    Multiselect,
   },
   firebase: function() {
     return {
@@ -150,8 +152,8 @@ export default {
         readyCallback: function() {
           debug('data retrieved from fbase')
           this.setUserProfile()
-        }
-      }
+        },
+      },
     }
   },
   data() {
@@ -159,7 +161,7 @@ export default {
       items: [], // this needs to be the list from firebase
       tagList: [],
       unsyncedTags: [],
-      localPhoto: null
+      localPhoto: null,
     }
   },
   computed: {
@@ -196,7 +198,7 @@ export default {
         })
       }
       return tagList
-    }
+    },
   },
   methods: {
     addTag(newTag) {
@@ -205,7 +207,7 @@ export default {
       const tag = {
         name: newTag,
         code: tempVal,
-        id: 'tempval' + tempVal
+        id: 'tempval' + tempVal,
       }
       this.profile.fields.tags.push(tag)
       this.unsyncedTags.push(tag)
@@ -268,7 +270,7 @@ export default {
       } else {
         debug('No matches', matchingProfiles)
       }
-    }
+    },
   },
   created() {
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
@@ -277,7 +279,7 @@ export default {
     debug(fbase.auth().currentUser)
     // this.$store.commit('setFBUser', fbase.auth().currentUser)
     // debug('profile', this.$store.getters.profile)
-  }
+  },
 }
 </script>
 

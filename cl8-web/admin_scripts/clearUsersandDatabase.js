@@ -1,4 +1,4 @@
-const _ = require('lodash')
+const prompt = require('prompt')
 const debug = require('debug')('cl8.clearUsersAndDatabase')
 
 const Cl8Importer = require('../functions/src/importer.js')
@@ -6,7 +6,7 @@ const Cl8Importer = require('../functions/src/importer.js')
 const devBase = process.env.AIRTABLE_BASE_DEV
 const devKey = process.env.AIRTABLE_API_KEY_DEV
 
-const serviceAccount = require('../functions/' +
+const serviceAccount = require('../' +
   process.env.FIREBASE_SERVICE_ACCOUNT_PATH_DEV)
 const databaseURL = process.env.FIREBASE_DATABASEURL_DEV
 
@@ -46,17 +46,38 @@ async function clearFirebaseAccounts () {
 }
 
 // for this constellation:
-// - remove all the user accounts
-// - clear the realtime database
-
 async function main () {
-  debug('clearing accounts and data:')
+  console.log('This will clear the database at', databaseURL)
+  console.log('Are you sure you want this?')
+  const domainToCheck = databaseURL.split('.')[0].replace('https://', '')
 
-  debug('clearing data: starting')
-  await clearFirebaseAccounts()
-  await clearFirebaseUserList()
+  console.log('if so, add type in the name of this database:', domainToCheck)
 
-  process.exit()
+  prompt.start()
+
+  prompt.get('confirmation', async function (err, result) {
+    if (err) {
+      throw err
+    }
+
+    console.log('checking: ', domainToCheck, result.confirmation)
+
+    if (result.confirmation !== domainToCheck) {
+      console.log("This response doesn't match. Exiting early")
+      process.exit("exiting early a they don't match")
+    }
+
+    console.log('clearing accounts and data:')
+    // - remove all the user accounts
+
+    await clearFirebaseAccounts()
+
+    // - clear the realtime database
+    await clearFirebaseUserList()
+
+    console.log('The deed is done.')
+    process.exit()
+  })
 }
 
 main()

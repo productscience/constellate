@@ -1,6 +1,4 @@
-const spawn = require('child-process-promise').spawn
 const path = require('path')
-const os = require('os')
 const debug = require('debug')('cl8.profiler-thumbnailer')
 
 const ThumbnailGenerator = require('./thumbnail-generator.js')
@@ -17,15 +15,33 @@ module.exports = ProfileThumbnailer
  * @param {any} photoPath
  * @returns {Object}
  */
-function ProfileThumbnailer (admin, profileId, photoPath) {
-  function updateProfile (profileId, photoPath) {
-    // const prof = await fetchProfile(profileId)
+function ProfileThumbnailer (admin, objectMetaData) {
+  /**
+   *
+   *
+   * @param {any} profileId
+   * @param {any} objectMetaData
+   * @returns
+   */
+  async function updateProfile (profileId, fileObjectMetaData) {
+    const photoPath = objectMetaData.name
 
-    // const thumbnailUrls = generateThumbs(photoPath)
+    const pushKey = await lookupProfile('id', profileId)
+    const prof = fetchProfile(pushKey)
 
-    // savedProf = addPhotoUrls(prof)
+    console.log('prof', prof)
+    const thumbgen = ThumbnailGenerator(admin, fileObjectMetaData)
+    console.log('thumbgen', thumbgen)
 
-    return true
+    const photoUrls = await thumbgen.createThumbsForProfile(
+      photoPath,
+      'some-outfile.png'
+    )
+    console.log('photoUrls', photoUrls)
+
+    const savedProf = addPhotoUrls(prof, photoUrls)
+
+    return savedProf
   }
 
   /**
@@ -65,6 +81,35 @@ function ProfileThumbnailer (admin, profileId, photoPath) {
         return _.keys(snap.val())[0]
       })
   }
+
+  /**
+   * Accepts a metadata object representing an uploaded file
+   * if the filename matches a known pattern for an Id we're using,
+   * it returns the profileID
+   *
+   * @param {MetaDataObject} fileObjectMetaData
+   * @returns {string} profileId
+   */
+  function isProfilePic (fileObjectMetaData) {
+    const filePath = objectMetaData.name
+    const fileName = path.basename(filePath)
+
+    const splitName = fileName.split('-')
+
+    if (splitName.length === 0) return false
+
+    debug('isProfilePic.splitName', splitName)
+    const maybeProfileId = splitName[0]
+
+    // first part of object begins with rec,
+    // and is as long as a typical airtable ID
+    if (maybeProfileId.match(/rec/) && maybeProfileId.length === 17) {
+      return maybeProfileId
+    }
+
+    return false
+  }
+
   /**
    * Accept a profile, and update the
    *
@@ -75,20 +120,21 @@ function ProfileThumbnailer (admin, profileId, photoPath) {
   async function addPhotoUrls (profile, photoObject) {
     debug('addPhotoUrls')
     debug('addPhotoUrls:profile', profile.val())
-    const photos = await profile.child('fields/photo')
-
-    debug('addPhotoUrls:profile.fields.photo', profile.val().fields.photo)
-    debug('addPhotoUrls:photos', photos.val())
 
     const newPhotoObj = _.merge(profile.val().fields.photo, photoObject)
+    let profileVal = profile.val()
+    profileVal.fields.photo = newPhotoObj
 
-    // we use set to overritw the array of photos, as we're not tracking previous ones
-    await photos.ref.set(newPhotoObj)
+    debug('addPhotoUrls:profile - after', profileVal)
+
+    // we use set to overwrite the profile with the updated object
+    await profile.ref.set(profileVal)
 
     return newPhotoObj
   }
 
   return {
+    isProfilePic,
     updateProfile,
     lookupProfile,
     fetchProfile,

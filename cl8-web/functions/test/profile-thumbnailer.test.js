@@ -46,21 +46,31 @@ describe('profileThumbnailer', () => {
     const profile = await profThumber.fetchProfile(profileKey)
     debug('profile', profile.val())
 
-    const photoUrls = {
-      large: 'http://someurl.com/large.jpg',
-      small: 'http://someurl.com/medium.jpg'
-    }
+    const photoObject = [
+      {
+        url: 'someLongString',
+        thumbnails: {
+          small: { url: 'someLongString' },
+          large: { url: 'someLongString' }
+        }
+      }
+    ]
 
-    await profThumber.addPhotoUrls(profile, photoUrls)
+    await profThumber.addPhotoUrls(profile, photoObject)
 
     const newProfile = await profThumber.fetchProfile(profileKey)
-    debug('newProfile', newProfile.val())
+    debug('newProfile - after updating', newProfile.val())
 
-    expect(newProfile.val()).toHaveProperty('photo.large', photoUrls.large)
-    expect(newProfile.val()).toHaveProperty('photo.small', photoUrls.small)
+    expect(newProfile.val()).toHaveProperty('fields.photo')
+    expect(newProfile.val().fields.photo).toHaveLength(1)
+    expect(newProfile.val().fields.photo).toEqual(photoObject)
   })
 
-  test.only(
+  test('isProfilePic -  photo is a profile', async () => {
+    expect(profThumber.isProfilePic(testData)).toBe(profileId)
+  })
+
+  test(
     'addPhotoUrls - actual generator',
     async () => {
       const profileKey = await profThumber.lookupProfile('id', profileId)

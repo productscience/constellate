@@ -144,9 +144,8 @@ function Cl8Importer (importerCredentials) {
   function filterOutPeepsToImport (enrichedPeeps, firebaseUserList) {
     function pulloutEmails (list) {
       return _.map(_.values(list), rec => {
-        // we need to check if rec is undefined, as I think numerically indexes we started with, result
-        // can result in one of the calues of list here being `undefined` which crashes the importer
-        // are empty, without even ids.
+        // we need to check if rec is undefined, as I think the numerical indexes we started with,
+        // can result in one of the values of 'list' here being `undefined`, which crashes the importer
         if (typeof rec !== 'undefined') {
           if (
             typeof rec.id !== 'undefined' &&

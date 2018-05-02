@@ -1,9 +1,9 @@
 const spawn = require('child-process-promise').spawn
 const path = require('path')
 const os = require('os')
+const fs = require('fs')
 
 const debug = require('debug')('cl8.thumbnail-generator')
-const admin = require('firebase-admin')
 const gcs = require('@google-cloud/storage')({
   projectId: 'munster-setup',
   keyFilename: './service-account.json'
@@ -39,7 +39,6 @@ function ThumbnailGenerator (admin, fileObject) {
   // if (typeof config.serviceAccount.project_id !== 'string') {
   //   throw new Error(`Service Account has no project ID`)
   // }
-
 
   // this bucket here, if it's using the admin thing above - SURELY has a project ID, right?
   // const gcs = admin.storage()
@@ -203,6 +202,18 @@ function ThumbnailGenerator (admin, fileObject) {
       return results
     })
   }
+  function clearLocalThumbs () {
+    let pattern = /thumb_/
+
+    fs
+      .readdirSync(tempFilePath)
+      .filter(path => {
+        return pattern.test(path)
+      })
+      .forEach(thumb => {
+        fs.unlinkSync(thumb)
+      })
+  }
 
   /**
    * Accept a profile id for a user, and the photo, creates thumbnails then up dates
@@ -217,30 +228,37 @@ function ThumbnailGenerator (admin, fileObject) {
       return null
     }
     // begin processing
-    return fetchImage(fetchPath, destPath)
-      .then(destPath => {
-        debug('image fetched', fetchPath)
-        return destPath
-      })
-      .then(destPath => {
-        debug('making thumbnails for', destPath)
-        return makeThumbnails(destPath)
-      })
-      .then(thumbs => {
-        debug('uploading thumbs', fetchPath)
-        return saveThumbs(thumbs)
-      })
-      .then(thumbUrls => {
-        debug('thumbnails saved, at', thumbUrls)
-        return thumbUrls
-      })
-      .catch(err => {
-        debug('error')
-        return err
-      })
+    return (
+      fetchImage(fetchPath, destPath)
+        .then(destPath => {
+          debug('image fetched', fetchPath)
+          return destPath
+        })
+        .then(destPath => {
+          debug('making thumbnails for', destPath)
+          return makeThumbnails(destPath)
+        })
+        .then(thumbs => {
+          debug('uploading thumbs', fetchPath)
+          return saveThumbs(thumbs)
+        })
+        .then(thumbUrls => {
+          debug('thumbnails saved, at', thumbUrls)
+          return thumbUrls
+        })
+        // .then(() => {
+        //   debug('tidying up ')
+        //   clearLocalThumbs()
+        // })
+        .catch(err => {
+          debug('error')
+          return err
+        })
+    )
   }
 
   return {
+    tmpDir,
     validateObject,
     fetchImage,
     makeThumbnails,

@@ -1,7 +1,6 @@
 const ThumbnailGenerator = require('../../functions/src/thumbnail-generator.js')
 const testData = require('./testdata.json')
 const fs = require('fs')
-const admin = require('firebase-admin')
 const debug = require('debug')('cl8.thumbnail-generator.test')
 
 describe('thumbnailGenerator', () => {
@@ -9,7 +8,6 @@ describe('thumbnailGenerator', () => {
   const smallThumbFileName = 'thumb_test_pic-36x36.png'
   const largeThumbFileName = 'thumb_test_pic-200x200.png'
   const alreadyUploadedFile = 'profilePhotos/recj0EMy3sWHhdove-1523955717393'
-  const projectId = ''
 
   const serviceAccountPath = process.env.FIREBASE_CONFIG
     ? process.env.FIREBASE_CONFIG

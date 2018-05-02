@@ -1,5 +1,3 @@
-const admin = require('firebase-admin')
-
 module.exports = CheckConfig
 
 function CheckConfig(initialisedApp) {

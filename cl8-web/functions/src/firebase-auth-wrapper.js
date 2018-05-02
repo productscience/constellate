@@ -1,4 +1,3 @@
-const fbadmin = require('firebase-admin')
 const _ = require('lodash')
 const debug = require('debug')('cl8.firebase.wrapper')
 
@@ -16,7 +15,7 @@ module.exports = FireBaseAuthWrapper
  * 'https://constellate-test.firebaseio.com'
  * @returns
  */
-function FireBaseAuthWrapper(admin) {
+function FireBaseAuthWrapper (admin) {
   /**
    * Fetches the first 1000 users in an account.
    * We assume we don't have more than 1000 users, and instead return the user array
@@ -60,6 +59,7 @@ function FireBaseAuthWrapper(admin) {
         }
       })
       .catch(function (error) {
+        // eslint-disable-next-line
         if (error.errorInfo.code == 'auth/user-not-found') {
           debug('user no longer exists:', user.fields.email)
         }
@@ -129,10 +129,12 @@ function FireBaseAuthWrapper(admin) {
         const newUser = await admin.auth().createUser(u)
         return newUser
       } catch (err) {
+        // eslint-disable-next-line
         if (err.errorInfo.code == '"auth/uid-already-exists"') {
           debug(error.errorInfo.message, user.id, user.email)
           return user
         }
+        // eslint-disable-next-line
         if (err.errorInfo.code == 'auth/email-already-exists') {
           debug(error.errorInfo.message, user.id, user.email)
           return user
@@ -140,8 +142,8 @@ function FireBaseAuthWrapper(admin) {
       }
     }
 
-    if (error.errorInfo.code == 'auth/user-not-found') {
-    }
+    // if (error.errorInfo.code == 'auth/user-not-found') {
+    // }
   }
 
   /**
@@ -174,6 +176,7 @@ function FireBaseAuthWrapper(admin) {
    */
   async function getOrCreateUserinUserList (user, userList) {
     // check for existence of user
+    // eslint-disable-next-line
     const matchesUserId = returnedUser => returnedUser.id == user.id
     const filteredUsers = _.filter(userList, matchesUserId)
 
@@ -248,6 +251,7 @@ function FireBaseAuthWrapper(admin) {
       let usersArray = _.values(userlist.val())
       // debug(usersArray[1])
       let filteredUsers = usersArray.filter(function (returnedUser) {
+        // eslint-disable-next-line
         return returnedUser.id == user.id
       })
       // return early - we don't want to change this one

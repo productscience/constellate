@@ -1,17 +1,45 @@
 <template>
   <div class="pa3 center w-80 cf">
 
-    <div>
-      <h2>profile: {{ profile }}</h2>
-      <hr>
-      <h2>user: {{ user }}</h2>
+    <form @submit.prevent="confirmPhoto">
+      <input type="file"
+        @change="updatePhoto($event)"
+        class="ma2"
+        accept="image/*" />
 
-    <div v>
-      <hr>
-        <router-link :to="{ name: 'editProfile' }"
-          class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-          Cancel
-        </router-link>
+    <img
+      v-if="localPhoto"
+      :src="this.localPhoto"
+      class="supplied-photo b--light-silver ba" />
+
+
+    <img 
+    v-if="hasPhoto()"
+    :src="showPhoto('large')"
+    class="supplied-photo b--light-silver ba" />
+
+    <v-gravatar v-else
+    :email="profile.fields.email"
+    :size="200"
+    class="gravatar b--light-silver ba" />
+
+    <button 
+      class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green"
+      >
+      Confirm
+      </button>
+
+    </form>
+    
+    <!-- <h2>profile: {{ profile }}</h2>
+    <hr>
+    <h2>user: {{ user }}</h2> -->
+
+    <hr>
+    <router-link :to="{ name: 'editProfile' }"
+    class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
+    Cancel
+    </router-link>
     </div>
 
     </div>
@@ -31,7 +59,10 @@ export default {
   components: {},
   props: [],
   data() {
-    return {}
+    return {
+      localPhoto: null,
+      localPhotoUpload: null
+    }
   },
   computed: {
     user() {
@@ -63,27 +94,47 @@ export default {
       return false
     },
     showPhoto(size) {
-      return this.profile.fields.photo[0].thumbnails[size].url
+      return this.profile.fields.photo[0].url
+      // return this.profile.fields.photo[0].thumbnails[size].url
+    },
+    updatePhoto(ev) {
+      debug('image added')
+      // assign the photo
+      debug(ev.target.files)
+      if (ev.target.files.length === 1) {
+        let newPhoto = ev.target.files[0]
+        this.localPhoto = window.URL.createObjectURL(newPhoto)
+      }
+    },
+    confirmPhoto(ev) {
+      // ev.target[0].files[0] is the first file in the file input
+      // we really ought to have a better way to refer to it, probably by
+      // setting an entry in the component data() method
+      let payload = { profile: this.profile, photo: ev.target[0].files[0] }
+      debug('sending to firebase', payload)
+      this.$store.dispatch('updateProfilePhoto', payload)
     }
   },
   created() {
     this.$store.commit('startLoading')
-
-    Promise.all([
-      // this.$store.dispatch('fetchVisibleProfileList'),
-      this.$store.dispatch('fetchProfile', this.user.uid)
-    ])
-      .then(values => {
-        debug('loaded the profiles in the component')
-        this.$store.commit('stopLoading')
-      })
-      .catch(err => {
-        debug("couldn't load in the component: ", payload, 'failed', error)
-      })
+    if (!this.profile) {
+      this.$store
+        .dispatch('fetchProfile', this.user.uid)
+        .then(values => {
+          debug('loaded the profiles in the component')
+          this.$store.commit('stopLoading')
+        })
+        .catch(err => {
+          debug("couldn't load in the component: ", payload, 'failed', error)
+        })
+    }
   }
 }
 </script>
 
 <style>
-
+@import '../../../node_modules/tachyons/css/tachyons.css';
+img.supplied-photo {
+  max-width: 200px;
+}
 </style>

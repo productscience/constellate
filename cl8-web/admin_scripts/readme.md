@@ -1,11 +1,11 @@
 # Admin scripts
 
-If you dont' want to use google cloud functions,  you can run these scripts on the command line.
+If you dont' want to use google cloud functions, you can run these scripts on the command line.
 
 These use the `debug` library, so you can see much more logging be setting the DEBUG variable when running it:
 
 ```
-DEBUG="cl8*" node clearUsersandDatabase.js
+DEBUG="cl8*" babel-node clearUsersandDatabase.js
 ```
 
 #### Running quietly
@@ -13,7 +13,7 @@ DEBUG="cl8*" node clearUsersandDatabase.js
 If you don't want this verbose logging, you can normally like so:
 
 ```
-node clearUsersandDatabase.js
+babel-node clearUsersandDatabase.js
 ```
 
 ### clearUsersandDatabase.js

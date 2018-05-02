@@ -4,8 +4,7 @@ const debug = require('debug')('cl8.profile-thumbnailer.test')
 
 const serviceAccount = require('../service-account.json')
 const testData = require('./testdata.json')
-const fs = require('fs')
-const _ = require('lodash')
+
 const admin = require('firebase-admin')
 const initialisedApp = admin.initializeApp({
   serviceAccount: serviceAccount,

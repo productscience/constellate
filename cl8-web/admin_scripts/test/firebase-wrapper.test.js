@@ -2,11 +2,16 @@ const serviceAccount = require('../' +
   process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
 const databaseURL = process.env.FIREBASE_DATABASE_URL_TEST
 
-const wrapper = require('../../functions/src/firebase-auth-wrapper.js')(
-  serviceAccount,
-  databaseURL
-)
-const admin = wrapper.admin
+const admin = require('firebase-admin')
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: databaseURL
+})
+
+const wrapper = require('../../functions/src/firebase-wrapper.js')(admin)
+
+// const admin = wrapper.admin
 
 const _ = require('lodash')
 const debug = require('debug')('cl8.firebase.wrapper.test')
@@ -40,7 +45,6 @@ describe('create or delete a user', () => {
       uid: testUser.id,
       email: testUser.fields.email
     }
-
     return admin
       .auth()
       .createUser(u)
@@ -68,6 +72,7 @@ describe('create or delete a user', () => {
       .auth()
       .deleteUser(testUser.uid)
       .catch(err => {
+        // eslint-disable-next-line
         if (err.errorInfo.code == 'auth/user-not-found') {
         }
       })
@@ -145,7 +150,7 @@ describe('create or edit users in realtime database', () => {
   })
 
   test('getUserList - at least one user', async () => {
-    const addedUserlist = await wrapper.admin
+    await wrapper.admin
       .database()
       .ref('userlist')
       .push(testUser)
@@ -207,7 +212,7 @@ describe('create or edit users in realtime database', () => {
     expect(addUserReq.user.fields.email).toBe(testUser.fields.email)
   })
 
-  test.only('delete by field - email', async () => {
+  test('delete by field - email', async () => {
     const initialUserList = await wrapper.getUserList()
     await wrapper.addUserToUserList(testUser, initialUserList)
 

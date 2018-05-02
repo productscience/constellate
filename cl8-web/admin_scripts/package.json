@@ -3,15 +3,9 @@
   "version": "0.1.0",
   "description": "Scripts for moving data between various SaaS platforms",
   "dependencies": {
-    "airtable": "^0.5.1",
-    "cors": "^2.8.4",
+    "airtable": "^0.5.3",
     "debug": "^3.1.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.5.0",
-    "firebase-admin": "^5.5.1",
-    "firebase-functions": "^0.7.3",
-    "babel-cli": "^6.2.4",
-    "babel-preset-es2015-node5": "^1.1.0"
+    "firebase-admin": "^5.12.0"
   },
   "scripts": {
     "test": "jest",
@@ -20,11 +14,9 @@
   },
   "private": true,
   "devDependencies": {
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "jest": "^21.2.1",
-    "prettier-eslint": "^8.8.1",
-    "standard": "^10.0.3"
+    "babel-jest": "^22.4.3",
+    "babel-preset-stage-2": "^6.24.1",
+    "jest": "^22.4.3"
   },
   "babel": {
     "presets": ["es2015-node5"]

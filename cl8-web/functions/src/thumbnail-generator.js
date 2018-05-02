@@ -264,6 +264,7 @@ function ThumbnailGenerator (admin, fileObject) {
     makeThumbnails,
     saveThumb,
     saveThumbs,
-    createThumbsForProfile
+    createThumbsForProfile,
+    clearLocalThumbs
   }
 }

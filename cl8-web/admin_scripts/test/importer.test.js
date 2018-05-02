@@ -1,20 +1,25 @@
-const _ = require('lodash')
 const debug = require('debug')('cl8.importer.test')
 
 const Cl8Importer = require('../../functions/src/importer.js')
 
 const devBase = process.env.AIRTABLE_BASE_TEST
 const devKey = process.env.AIRTABLE_API_KEY_TEST
-const tagTable = process.env.AIRTABLE_TAG_NAME_TEST
 const peepTable = process.env.AIRTABLE_PERSON_NAME_TEST
 
 const serviceAccount = require('../' +
   process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
 const databaseURL = process.env.FIREBASE_DATABASE_URL_TEST
 
+const firebaseAdmin = require('firebase-admin')
+
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+  databaseURL: databaseURL
+})
+
 const importerCredentials = {
   airTableCreds: [devKey, devBase],
-  fbaseCreds: [serviceAccount, databaseURL]
+  fbaseCreds: firebaseAdmin
 }
 
 const importer = Cl8Importer(importerCredentials)
@@ -175,14 +180,16 @@ describe('3rd party API functions', () => {
 
 describe('finding new users to import', () => {
   let payload = {}
+  let peeps
+  let tags
 
   beforeEach(async () => {
     await clearAirtable()
     await clearFirebaseAccounts()
     await clearFirebaseUserList()
 
-    const tags = await importer.atbl.getTags()
-    const peeps = await importer.atbl.getUsers()
+    tags = await importer.atbl.getTags()
+    peeps = await importer.atbl.getUsers()
 
     debug('before: peeps.length: ', peeps.length)
     debug('before: tags.length: ', tags.length)
@@ -208,8 +215,8 @@ describe('finding new users to import', () => {
         enrichedPeeps,
         payload.fbUserList
       )
-      expect(enrichedPeeps.length).toBe(6)
-      expect(payload.fbUserList.length).toBe(6)
+      expect(enrichedPeeps.length).toBe(peeps.length)
+      expect(payload.fbUserList.length).toBe(peeps.length)
       expect(usersToImport.length).toBe(0)
     },
     15000
@@ -264,14 +271,16 @@ describe('finding new users to import', () => {
 
 describe('importing users', () => {
   let payload = {}
+  let peeps
+  let tags
 
   beforeEach(async () => {
     await clearAirtable()
     await clearFirebaseAccounts()
     await clearFirebaseUserList()
 
-    const tags = await importer.atbl.getTags()
-    const peeps = await importer.atbl.getUsers()
+    tags = await importer.atbl.getTags()
+    peeps = await importer.atbl.getUsers()
 
     debug('before: peeps.length: ', peeps.length)
     debug('before: tags.length: ', tags.length)
@@ -325,22 +334,20 @@ describe('importing users', () => {
         tags: []
       }
 
-      const newAirtableUser = await importer.atbl
-        .airtable(peepTable)
-        .create(newAirtableUserPayload)
+      await importer.atbl.airtable(peepTable).create(newAirtableUserPayload)
 
       const updatedPeeps = await importer.atbl.getUsers()
       const updatedTags = await importer.atbl.getTags()
 
-      expect(updatedPeeps.length).toBe(7)
-      expect(payload.fbUserList.length).toBe(6)
+      expect(updatedPeeps.length).toBe(updatedPeeps.length)
+      expect(payload.fbUserList.length).toBe(peeps.length)
 
       const enrichedPeeps = importer.buildEnrichedPeeps(
         updatedPeeps,
         updatedTags
       )
 
-      expect(enrichedPeeps.length).toBe(7)
+      expect(enrichedPeeps.length).toBe(updatedPeeps.length)
 
       const usersToImport = importer.filterOutPeepsToImport(
         enrichedPeeps,
@@ -365,8 +372,8 @@ describe('importing users', () => {
       expect(updatedFirebaseAccountList.length).toBe(1)
 
       // check we have the updated list of firebase accounts
-      expect(payload.fbUserList.length).toBe(6)
-      expect(updatedFirebaseUserList.length).toBe(7)
+      expect(payload.fbUserList.length).toBe(peeps.length)
+      expect(updatedFirebaseUserList.length).toBe(updatedPeeps.length)
 
       //
     },
@@ -375,12 +382,15 @@ describe('importing users', () => {
 })
 
 describe('running import command as blackbox', () => {
+  let tags
+  let peeps
+
   beforeEach(async () => {
     await clearAirtable()
     await clearFirebaseAccounts()
     await clearFirebaseUserList()
-    const tags = await importer.atbl.getTags()
-    const peeps = await importer.atbl.getUsers()
+    tags = await importer.atbl.getTags()
+    peeps = await importer.atbl.getUsers()
     await addPeepsToFireBaseUserList(peeps, tags)
   }, 30000)
 
@@ -390,7 +400,7 @@ describe('running import command as blackbox', () => {
       const importResult = await importer.importUsersAndTags()
 
       expect(importResult.imported.length).toBe(0)
-      expect(importResult.skipped.length).toBe(6)
+      expect(importResult.skipped.length).toBe(peeps.length)
     },
     30000
   )
@@ -406,14 +416,12 @@ describe('running import command as blackbox', () => {
         tags: []
       }
 
-      const newAirtableUser = await importer.atbl
-        .airtable(peepTable)
-        .create(newAirtableUserPayload)
+      await importer.atbl.airtable(peepTable).create(newAirtableUserPayload)
 
       const importResult = await importer.importUsersAndTags()
 
       expect(importResult.imported.length).toBe(1)
-      expect(importResult.skipped.length).toBe(6)
+      expect(importResult.skipped.length).toBe(peeps.length)
     },
     30000
   )

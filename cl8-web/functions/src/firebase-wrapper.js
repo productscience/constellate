@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const debug = require('debug')('cl8.firebase.wrapper')
 
-module.exports = FireBaseAuthWrapper
+module.exports = FirebaseWrapper
 
 /**
  * A wrapper around the Firebase API, to return basic javascript objects as much
@@ -15,7 +15,7 @@ module.exports = FireBaseAuthWrapper
  * 'https://constellate-test.firebaseio.com'
  * @returns
  */
-function FireBaseAuthWrapper (admin) {
+function FirebaseWrapper (admin) {
   /**
    * Fetches the first 1000 users in an account.
    * We assume we don't have more than 1000 users, and instead return the user array

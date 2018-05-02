@@ -1,11 +1,8 @@
 const AirtableWrapper = require('../../functions/src/airtable-wrapper.js')
 const debug = require('debug')('cl8.test.airtable.wrapper')
 
-debug('Yes, you can call debug, and see it in output from jest')
-
 const devBase = process.env.AIRTABLE_BASE_TEST
 const devkey = process.env.AIRTABLE_API_KEY_TEST
-const tagTable = process.env.AIRTABLE_TAG_NAME_TEST
 const peepTable = process.env.AIRTABLE_PERSON_NAME_TEST
 
 const atbl = AirtableWrapper(devkey, devBase)
@@ -19,7 +16,6 @@ describe('fetching records', () => {
       expect(record).toHaveProperty('id')
       expect(record).toHaveProperty('fields.email')
       expect(record).toHaveProperty('fields.name')
-      // expect(record.).toHaveProperty('fields.tags')
     })
   })
 

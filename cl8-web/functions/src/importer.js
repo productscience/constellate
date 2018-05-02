@@ -1,5 +1,5 @@
 const AirTableWrapper = require('./airtable-wrapper')
-const FireBaseWrapper = require('./firebase-auth-wrapper')
+const FireBaseWrapper = require('./firebase-wrapper')
 const _ = require('lodash')
 const debug = require('debug')('cl8.importer')
 
@@ -17,7 +17,7 @@ function Cl8Importer (importerCredentials) {
     importerCredentials.airTableCreds[0],
     importerCredentials.airTableCreds[1]
   )
-  const fbase = FireBaseWrapper(importerCredentials.fbaseApp)
+  const fbase = FireBaseWrapper(importerCredentials.fbaseCreds)
 
   /**
    * Fetches the data from the necessary Airtable and Firebase APIs, builds the
@@ -62,13 +62,13 @@ function Cl8Importer (importerCredentials) {
    * Accepts a user, with an id as created in Airtable, and deletes
    * it from Firebase Realtime Database as well as the their account
    *
-   * @param {any} userToDelete
-   */
-  function deleteUserAcrossServices (user) {
-    // remove users from:
-    // 1. firebase UserList
-    // 2. firebase Account
-  }
+  //  * @param {any} userToDelete
+  //  */
+  // function deleteUserAcrossServices (user) {
+  //   // remove users from:
+  //   // 1. firebase UserList
+  //   // 2. firebase Account
+  // }
 
   /**
    * Takes an array of User objects, with an airtable with an ID as created in

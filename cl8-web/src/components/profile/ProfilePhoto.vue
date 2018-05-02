@@ -1,7 +1,7 @@
 <template>
   <div class="pa3 center w-80 cf">
 
-    <form @submit.prevent="confirmPhoto">
+    <form @submit.prevent="confirmPhoto" v-if="profile">
       <input type="file"
         @change="updatePhoto($event)"
         class="ma2"
@@ -13,7 +13,7 @@
       class="supplied-photo b--light-silver ba" />
 
 
-    <img 
+    <img
     v-if="hasPhoto()"
     :src="showPhoto('large')"
     class="supplied-photo b--light-silver ba" />
@@ -23,14 +23,14 @@
     :size="200"
     class="gravatar b--light-silver ba" />
 
-    <button 
+    <button
       class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green"
       >
       Confirm
       </button>
 
     </form>
-    
+
     <!-- <h2>profile: {{ profile }}</h2>
     <hr>
     <h2>user: {{ user }}</h2> -->
@@ -61,7 +61,7 @@ export default {
   data() {
     return {
       localPhoto: null,
-      localPhotoUpload: null
+      localPhotoUpload: null,
     }
   },
   computed: {
@@ -70,7 +70,7 @@ export default {
     },
     profile() {
       return this.$store.getters.profile
-    }
+    },
   },
   methods: {
     canEdit: function() {
@@ -113,7 +113,7 @@ export default {
       let payload = { profile: this.profile, photo: ev.target[0].files[0] }
       debug('sending to firebase', payload)
       this.$store.dispatch('updateProfilePhoto', payload)
-    }
+    },
   },
   created() {
     this.$store.commit('startLoading')
@@ -128,7 +128,7 @@ export default {
           debug("couldn't load in the component: ", payload, 'failed', error)
         })
     }
-  }
+  },
 }
 </script>
 

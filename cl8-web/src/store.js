@@ -18,7 +18,7 @@ export default new Vuex.Store({
     profilePhoto: null,
     profileList: [],
     visibleProfileList: [],
-    requestUrl: null
+    requestUrl: null,
   },
   getters: {
     currentUser: function(state) {
@@ -51,7 +51,7 @@ export default new Vuex.Store({
     },
     requestUrl: function(state) {
       return state.requestUrl
-    }
+    },
   },
   mutations: {
     stopLoading: function(state) {
@@ -100,7 +100,7 @@ export default new Vuex.Store({
     setRequestUrl: function(state, payload) {
       debug('setrequestUrl', payload)
       state.requestUrl = payload
-    }
+    },
   },
   actions: {
     // otherwise log user in here
@@ -229,6 +229,7 @@ export default new Vuex.Store({
           .once('value')
           .then(snap => {
             let firebaseKey = _.keys(snap.val())[0]
+            debug('firebaseKey', firebaseKey)
             return fbase
               .database()
               .ref('userlist')
@@ -241,7 +242,9 @@ export default new Vuex.Store({
                   firebaseKey,
                   userProfile
                 )
-                context.commit('setProfile', userProfile.val())
+                const fetchedProfile = userProfile.val()
+                fetchedProfile['.key'] = firebaseKey
+                context.commit('setProfile', fetchedProfile)
                 resolve()
               })
           })
@@ -256,11 +259,20 @@ export default new Vuex.Store({
 
       // not super happy about this - surely there's a toJSON() method?
       let newProfile = JSON.parse(JSON.stringify(payload))
+      // check if this is a profile with no pushkey, and fetch it if so
+      const pushKey = newProfile['.key']
+
+      if (!pushKey) {
+        throw new Error(
+          'this profile has no push key. this is needed for writing data'
+        )
+      }
       delete newProfile['.key']
-      fbase
+
+      return fbase
         .database()
         .ref('userlist')
-        .child(payload['.key'])
+        .child(pushKey)
         .set(newProfile)
         .then(() => {
           debug('Succesfully saved')
@@ -272,28 +284,51 @@ export default new Vuex.Store({
     },
     updateProfilePhoto: function(context, payload) {
       debug('sending photo update to Firebase', payload)
-      let profileId = payload.profile.id
-      var metadata = {
-        contentType: 'image/jpeg'
+      const profileId = payload.profile.id
+      const uploadedFileName = `profilePhotos/${profileId}-${Date.now()}`
+      debug('uploadedFileName', payload.photo)
+      debug('uploadedFileName', uploadedFileName)
+      const metadata = {
+        contentType: 'image/jpeg',
       }
-      fbase
-        .storage()
-        .ref()
-        // we add the timestamp so photos are unique in buckets
-        .child(`profilePhotos/${profileId}-${Date.now()}`)
-        .put(payload.photo, metadata)
-        .then(snapshot => {
-          debug('Succesfully uploaded photo', snapshot)
-          // build the photo array to pass in with the profile
-          let returnedPhoto = {
-            url: snapshot.downloadURL,
-            thumbnails: {}
-          }
-          context.commit('setProfilePhoto', returnedPhoto)
-        })
-        .catch(error => {
-          debug('Saving uploaded photo: ', payload, 'failed', error)
-        })
-    }
-  }
+      return new Promise((resolve, reject) => {
+        fbase
+          .storage()
+          .ref()
+          // we add the timestamp so photos are unique in buckets
+          .child(uploadedFileName)
+          .put(payload.photo, metadata)
+          .then(snapshot => {
+            debug('Succesfully uploaded photo', snapshot)
+            // build the photo array to pass in with the profile
+            let returnedPhoto = {
+              url: snapshot.downloadURL,
+              thumbnails: {},
+            }
+            payload.profile.fields.photo[0] = returnedPhoto
+            debug(
+              'payload.profile.fields.photo[0]',
+              payload.profile.fields.photo[0]
+            )
+            context
+              .dispatch('updateProfile', payload.profile)
+              .then(() => {
+                debug('profile updated')
+                resolve()
+              })
+              .catch(err => {
+                debug('Updating profile failed', err)
+                reject()
+              })
+
+            // TODO now we need to save the updated photo on the profile
+            // typically by dispatching a new action
+          })
+          .catch(error => {
+            reject()
+            debug('Saving uploaded photo: ', payload, 'failed', error)
+          })
+      })
+    },
+  },
 })

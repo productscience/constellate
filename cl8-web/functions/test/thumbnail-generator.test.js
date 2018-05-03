@@ -21,6 +21,25 @@ describe('thumbnailGenerator', () => {
 
   debug(thumbGen)
 
+  function deleteIfPresent (filePath) {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath)
+    }
+  }
+
+  beforeEach(() => {
+    ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
+      deleteIfPresent(filePath)
+    })
+  })
+
+  afterEach(() => {
+    ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
+      deleteIfPresent(filePath)
+    })
+    thumbGen.clearLocalThumbs('.')
+  })
+
   test('validateObject', () => {
     debug(thumbGen)
     expect(thumbGen.validateObject()).toBe(true)
@@ -42,6 +61,7 @@ describe('thumbnailGenerator', () => {
     await expect(fetchRequest).resolves.toContain(largeThumbFileName)
   })
   test('saveThumb', async () => {
+    await thumbGen.makeThumbnails(`./test/${fileName}`)
     const thumbPaths = smallThumbFileName
     const uploadRequest = thumbGen.saveThumb(thumbPaths)
     await expect(uploadRequest).resolves.toMatch(

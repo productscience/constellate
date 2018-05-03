@@ -202,11 +202,14 @@ function ThumbnailGenerator (admin, fileObject) {
       return results
     })
   }
-  function clearLocalThumbs () {
+  function clearLocalThumbs (filePath) {
     let pattern = /thumb_/
 
+    if (!filePath) {
+      filePath = tempFilePath
+    }
     fs
-      .readdirSync(tempFilePath)
+      .readdirSync(filePath)
       .filter(path => {
         return pattern.test(path)
       })

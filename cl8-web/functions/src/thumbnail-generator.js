@@ -199,6 +199,51 @@ function ThumbnailGenerator (admin, fileObject) {
       return results
     })
   }
+
+  /**
+   * Accept a profile id for a user, and the photo, creates thumbnails then up dates
+   * thumbnail pics for the user
+   *
+   * @param {any} profileId
+   * @param {any} photo
+   */
+  function createThumbsForProfile (fetchPath, destPath) {
+    // do we have a valid object to work with?
+    if (!validateObject()) {
+      throw new Error(
+        "We don't have a valid image object, so we can't make thumbnails from it"
+      )
+    }
+    // begin processing
+    return (
+      fetchImage(fetchPath, destPath)
+        .then(destPath => {
+          debug('image fetched', fetchPath)
+          return destPath
+        })
+        .then(destPath => {
+          debug('making thumbnails for', destPath)
+          return makeThumbnails(destPath)
+        })
+        .then(thumbs => {
+          debug('uploading thumbs', fetchPath)
+          return saveThumbs(thumbs)
+        })
+        .then(thumbUrls => {
+          debug('thumbnails saved, at', thumbUrls)
+          return thumbUrls
+        })
+        // .then(() => {
+        //   debug('tidying up ')
+        //   clearLocalThumbs()
+        // })
+        .catch(err => {
+          debug('error')
+          return err
+        })
+    )
+  }
+
   async function clearTempDir () {
     debug('tmpdir exists? ', tmpDir, fs.existsSync(tmpDir))
     debug('clearing temp directory:', tmpDir)
@@ -221,6 +266,7 @@ function ThumbnailGenerator (admin, fileObject) {
     fetchImage,
     makeThumbnails,
     saveThumb,
-    saveThumbs
+    saveThumbs,
+    createThumbsForProfile
   }
 }

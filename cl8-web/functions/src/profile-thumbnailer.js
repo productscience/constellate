@@ -1,45 +1,46 @@
 const path = require('path')
-const debug = require('debug')('cl8.profiler-thumbnailer')
+const debug = require('debug')('cl8.profile-thumbnailer')
 
 const ThumbnailGenerator = require('./thumbnail-generator.js')
-
 const _ = require('lodash')
+
 module.exports = ProfileThumbnailer
 
 /**
- *  accepts a profile ID, and object representing a cloud file
- * fetches the file, and adds the thumbnails to the user's file
+
  *
- * @param {any} config
+ * @param {any} admin FirebaseAdmin
  * @param {any} profileId
  * @param {any} photoPath
  * @returns {Object}
  */
 function ProfileThumbnailer (admin, objectMetaData) {
   /**
-   *
+   * accepts a profile ID, and object representing a cloud file
+   * fetches the file, and adds the thumbnails to the user's file
    *
    * @param {any} profileId
    * @param {any} objectMetaData
    * @returns
    */
-  async function updateProfile (profileId, fileObjectMetaData) {
+
+  async function updateProfile (profileId) {
     const photoPath = objectMetaData.name
 
     const pushKey = await lookupProfile('id', profileId)
-    const prof = fetchProfile(pushKey)
+    const profile = fetchProfile(pushKey)
 
-    console.log('prof', prof)
-    const thumbgen = ThumbnailGenerator(admin, fileObjectMetaData)
-    console.log('thumbgen', thumbgen)
+    debug('prof', profile)
+    const thumbgen = ThumbnailGenerator(admin, objectMetaData)
+    debug('thumbgen', thumbgen)
 
     const photoUrls = await thumbgen.createThumbsForProfile(
       photoPath,
       'some-outfile.png'
     )
-    console.log('photoUrls', photoUrls)
+    debug('photoUrls', photoUrls)
 
-    const savedProf = addPhotoUrls(prof, photoUrls)
+    const savedProf = addPhotoUrls(profile, photoUrls)
 
     return savedProf
   }
@@ -78,7 +79,9 @@ function ProfileThumbnailer (admin, objectMetaData) {
       .limitToFirst(1)
       .once('value')
       .then(snap => {
-        return _.keys(snap.val())[0]
+        const firebaseKey = _.keys(snap.val())[0]
+        debug('found firebaseKey:', firebaseKey)
+        return firebaseKey
       })
   }
 

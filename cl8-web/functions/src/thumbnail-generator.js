@@ -4,10 +4,6 @@ const os = require('os')
 const fs = require('fs')
 
 const debug = require('debug')('cl8.thumbnail-generator')
-const gcs = require('@google-cloud/storage')({
-  projectId: 'munster-setup',
-  keyFilename: './service-account.json'
-})
 
 module.exports = ThumbnailGenerator
 /**
@@ -22,27 +18,20 @@ module.exports = ThumbnailGenerator
  * @returns {Object} with methods to run the import scripts
  */
 function ThumbnailGenerator (admin, fileObject) {
-  const fileBucket = fileObject.bucket // The Storage bucket that contains the file.
+  // const fileBucket = fileObject.bucket // The Storage bucket that contains the file.
+
   const filePath = fileObject.name // File path in the bucket.
   const fileName = path.basename(filePath)
   const contentType = fileObject.contentType // File content type.
 
-  const tmpDir = os.tmpdir()
+  // we need to pass in
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'local-image-'))
   const tempFilePath = path.join(tmpDir, fileName)
 
   const THUMB_SMALL = '36x36'
   const THUMB_LARGE = '200x200'
 
-  // // this definitely has a project ID
-  // debug('config.serviceAccount.project_id', config.serviceAccount.project_id)
-  // // sanity check
-  // if (typeof config.serviceAccount.project_id !== 'string') {
-  //   throw new Error(`Service Account has no project ID`)
-  // }
-
-  // this bucket here, if it's using the admin thing above - SURELY has a project ID, right?
-  // const gcs = admin.storage()
-  const bucket = gcs.bucket(fileBucket)
+  const bucket = admin.storage().bucket()
 
   // check if this is a profile photos, with a profile id
   debug('Profile filename ', fileName.split('-'))
@@ -110,8 +99,14 @@ function ThumbnailGenerator (admin, fileObject) {
     const ext = path.extname(origPath)
     const baseName = path.basename(origPath, '.png')
 
-    const smallThumbnailPath = `thumb_${baseName}-${THUMB_SMALL}${ext}`
-    const largeThumbnailPath = `thumb_${baseName}-${THUMB_LARGE}${ext}`
+    const smallThumbnailPath = path.join(
+      tmpDir,
+      `thumb_${baseName}-${THUMB_SMALL}${ext}`
+    )
+    const largeThumbnailPath = path.join(
+      tmpDir,
+      `thumb_${baseName}-${THUMB_LARGE}${ext}`
+    )
     // Generate a thumbnail using ImageMagick.
     debug('making thumbnails for', tempFilePath)
 
@@ -130,7 +125,7 @@ function ThumbnailGenerator (admin, fileObject) {
       ])
     ])
       .then(results => {
-        debug('thumbnails created ', results.map(res => res.code))
+        debug('thumbnails created. Exit codes ', results.map(res => res.code))
         return [smallThumbnailPath, largeThumbnailPath]
       })
       .catch(err => {
@@ -154,6 +149,10 @@ function ThumbnailGenerator (admin, fileObject) {
       contentType: contentType
     }
 
+    if (!fs.existsSync(thumbPath)) {
+      throw new Error("file doesn't exist at path:", thumbPath)
+    }
+
     // upload
     return bucket
       .upload(thumbPath, {
@@ -163,10 +162,7 @@ function ThumbnailGenerator (admin, fileObject) {
       .then(uploadResponse => {
         // debug('file uploaded', uploadResponse[0].metadata.mediaLink)
         // return the signedUrl
-        const signedUrlconfig = {
-          action: 'read',
-          expires: '03-01-2500'
-        }
+        const signedUrlconfig = { action: 'read', expires: '03-01-2500' }
         // if this is from the bucket, and I can *download* files, fine,
         // why would the project not be set?
         // debug(uploadResponse[0])
@@ -191,6 +187,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @returns {Promise} of signed urls where the uploaded file can be accessed
    */
   function saveThumbs (pathArray) {
+    debug('uploading our thumbnails')
     // make our fetching promises, so we can use Promise.all to wait for the
     // results to come back
     const pathPromises = pathArray.map(thumbPath => {
@@ -198,9 +195,17 @@ function ThumbnailGenerator (admin, fileObject) {
     })
 
     return Promise.all(pathPromises).then(results => {
-      debug(results)
+      debug('results from saving thumbs:', results)
       return results
     })
+  }
+  async function clearTempDir () {
+    debug('tmpdir exists? ', tmpDir, fs.existsSync(tmpDir))
+    debug('clearing temp directory:', tmpDir)
+    clearLocalThumbs(tmpDir)
+    fs.rmdirSync(tmpDir)
+    debug('tmpdir exists? ', tmpDir, fs.existsSync(tmpDir))
+    debug('cleared')
   }
   function clearLocalThumbs (filePath) {
     let pattern = /thumb_/
@@ -214,7 +219,7 @@ function ThumbnailGenerator (admin, fileObject) {
         return pattern.test(path)
       })
       .forEach(thumb => {
-        fs.unlinkSync(thumb)
+        fs.unlinkSync(path.join(tmpDir, thumb))
       })
   }
 
@@ -262,12 +267,12 @@ function ThumbnailGenerator (admin, fileObject) {
 
   return {
     tmpDir,
+    clearTempDir,
     validateObject,
     fetchImage,
     makeThumbnails,
     saveThumb,
     saveThumbs,
-    createThumbsForProfile,
-    clearLocalThumbs
+    createThumbsForProfile
   }
 }

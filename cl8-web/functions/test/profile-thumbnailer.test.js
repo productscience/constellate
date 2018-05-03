@@ -2,20 +2,36 @@ const ProfileThumbnailer = require('../../functions/src/profile-thumbnailer.js')
 const ThumbnailGenerator = require('../../functions/src/thumbnail-generator.js')
 const debug = require('debug')('cl8.profile-thumbnailer.test')
 
-const serviceAccount = require('../service-account.json')
 const testData = require('./testdata.json')
+const testUtils = require('./testUtils')()
 
-const admin = require('firebase-admin')
-const initialisedApp = admin.initializeApp({
-  serviceAccount: serviceAccount,
-  databaseURL: 'https://munster-setup.firebaseio.com'
-})
-
-debug(serviceAccount)
+const admin = testUtils.firebaseAdmin()
 
 describe('profileThumbnailer', () => {
   const profileId = 'recj0EMy3sWHhdove'
   const profThumber = ProfileThumbnailer(admin, testData)
+
+  beforeEach(() => {
+    ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
+      testUtils.deleteIfPresent(filePath)
+    })
+  })
+
+  afterEach(() => {
+    ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
+      testUtils.deleteIfPresent(filePath)
+    })
+    testUtils.clearLocalThumbs('.')
+  })
+
+  afterAll(() => {
+    // if you don't add this bit, firebase will keep the connection open,
+    // and Jest won't ever close.
+    // https://github.com/facebook/jest/issues/1456
+
+    admin.database().goOffline()
+    admin.delete()
+  })
 
   test.skip('updateProfile - existing user', () => {})
   test.skip('updateProfile - no user', () => {})
@@ -76,7 +92,7 @@ describe('profileThumbnailer', () => {
       const profile = await profThumber.fetchProfile(profileKey)
       debug('profile', profile.val())
 
-      const thumbgen = ThumbnailGenerator(initialisedApp, testData)
+      const thumbgen = ThumbnailGenerator(admin, testData)
 
       const photoUrls = await thumbgen.createThumbsForProfile(
         'profilePhotos/recj0EMy3sWHhdove-1523955717393',

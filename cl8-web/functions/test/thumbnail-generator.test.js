@@ -1,43 +1,55 @@
-const ThumbnailGenerator = require('../../functions/src/thumbnail-generator.js')
-const testData = require('./testdata.json')
 const fs = require('fs')
+const path = require('path')
+const ThumbnailGenerator = require('../../functions/src/thumbnail-generator.js')
+
+const testData = require('./testdata.json')
+const testUtils = require('./testUtils')()
+
+const admin = testUtils.firebaseAdmin()
+
 const debug = require('debug')('cl8.thumbnail-generator.test')
 
 describe('thumbnailGenerator', () => {
   const fileName = 'test_pic.png'
   const smallThumbFileName = 'thumb_test_pic-36x36.png'
   const largeThumbFileName = 'thumb_test_pic-200x200.png'
-  const alreadyUploadedFile = 'profilePhotos/recj0EMy3sWHhdove-1523955717393'
 
-  const serviceAccountPath = process.env.FIREBASE_CONFIG
-    ? process.env.FIREBASE_CONFIG
-    : '../service-account.json'
-  const serviceAccount = require(serviceAccountPath)
-
-  const thumbGen = ThumbnailGenerator(
-    { serviceAccount: serviceAccount },
-    testData
-  )
+  const thumbGen = ThumbnailGenerator(admin, testData)
 
   debug(thumbGen)
 
-  function deleteIfPresent (filePath) {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath)
+  beforeAll(async () => {
+    debug('checking for file existing in cloud storage')
+    const uploadExistsReq = await admin
+      .storage()
+      .bucket()
+      .exists('test/test_pic.png')
+
+    if (!uploadExistsReq[0]) {
+      const uploadedFile = await admin
+        .storage()
+        .bucket()
+        .upload('test/test_pic.png')
+      debug('uploadedFile', uploadedFile)
     }
-  }
+  })
+
+  afterAll(async () => {
+    // clear  up after ourselves
+    thumbGen.clearTempDir()
+  })
 
   beforeEach(() => {
-    ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
-      deleteIfPresent(filePath)
-    })
+    // ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
+    //   testUtils.deleteIfPresent(filePath)
+    // })
   })
 
   afterEach(() => {
-    ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
-      deleteIfPresent(filePath)
-    })
-    thumbGen.clearLocalThumbs('.')
+    // ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
+    //   testUtils.deleteIfPresent(filePath)
+    // })
+    // thumbGen.clearLocalThumbs('.')
   })
 
   test('validateObject', () => {
@@ -46,33 +58,37 @@ describe('thumbnailGenerator', () => {
   })
 
   test('fetchImage with nested path', async () => {
-    if (fs.existsSync('outfile.png')) {
-      fs.unlinkSync('outfile.png')
-    }
-
-    const fetchRequest = thumbGen.fetchImage(alreadyUploadedFile, 'outfile.png')
-    await expect(fetchRequest).resolves.toBe('outfile.png')
-    expect(fs.existsSync('outfile.png')).toBe(true)
+    const tmpDownloadPath = path.join(thumbGen.tmpDir, fileName)
+    const fetchRequest = thumbGen.fetchImage(fileName, tmpDownloadPath)
+    await expect(fetchRequest).resolves.toBe(tmpDownloadPath)
+    expect(fs.existsSync(tmpDownloadPath)).toBe(true)
   })
 
   test('makeThumbnails', async () => {
-    const fetchRequest = thumbGen.makeThumbnails(`./test/${fileName}`)
-    await expect(fetchRequest).resolves.toContain(smallThumbFileName)
-    await expect(fetchRequest).resolves.toContain(largeThumbFileName)
+    await thumbGen.makeThumbnails(`./test/${fileName}`)
+    // check our tmp dir has the files
+    const tmpDirContents = fs.readdirSync(thumbGen.tmpDir)
+    debug(tmpDirContents)
+    expect(tmpDirContents.length).toBe(2)
+    expect(tmpDirContents).toContain('thumb_test_pic-36x36.png')
+    expect(tmpDirContents).toContain('thumb_test_pic-200x200.png')
   })
   test('saveThumb', async () => {
     await thumbGen.makeThumbnails(`./test/${fileName}`)
-    const thumbPaths = smallThumbFileName
-    const uploadRequest = thumbGen.saveThumb(thumbPaths)
-    await expect(uploadRequest).resolves.toMatch(
-      'https://storage.googleapis.com/'
-    )
+    const thumbpath = path.join(thumbGen.tmpDir, smallThumbFileName)
+    const uploadRequest = await thumbGen.saveThumb(thumbpath)
+    expect(uploadRequest).toMatch('https://storage.googleapis.com/')
   })
 
   test('saveThumbs', async () => {
-    const thumbPaths = [smallThumbFileName, largeThumbFileName]
-    const uploadRequest = thumbGen.saveThumbs(thumbPaths)
-    await expect(uploadRequest).resolves.toHaveLength(2)
+    const thumbPaths = [smallThumbFileName, largeThumbFileName].map(pth => {
+      return path.join(thumbGen.tmpDir, pth)
+    })
+    const uploadRequest = await thumbGen.saveThumbs(thumbPaths)
+    debug(uploadRequest)
+    uploadRequest.forEach(ur => {
+      expect(ur).toMatch('https://storage.googleapis.com/')
+    })
   })
 
   test(
@@ -80,7 +96,7 @@ describe('thumbnailGenerator', () => {
     async () => {
       debug(thumbGen.createThumbsForProfile)
       const thumbGenerateRequest = thumbGen.createThumbsForProfile(
-        alreadyUploadedFile,
+        fileName,
         'some-outfile.png'
       )
       await expect(thumbGenerateRequest).resolves.toHaveLength(2)

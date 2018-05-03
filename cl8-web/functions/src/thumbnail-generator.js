@@ -208,71 +208,19 @@ function ThumbnailGenerator (admin, fileObject) {
     debug('cleared')
   }
   function clearLocalThumbs (filePath) {
-    let pattern = /thumb_/
-
-    if (!filePath) {
-      filePath = tempFilePath
-    }
-    fs
-      .readdirSync(filePath)
-      .filter(path => {
-        return pattern.test(path)
-      })
-      .forEach(thumb => {
-        fs.unlinkSync(path.join(tmpDir, thumb))
-      })
-  }
-
-  /**
-   * Accept a profile id for a user, and the photo, creates thumbnails then up dates
-   * thumbnail pics for the user
-   *
-   * @param {any} profileId
-   * @param {any} photo
-   */
-  function createThumbsForProfile (fetchPath, destPath) {
-    // do we have a valid object to work with?
-    if (!validateObject()) {
-      return null
-    }
-    // begin processing
-    return (
-      fetchImage(fetchPath, destPath)
-        .then(destPath => {
-          debug('image fetched', fetchPath)
-          return destPath
-        })
-        .then(destPath => {
-          debug('making thumbnails for', destPath)
-          return makeThumbnails(destPath)
-        })
-        .then(thumbs => {
-          debug('uploading thumbs', fetchPath)
-          return saveThumbs(thumbs)
-        })
-        .then(thumbUrls => {
-          debug('thumbnails saved, at', thumbUrls)
-          return thumbUrls
-        })
-        // .then(() => {
-        //   debug('tidying up ')
-        //   clearLocalThumbs()
-        // })
-        .catch(err => {
-          debug('error')
-          return err
-        })
-    )
+    fs.readdirSync(filePath).forEach(thumb => {
+      fs.unlinkSync(path.join(tmpDir, thumb))
+    })
   }
 
   return {
     tmpDir,
     clearTempDir,
+    clearLocalThumbs,
     validateObject,
     fetchImage,
     makeThumbnails,
     saveThumb,
-    saveThumbs,
-    createThumbsForProfile
+    saveThumbs
   }
 }

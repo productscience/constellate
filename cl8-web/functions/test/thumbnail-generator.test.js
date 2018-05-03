@@ -46,10 +46,7 @@ describe('thumbnailGenerator', () => {
   })
 
   afterEach(() => {
-    // ;['outfile.png', 'some-outfile.png'].forEach(filePath => {
-    //   testUtils.deleteIfPresent(filePath)
-    // })
-    // thumbGen.clearLocalThumbs('.')
+    thumbGen.clearLocalThumbs(thumbGen.tmpDir)
   })
 
   test('validateObject', () => {
@@ -69,7 +66,6 @@ describe('thumbnailGenerator', () => {
     // check our tmp dir has the files
     const tmpDirContents = fs.readdirSync(thumbGen.tmpDir)
     debug(tmpDirContents)
-    expect(tmpDirContents.length).toBe(2)
     expect(tmpDirContents).toContain('thumb_test_pic-36x36.png')
     expect(tmpDirContents).toContain('thumb_test_pic-200x200.png')
   })
@@ -84,6 +80,7 @@ describe('thumbnailGenerator', () => {
     const thumbPaths = [smallThumbFileName, largeThumbFileName].map(pth => {
       return path.join(thumbGen.tmpDir, pth)
     })
+    await thumbGen.makeThumbnails(`./test/${fileName}`)
     const uploadRequest = await thumbGen.saveThumbs(thumbPaths)
     debug(uploadRequest)
     uploadRequest.forEach(ur => {

@@ -9,15 +9,16 @@ import TheHomePanel from '@/components/TheHomePanel'
 import ProfileEdit from '@/components/profile/ProfileEdit'
 import ProfilePhoto from '@/components/profile/ProfilePhoto'
 
-// const debug = require('debug')('cl8.route')
+const debug = require('debug')('cl8.route')
 
 Vue.use(Router)
 
+debug('routing')
 const router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '',
+      path: '/',
       name: 'home',
       component: TheHomePanel,
       meta: { requiresAuth: true }

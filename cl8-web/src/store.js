@@ -305,6 +305,11 @@ export default new Vuex.Store({
               url: snapshot.downloadURL,
               thumbnails: {},
             }
+            // if there is no previous photo added from airtable, we need to create the
+            // property
+            if (typeof payload.profile.fields.photo === 'undefined') {
+              payload.profile.fields.photo = []
+            }
             payload.profile.fields.photo[0] = returnedPhoto
             debug(
               'payload.profile.fields.photo[0]',

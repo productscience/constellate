@@ -9,7 +9,7 @@
 
                 <router-link :to="{ name: 'editProfilePhoto' }">
                   <img v-if="hasPhoto()"
-                  :src="profile.photo.large"
+                  :src="showPhoto('large')"
                   class="supplied-photo b--light-silver ba" />
 
                   <v-gravatar v-else
@@ -243,20 +243,14 @@ export default {
       // otherwise jjust return false
       return false
     },
-    showPhoto() {
-      if (this.hasPhoto()) {
+    showPhoto(size) {
+      debug(size)
+      try {
+        return this.profile.fields.photo[0].thumbnails[size].url
+      } catch (e) {
+        debug(`error`, this.profile.fields, e)
         return false
       }
-      let photo = this.profile.fields.photo[0]
-      if (typeof photo.thumbnails === 'undefined') {
-        return false
-      }
-      // if we have a airtable pic, fetch that
-      if (photo.thumbnails.large) {
-        return photo.thumbnails.large.url
-      }
-
-      // if we have a user provided photo, use that instead
     },
     setUserProfile() {
       debug('setting own profile for ', this.user)

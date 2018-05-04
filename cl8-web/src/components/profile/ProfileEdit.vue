@@ -143,7 +143,7 @@ const debug = debugLib('cl8.ProfileEdit')
 export default {
   name: 'ProfileEdit',
   components: {
-    Multiselect,
+    Multiselect
   },
   firebase: function() {
     return {
@@ -152,8 +152,8 @@ export default {
         readyCallback: function() {
           debug('data retrieved from fbase')
           this.setUserProfile()
-        },
-      },
+        }
+      }
     }
   },
   data() {
@@ -161,7 +161,7 @@ export default {
       items: [], // this needs to be the list from firebase
       tagList: [],
       unsyncedTags: [],
-      localPhoto: null,
+      localPhoto: null
     }
   },
   computed: {
@@ -198,7 +198,7 @@ export default {
         })
       }
       return tagList
-    },
+    }
   },
   methods: {
     addTag(newTag) {
@@ -207,7 +207,7 @@ export default {
       const tag = {
         name: newTag,
         code: tempVal,
-        id: 'tempval' + tempVal,
+        id: 'tempval' + tempVal
       }
       this.profile.fields.tags.push(tag)
       this.unsyncedTags.push(tag)
@@ -270,7 +270,7 @@ export default {
       } else {
         debug('No matches', matchingProfiles)
       }
-    },
+    }
   },
   created() {
     this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
@@ -279,7 +279,7 @@ export default {
     debug(fbase.auth().currentUser)
     // this.$store.commit('setFBUser', fbase.auth().currentUser)
     // debug('profile', this.$store.getters.profile)
-  },
+  }
 }
 </script>
 

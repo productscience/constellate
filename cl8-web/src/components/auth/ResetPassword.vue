@@ -1,54 +1,78 @@
 <template>
-<div class="w-100">
+  <div class="w-100">
 
     <div class="v-mid sign-in-prompt">
 
       <h2 class="pt5 pl6">Constellation</h2>
       <div class="w-100 pl6">
-        <div role="status" aria-live="polite" class="vh">
+        <div
+          role="status"
+          aria-live="polite"
+          class="vh">
           <!--
       when there is an error, we want list it in here, to a screen reader
       can pick it up and read out the announcement
       -->
           {{ announcement }}
-          <div v-if="errors" class="errors">
-            <p v-for="(key, val) in errors.all()">
+          <div
+            v-if="errors"
+            class="errors">
+            <p
+              v-for="(key, val) in errors.all()"
+              :key="key">
               {{ key }}
             </p>
           </div>
         </div>
         {{ announcement }}
-        <form v-on:submit.prevent="sendPasswordReset">
+        <form
+          @submit.prevent="sendPasswordReset">
 
           <div class="w-100 mb3">
 
-            <input type="text" name="email" v-model="email"
-              class="input-reset pa2 ba  mt1"
+            <input
+              v-validate="'required|email'"
+              v-model="email"
               :class=" {'bg-washed-red': errors ? errors.has('email') : null}"
-              placeholder="your email address" aria-label="your email address"
-              v-validate="'required|email'" autocomplete="email"
+              class="input-reset pa2 ba  mt1"
+              type="text"
+              name="email"
+              placeholder="your email address"
+              autocomplete="email"
+              aria-label="your email address"
               @input="checkForValidFormSubmission"
-            />
+            >
 
             <div>
-              <small v-if="errors && errors.has('email')" class="red w-40">
-              {{ errors.first('email') }}
-            </small>
+              <small
+                v-if="errors && errors.has('email')"
+                class="red w-40">
+                {{ errors.first('email') }}
+              </small>
             </div>
           </div>
 
           <div class="mt2">
-            <button class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2" :class="{'bg-green pointer grow': formValid}" :disabled="!formValid" type="submit" name="button">
-                Reset Password
-              </button>
+            <button
+              :disabled="!formValid"
+              :class="{'bg-green pointer grow': formValid}"
+              class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2"
+              type="submit"
+              name="button">
+              Reset Password
+            </button>
           </div>
 
-          <router-link :to="{ name: 'signin' }" class="f6 ml4">Back to Sign in</router-link>
+          <router-link
+            :to="{ name: 'signin' }"
+            class="f6 ml4">
+            Back to Sign in
+          </router-link>
         </form>
       </div>
     </div>
 
-</div>
+  </div>
 </template>
 
 <script>

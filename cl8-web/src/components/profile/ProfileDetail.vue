@@ -3,7 +3,9 @@
 
     <div v-if="loading">
       <div class="spinner">
-        <img src="../../assets/loading.svg" alt="loading"/>
+        <img
+          src="../../assets/loading.svg"
+          alt="loading">
       </div>
     </div>
 
@@ -40,7 +42,9 @@
           </ul>
 
           <ul class="list">
-            <li v-if="profile.fields.website" class="list f5 website">
+            <li
+              v-if="profile.fields.website"
+              class="list f5 website">
               <a :href="websiteLink">{{ profile.fields.website }}</a>
               </li>
           </ul>
@@ -109,12 +113,12 @@ import linkify from '../../utils'
 export default {
   name: 'ProfileDetail',
   components: {
-    Gravatar,
+    Gravatar
   },
   props: ['auth', 'currentUser', 'fbtagList'],
   data() {
     return {
-      loading: true,
+      loading: true
     }
   },
   computed: {
@@ -151,14 +155,14 @@ export default {
       return this.profile.fields.blurb
         ? marked(this.profile.fields.blurb, { sanitize: true })
         : null
-    },
+    }
   },
   watch: {
     profile() {
       if (this.profile) {
         this.loading = false
       }
-    },
+    }
   },
   methods: {
     canEdit: function() {
@@ -198,7 +202,7 @@ export default {
         debug(`error`, this.profile.fields, e)
         return false
       }
-    },
+    }
   },
   created() {
     debug('created!', this.profile)
@@ -217,7 +221,7 @@ export default {
     } else {
       this.loading = false
     }
-  },
+  }
 }
 </script>
 

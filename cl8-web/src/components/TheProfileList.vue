@@ -1,39 +1,46 @@
 <template>
-<div>
+  <div>
 
     <div v-if="loading">
       <div class="spinner">
-        <img src="../assets/loading.svg" alt="loading"/>
+        <img
+          src="../assets/loading.svg"
+          alt="loading">
+
       </div>
-    </div> 
+    </div>
 
     <div v-else>
       <div class="tag-list ba b--light-silver">
         <p>
-          <button v-for="tag in activeTags" :key="tag"
-            @click.stop.prevent="toggleTag" 
+          <button
+            v-for="tag in activeTags"
+            :key="tag"
             class="remove-tag list pa2 ma1 ph3 b--light-silver ba br2 b--white ba br2 bg-dark-blue white relative bg-animate hover-bg-light-blue">
+            @click.stop.prevent="toggleTag"
             {{ tag }}
           </button>
         </p>
       </div>
 
       <ul class="list ml0 pl0">
-        <profile-search-item v-for="item in searchResults" :item="item" :key="item.id" />
+        <profile-search-item
+          v-for="item in searchResults"
+          :item="item"
+          :key="item.id" />
       </ul>
     </div>
 
-</div>
-  
+  </div>
+
 </template>
 
 <script>
-import ProfileSearchItem from '@/components/profile/ProfileSearchItem.vue'
+import { includes } from 'lodash'
 
+import ProfileSearchItem from '@/components/profile/ProfileSearchItem.vue'
 import debugLib from 'debug'
 const debug = debugLib('cl8.TheProfileList')
-
-import { includes } from 'lodash'
 
 const searchKeys = ['fields.name', 'fields.email', 'fields.tags.name']
 const searchOptions = {
@@ -72,6 +79,24 @@ export default {
       this.checkAgainstSearch()
     }
   },
+  created() {
+    debug('created')
+    this.$store.commit('startLoading')
+
+    // make a new promise to fetch this stuff, then after they have loaded show the stuff
+    this.$store
+      .dispatch('fetchVisibleProfileList')
+      .then(() => {
+        debug('loaded the profiles in the component')
+        this.searchResults = this.methodResults
+        this.$store.commit('stopLoading')
+        this.loading = false
+      })
+      .catch(err => {
+        debug("couldn't load in the profile: ", err)
+      })
+  },
+
   methods: {
     checkAgainstSearch() {
       debug('checkAgainstSearch: filtering against matching tags:', this.term)
@@ -96,7 +121,7 @@ export default {
     matchingTags() {
       let terms = this.activeTags
       debug('matchingTags', terms)
-      if (typeof terms === 'undefined' || terms == '') {
+      if (typeof terms === 'undefined' || terms === '') {
         return this.methodResults
       }
       let matchingPeeps = this.methodResults
@@ -118,27 +143,10 @@ export default {
         })
       })
       let visiblePeeps = peepsWithTags.filter(function(peep) {
-        return peep.fields.visible == 'yes'
+        return peep.fields.visible === 'yes'
       })
       return visiblePeeps
     }
-  },
-  created() {
-    debug('created')
-    this.$store.commit('startLoading')
-
-    // make a new promise to fetch this stuff, then after they have loaded show the stuff
-    this.$store
-      .dispatch('fetchVisibleProfileList')
-      .then(() => {
-        debug('loaded the profiles in the component')
-        this.searchResults = this.methodResults
-        this.$store.commit('stopLoading')
-        this.loading = false
-      })
-      .catch(err => {
-        debug("couldn't load in the component: ", payload, 'failed', error)
-      })
   }
 }
 </script>

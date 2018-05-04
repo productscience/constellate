@@ -1,19 +1,19 @@
 <template>
   <div class="cf bg-white bg-network">
-    
+
     <div>
-      <nav-header-logged-in @myProfile="setUserProfile"></nav-header-logged-in>
-  
+      <nav-header-logged-in @myProfile="setUserProfile" />
+
       <div class="profile-holder fl w-two-thirds pa br b--light-silver">
-        <profile-detail></profile-detail>
+        <profile-detail />
       </div>
 
       <div class="side-column fl w-third pa2">
-       <the-profile-list />
-    
+        <the-profile-list />
+
       </div>
     </div>
-  
+
   </div>
 
 </template>

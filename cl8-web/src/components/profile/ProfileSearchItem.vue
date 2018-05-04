@@ -1,13 +1,19 @@
 <template>
-  <li class="list peep cf ma2" :data-atid="item.id" @click="profileChosen"
-  v-if="hasfields()">
+  <li
+    v-if="hasfields()"
+    :data-atid="item.id"
+    class="list peep cf ma2"
+    @click="profileChosen">
 
-    <img v-if="hasPhoto()"
+    <img
+      v-if="hasPhoto()"
       :src="showPhoto('small')"
-      class="supplied-photo fl b--light-silver ba" />
+      class="supplied-photo fl b--light-silver ba">
 
-    <v-gravatar v-else
-      :email="item.fields.email" :size="36"
+    <v-gravatar
+      v-else
+      :email="item.fields.email"
+      :size="36"
       class="gravatar fl b--light-silver ba" />
 
     <div class="fl w60">
@@ -26,7 +32,22 @@ const debug = debugLib('cl8.ProfileSearchItem')
 Vue.component('v-gravatar', Gravatar)
 
 export default {
-  props: ['item'],
+  components: {
+    Gravatar
+  },
+  props: {
+    item: {
+      type: Object,
+      default: function() {
+        return {
+          fields: {
+            name: 'default',
+            photo: []
+          }
+        }
+      }
+    }
+  },
   data() {
     return {}
   },
@@ -62,10 +83,7 @@ export default {
         debug(`error`, this.item.fields, e)
         return false
       }
-    },
-  },
-  components: {
-    Gravatar,
-  },
+    }
+  }
 }
 </script>

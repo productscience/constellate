@@ -25,6 +25,11 @@ selenium-debug.log
 .env.*.sh
 */service-accounts/*
 
+.env.local
+.env.*.local
+
+
+
 # functions
 functions/dist/*
 
@@ -37,6 +42,4 @@ functions/dist/*
 
 
 *.DS_Store
-
-
 coverage

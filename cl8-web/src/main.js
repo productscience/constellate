@@ -26,7 +26,7 @@ Vue.use(VueFuse)
 Vue.use(VueFire)
 
 Vue.use(VueAnalytics, {
-  id: process.env.GOOGLE_ANALYTICS_UA,
+  id: process.env.VUE_APP_GOOGLE_ANALYTICS_UA,
   router
 })
 
@@ -65,11 +65,9 @@ fbase.auth().onAuthStateChanged(firebaseUser => {
   if (!app) {
     store.commit('stopLoading')
     app = new Vue({
-      el: '#app',
       router,
       store,
-      template: '<App/>',
-      components: { App }
-    })
+      render: h => h(App)
+    }).$mount("#app");
   }
 })

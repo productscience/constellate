@@ -40,9 +40,7 @@
     class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
     Cancel
     </router-link>
-    </div>
 
-    </div>
 
   </div>
 </template>
@@ -61,7 +59,7 @@ export default {
   data() {
     return {
       localPhoto: null,
-      localPhotoUpload: null,
+      localPhotoUpload: null
     }
   },
   computed: {
@@ -70,7 +68,7 @@ export default {
     },
     profile() {
       return this.$store.getters.profile
-    },
+    }
   },
   methods: {
     canEdit: function() {
@@ -117,7 +115,7 @@ export default {
       let payload = { profile: this.profile, photo: ev.target[0].files[0] }
       debug('sending to firebase', payload)
       this.$store.dispatch('updateProfilePhoto', payload)
-    },
+    }
   },
   created() {
     this.$store.commit('startLoading')
@@ -132,7 +130,7 @@ export default {
           debug("couldn't load in the component: ", payload, 'failed', error)
         })
     }
-  },
+  }
 }
 </script>
 

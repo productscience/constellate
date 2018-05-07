@@ -2,24 +2,32 @@
   <li
     v-if="hasfields()"
     :data-atid="item.id"
-    class="list peep cf ma2"
+    class="list peep cf pa3 bb b--light-gray mid-gray hover-bg-white"
     @click="profileChosen">
 
     <img
       v-if="hasPhoto()"
       :src="showPhoto('small')"
-      class="supplied-photo fl b--light-silver ba">
+      class='dib w-20'>
 
     <v-gravatar
       v-else
       :email="item.fields.email"
-      :size="36"
+      :size="64"
       class="gravatar fl b--light-silver ba" />
 
-    <div class="fl w60">
-      <ul class="list pt2 mt0 ml0 pl1">
-        <li class="name b">{{ item.fields.name }}</li>
+    <div class="dib w-70 ph2 flex-auto v-top h3 h-auto-m overflow-hidden">
+      <ul class="list pt1 mt0 ml0 pl0 pb1 f4-m">
+        <li class="name mid-gray">{{ item.fields.name }}</li>
       </ul>
+      <div class="dib mt1-m">
+        <div
+          class="dib mr2 black-30 f7 f6-m"
+          v-for="tag in item.fields.tags"
+          :key="tag.id">
+          {{tag.name}}
+          </div>
+        </div>
     </div>
   </li>
 </template>
@@ -56,6 +64,11 @@ export default {
     profileChosen() {
       debug(this.item)
       this.$store.commit('setProfile', this.item)
+
+      // if (this.$store.state.profile && this.$store.state.profile.id === this.item.id){
+      // this.$store.commit('setProfile', null)
+      // } else {
+      // this.$store.commit('setProfile', this.item)
     },
     hasfields() {
       if (typeof this.item.fields === 'undefined') {
@@ -87,3 +100,9 @@ export default {
   }
 }
 </script>
+
+<style>
+li {
+  cursor: pointer;
+}
+</style>

@@ -1,16 +1,17 @@
 <template>
   <div class="cf bg-white">
+    <nav-header-edit />
     <div class="fl pa2">
-      <div class="pa3 center cf">
+      <div class="pa3 center w-80-l cf">
         <div>
           <form class="" v-if="profile">
-            <div class="cf" style="min-height:11em;">
-              <div class="fl">
+            <div class="cf w-100" style="min-height:11em;">
+              <div class="fl w-100 w-25-ns mb3">
 
                 <router-link :to="{ name: 'editProfilePhoto' }">
                   <img v-if="hasPhoto()"
                   :src="showPhoto('large')"
-                  class="supplied-photo b--light-silver ba" />
+                  class="supplied-photo b--light-silver ba w-40 w-80-ns v-top fn-ns" />
 
                   <v-gravatar v-else
                     :email="profile.fields.email"
@@ -18,7 +19,7 @@
                     class="gravatar b--light-silver ba" />
                 </router-link>
 
-                <div class="">
+                <div class="w-40 w-100-ns fn-ns pl2 pl0-ns dib v-btm">
                     <input tabindex="1" class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
                     <label for="yes">Visible</label>
                     <br>
@@ -26,7 +27,7 @@
                     <label for="no">Invisible</label>
 
                     <div v-if="this.profile.fields.visible == 'yes'"
-                    class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-green ma2 w-80" >
+                    class="pointer f6 link dim br2 ph3 pv2 mb2 dib white bg-green ma2 w-80" >
                         Visible
                     </div>
                     <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red w-80 ma2">
@@ -35,8 +36,8 @@
                 </div>
               </div>
 
-              <div class="fl mt0 pt0">
-                <ul class="list mt0 pt0 f4 pl0 ml0">
+              <div class="fl w-100 w-75-ns mt0 pt0">
+                <ul class="list mt0 pt0 f4">
                   <li class="list name">
                     <label class="f5" for="">name</label>
                     <input class="w-100 mt1 pa1"  v-model="profile.fields.name" />
@@ -56,7 +57,7 @@
                   </li>
                 </ul>
 
-                <ul class="list mt0 pt0  pl0 ml0">
+                <ul class="list mt0 pt0">
                   <li class="list twitter">
                     <label class="f5" for="">twitter <small>(just add your @username)</small></label>
                     <input class="w-100 mt1 pa1"  v-model="profile.fields.twitter" />
@@ -86,45 +87,25 @@
 
               </div>
 
-            </div>
+              <div class="cf pt2 bg-white mb4 mb5">
+                <label class="typo__label">Skills and interests </label>
+                <p class="f6 mb0"><em>(type below to add new tags)</em></p>
+                <profile-tags-component
+                  :data="profile.fields.tags"
+                  :options="profileTags"
+                  @newtag="addTag">
+                </profile-tags-component>
+              </div>
+              </div>
 
-            <div class="cf pt2 bg-near-white pa3">
-              <label class="typo__label">Skills and interests </label>
-              <p class="f6 mb0"><em>(type below to add new tags)</em></p>
-              <multiselect v-model="profile.fields.tags"
-                class="pt3 pb3"
-                tag-placeholder="Add this as new tag"
-                placeholder="Search or add a tag"
-                label="name" track-by="id"
-                :options="profileTags"
-                :multiple="true" :taggable="true"
-                @tag="addTag"></multiselect>
-            </div>
-
-            <ul class='list tags ml0 pl0'>
-        <li
-          v-for="tag in profile.fields.tags" :key="tag.name"
-          class="list bg-white pa2 ma1 ph3 b--light-silver ba br2 bg-animate hover-bg-blue hover-white">
-          {{ tag.name }}
-        </li>
-      </ul>
-
-
-            <p class="f6">
-              <em>
-                Email gavin@dgen.net to remove your account
-              </em>
-            </p>
-
-            <hr>
-
-            <a href="#"
-              v-on:submit.prevent="onSubmit" @click="onSubmit"
-              class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-              Save
-            </a>
+              <p class="f6 tc gray">
+                <em>
+                  Email gavin@dgen.net to remove your account
+                </em>
+              </p>
 
           </form>
+
         </div>
       </div>
     </div>
@@ -133,7 +114,8 @@
 
 <script>
 /* eslint-disable */
-import Multiselect from 'vue-multiselect'
+import NavHeaderEdit from '../shared/NavHeaderEdit.vue'
+import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
 import { includes } from 'lodash'
 import debugLib from 'debug'
 import fbase from '@/fbase'
@@ -143,7 +125,8 @@ const debug = debugLib('cl8.ProfileEdit')
 export default {
   name: 'ProfileEdit',
   components: {
-    Multiselect
+    NavHeaderEdit,
+    ProfileTagsComponent
   },
   firebase: function() {
     return {

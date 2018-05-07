@@ -3,10 +3,10 @@
 
     <div v-if="loading">
       <div class="spinner">
-        <img
-          src="../../assets/loading.svg"
-          alt="loading">
-      </div>
+        <img src="../../assets/loading.svg"
+            alt="loading"
+            width="50px">
+        </div>
     </div>
 
     <div v-else>
@@ -61,10 +61,9 @@
               </li>
           </ul>
         </div>
-      </div>
 
 
-      <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
+            <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
           <div v-html="blurbOutput"></div>
         </div>
 

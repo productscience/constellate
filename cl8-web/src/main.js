@@ -30,17 +30,16 @@ Vue.use(VueAnalytics, {
   router
 })
 
-
 router.beforeEach((to, from, next) => {
   debug(to.name, to.from)
   let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   let currentUser = fbase.auth().currentUser
   debug('currentUser:', currentUser)
-  
+
   if (currentUser && to.name === 'signin') {
     next('home')
   }
-  
+
   if (currentUser) {
     debug(`store.commit('setFBUser', ${currentUser})`)
     store.commit('setFBUser', currentUser)
@@ -68,6 +67,6 @@ fbase.auth().onAuthStateChanged(firebaseUser => {
       router,
       store,
       render: h => h(App)
-    }).$mount("#app");
+    }).$mount('#app')
   }
 })

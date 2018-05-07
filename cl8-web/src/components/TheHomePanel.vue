@@ -1,14 +1,16 @@
 <template>
-  <div class="cf bg-white bg-network">
+  <div class="cf bg-white bg-network mainframe">
 
     <div>
-      <nav-header-logged-in @myProfile="setUserProfile" />
+      <nav-header-logged-in
+        class="navnav fixed relative-l"
+         />
 
-      <div class="profile-holder fl w-two-thirds pa br b--light-silver">
+      <div class="profile-holder fr-ns w-two-thirds-ns w-100-m pa">
         <profile-detail />
       </div>
 
-      <div class="side-column fl w-third pa2">
+      <div class="side-column fl w-100 w-third-ns bt-s bt-m w-100-m bg-white br b--light-gray">
         <the-profile-list />
 
       </div>

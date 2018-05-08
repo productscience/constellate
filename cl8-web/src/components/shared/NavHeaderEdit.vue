@@ -7,16 +7,31 @@
           class="fr v-btm f6 mr3 link br2 ph3 pv2 dib white bg-gray hover-bg-green">
           Save
         </a>
-        <a href="javascript:history.back()"
+        <router-link
+          :to="{ name: 'home' }"
           class="fr v-btm f6 link br2 ph3 pv2 dib white bg-gray hover-bg-dark-gray">
           cancel
-        </a>
+        </router-link>
     </nav>
   </div>
 </template>
 
 <script>
+import debugLib from 'debug'
+const debug = debugLib('cl8.NavHeaderEdit')
+
 export default {
-  name: 'NavHeaderEdit'
+  name: 'NavHeaderEdit',
+  computed: {
+    profile() {
+      return this.$store.getters.profile
+    }
+  },
+  methods: {
+    onSubmit: function(item) {
+      debug('updating profile', this.profile)
+      this.$store.dispatch('updateProfile', this.profile)
+    }
+  }
 }
 </script>

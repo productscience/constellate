@@ -216,7 +216,16 @@ export default {
           debug("couldn't load profile", error)
         })
     } else {
-      this.loading = false
+      this.loading = true
+      this.$store
+        .dispatch('fetchProfile', this.user.uid)
+        .then(() => {
+          debug('loaded the user profile')
+          this.loading = false
+        })
+        .catch(err => {
+          debug("couldn't load profile", error)
+        })
     }
   }
 }

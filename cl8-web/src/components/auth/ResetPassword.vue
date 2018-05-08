@@ -18,7 +18,7 @@
             v-if="errors"
             class="errors">
             <p
-              v-for="(key, val) in errors.all()"
+              v-for="(key) in errors.all()"
               :key="key">
               {{ key }}
             </p>

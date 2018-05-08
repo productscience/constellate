@@ -19,7 +19,7 @@
       can pick it up and read out the announcement
       -->
         <div v-if="errors" class="errors">
-          <p v-for="(key, val) in errors.all()" v-bind:key="key">
+          <p v-for="(key) in errors.all()" v-bind:key="key">
             {{ key }}
           </p>
         </div>
@@ -41,7 +41,7 @@
             {{ errors.first('email') }}
             </small>
           </div>
-          
+
 
 
         </div>
@@ -60,14 +60,14 @@
           {{ errors.first('password') }}
         </small>
           </div>
-          
+
         </div>
 
         <div class="mt2">
-          <button 
+          <button
             class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2"
             :class="{'bg-green pointer grow': formValid}"
-            :disabled="!formValid" 
+            :disabled="!formValid"
             :id="formValid" type="submit"
             name="button">
             Sign in

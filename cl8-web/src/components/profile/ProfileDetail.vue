@@ -23,7 +23,7 @@
         <div class="fl w-70 w-20-m w-20-l mr3">
 
           <img v-if="hasPhoto()"
-            :src="profile.fields.photo[0].thumbnails.large.url"
+            :src="showPhoto('large')"
             class="supplied-photo b--light-gray ba" />
 
           <v-gravatar v-else

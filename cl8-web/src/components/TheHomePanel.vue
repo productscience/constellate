@@ -81,12 +81,12 @@ p span.list {
 }
 
 .bg-network {
-  background-image: url(../assets/network-watermark.png);
-  background-repeat: no-repeat;
+  /* background-image: url(../assets/network-watermark.png); */
+  /* background-repeat: no-repeat; */
 }
 
 .profile-holder {
-  box-shadow: 5px 0px 20px #ddd;
+  /* box-shadow: 5px 0px 20px #ddd; */
 }
 
 button.remove-tag {

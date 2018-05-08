@@ -11,9 +11,9 @@
 
   <div class="v-mid sign-in-prompt">
 
-    <h2 class="pt5 pl6">Constellation</h2>
-    <div class="w-100 pl6">
-      <div role="status" aria-live="polite" class="vh">
+    <h2 class="pt5 tc fw3 tracked">Constellation</h2>
+    <div class="w-100 tc">
+      <div role="status" aria-live="polite" class="vh dib">
         <!--
       when there is an error, we want list it in here, to a screen reader
       can pick it up and read out the announcement
@@ -24,12 +24,12 @@
           </p>
         </div>
       </div>
-      <form v-on:submit.prevent="signIn">
+      <form v-on:submit.prevent="signIn" class='w-100 pa3 dib border-box mw5'>
 
         <div class="w-100 mb3">
 
-          <input type="text" name="email" v-model="email" class="input-reset pa2 ba  mt1"
-            :class=" {'bg-washed-red': errors ? errors.has('email') : null}"
+          <input type="text" name="email" v-model="email" class="input-reset br2 pa2 ba b--light-gray mt1 w-100"
+            :class=" {'bg-washed-red b--red': errors ? errors.has('email') : null}"
             placeholder="your email address"
             aria-label="your email address"
             v-validate="'required|email'"
@@ -48,7 +48,7 @@
 
         <div class="w-100">
           <input type="password" name="password" v-model="password"
-            class="input-reset pa2 ba" :class=" {'bg-washed-red': errors && errors.has('password') }"
+            class="input-reset pa2 ba br2 b--light-gray w-100" :class=" {'bg-washed-red b--red': errors && errors.has('password') }"
             placeholder="your password"
             v-validate="'required|min:6'"
             aria-label="your password"
@@ -65,8 +65,8 @@
 
         <div class="mt2">
           <button
-            class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2"
-            :class="{'bg-green pointer grow': formValid}"
+            class="f6 link br2 bn ph3 pv2 mb2 bg-light-silver white w-80 ml0 mt2"
+            :class="{'bg-blue pointer grow hover-bg-dark-blue': formValid}"
             :disabled="!formValid"
             :id="formValid" type="submit"
             name="button">
@@ -74,7 +74,7 @@
           </button>
         </div>
 
-        <router-link :to="{ name: 'resetPassword' }" class="f6 ml4">Reset password</router-link>
+        <router-link :to="{ name: 'resetPassword' }" class="f6 gray link">Reset password</router-link>
 
 
       </form>
@@ -146,12 +146,13 @@ export default {
 <style>
 @import '../../../node_modules/tachyons/css/tachyons.css';
 
+input {
+  outline-style: none;
+}
+
 .sign-in-prompt {
-  width: 500px;
-  height: 500px;
   margin-left: auto;
   margin-right: auto;
-  background-image: url(../../assets/earth-transparent.png);
   background-repeat: no-repeat;
 }
 

@@ -1,10 +1,10 @@
 <template>
   <div class="w-100">
 
-    <div class="v-mid sign-in-prompt">
+    <div class="v-mid sign-in-prompt pa3">
 
-      <h2 class="pt5 pl6">Constellation</h2>
-      <div class="w-100 pl6">
+      <h2 class="pt5 fw3 tracked tc">Constellation</h2>
+      <div class="w-100 tc">
         <div
           role="status"
           aria-live="polite"
@@ -26,7 +26,7 @@
         </div>
         {{ announcement }}
         <form
-          @submit.prevent="sendPasswordReset">
+          @submit.prevent="sendPasswordReset" class='mw5 tc center'>
 
           <div class="w-100 mb3">
 
@@ -34,7 +34,7 @@
               v-validate="'required|email'"
               v-model="email"
               :class=" {'bg-washed-red': errors ? errors.has('email') : null}"
-              class="input-reset pa2 ba  mt1"
+              class="input-reset pa2 ba mt1 w-100 b--light-gray br2"
               type="text"
               name="email"
               placeholder="your email address"
@@ -55,8 +55,8 @@
           <div class="mt2">
             <button
               :disabled="!formValid"
-              :class="{'bg-green pointer grow': formValid}"
-              class="f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2"
+              :class="{'bg-blue hover-bg-dark-blue pointer grow': formValid}"
+              class="f6 link br2 bn ph3 pv2 mb2 bg-light-silver white w-80 ml0 mt2"
               type="submit"
               name="button">
               Reset Password
@@ -65,7 +65,7 @@
 
           <router-link
             :to="{ name: 'signin' }"
-            class="f6 ml4">
+            class="f6 link">
             Back to Sign in
           </router-link>
         </form>
@@ -130,11 +130,8 @@ export default {
 @import '../../../node_modules/tachyons/css/tachyons.css';
 
 .sign-in-prompt {
-  width: 500px;
-  height: 500px;
   margin-left: auto;
   margin-right: auto;
-  background-image: url(../../assets/earth-transparent.png);
   background-repeat: no-repeat;
 }
 

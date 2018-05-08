@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="cf bg-light-gray center w-100 mw8">
+  <div id="app" class="cf center w-100 mw8">
     <router-view></router-view>
   </div>
 </template>
@@ -20,7 +20,5 @@ export default {
 </script>
 
 <style>
-#app {
-  box-shadow: 0 0 3px rgb(0, 0, 0, 0.1);
-}
+
 </style>

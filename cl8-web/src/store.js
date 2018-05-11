@@ -16,9 +16,10 @@ export default new Vuex.Store({
     searchTags: [],
     profile: null,
     profilePhoto: null,
+    profileShowing: true,
     profileList: [],
     visibleProfileList: [],
-    requestUrl: null,
+    requestUrl: null
   },
   getters: {
     currentUser: function(state) {
@@ -45,13 +46,16 @@ export default new Vuex.Store({
       debug('getting profileList')
       return state.profileList
     },
+    profileShowing: function(state) {
+      return state.profileShowing
+    },
     visibleProfileList: function(state) {
       debug('getting visibleProfileList')
       return state.visibleProfileList
     },
     requestUrl: function(state) {
       return state.requestUrl
-    },
+    }
   },
   mutations: {
     stopLoading: function(state) {
@@ -83,6 +87,7 @@ export default new Vuex.Store({
     },
     setProfile: function(state, payload) {
       debug('setProfile', payload)
+      state.profileShowing = true
       state.profile = payload
     },
     setProfilePhoto: function(state, payload) {
@@ -97,10 +102,14 @@ export default new Vuex.Store({
       debug('setVisibleProfileList', payload)
       state.visibleProfileList = payload
     },
+    toggleProfileShowing: function(state) {
+      debug('profileShowing', state.profileShowing)
+      state.profileShowing = !state.profileShowing
+    },
     setRequestUrl: function(state, payload) {
       debug('setrequestUrl', payload)
       state.requestUrl = payload
-    },
+    }
   },
   actions: {
     // otherwise log user in here
@@ -289,7 +298,7 @@ export default new Vuex.Store({
       debug('uploadedFileName', payload.photo)
       debug('uploadedFileName', uploadedFileName)
       const metadata = {
-        contentType: 'image/jpeg',
+        contentType: 'image/jpeg'
       }
       return new Promise((resolve, reject) => {
         fbase
@@ -303,7 +312,7 @@ export default new Vuex.Store({
             // build the photo array to pass in with the profile
             let returnedPhoto = {
               url: snapshot.downloadURL,
-              thumbnails: {},
+              thumbnails: {}
             }
             // if there is no previous photo added from airtable, we need to create the
             // property
@@ -334,6 +343,6 @@ export default new Vuex.Store({
             debug('Saving uploaded photo: ', payload, 'failed', error)
           })
       })
-    },
-  },
+    }
+  }
 })

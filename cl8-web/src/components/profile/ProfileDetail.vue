@@ -1,5 +1,5 @@
 <template>
-  <div class="theprofile pa3 pa4-ns center w-100 cf border-box fixed relative-l bg-white">
+  <div class="theprofile pa3 pa4-ns center w-100 cf border-box fixed relative-l bg-white" >
 
     <div v-if="loading">
       <div class="spinner">
@@ -9,15 +9,14 @@
         </div>
     </div>
 
-    <div v-else class="">
-
+    <div v-else>
         <div v-if="canEdit()" class='fn fr-l'>
         <router-link :to="{ name: 'editProfile' }"
           class="f6 link dim br2 ph3 pv2 mb3 dib white bg-gray">
           Edit profile
         </router-link>
         </div>
-        <button class='closeProfile ma3 ma4-ns' @click="$store.commit('setProfile',null)"></button>
+        <button class='closeProfile ma3 ma4-ns' @click="$store.commit('toggleProfileShowing')"></button>
 
 
         <div class="fl w-70 w-20-m w-20-l mr3">
@@ -75,7 +74,7 @@
           </ul>
         </div>
 
-        <div class="fl cf pt2 w-100 ">
+        <div class="fl cf pt2 w-100">
           <ul class='db list tags ml0 pl0'>
             <li
               v-for="tag in profile.fields.tags" v-bind:key="tag.name"
@@ -85,12 +84,14 @@
                 {{ tag.name.toLowerCase().trim() }}
             </li>
           </ul>
-        </div>
 
-        <div v-if="this.profile.fields.blurb" class="blurb lh-copy measure-wide">
+                  <div v-if="this.profile.fields.blurb" class="w-100 blurb lh-copy measure-wide">
           <div v-html="blurbOutput"></div>
         </div>
-    </div>
+        </div>
+
+
+      </div>
   </div>
 
 </template>
@@ -203,9 +204,11 @@ export default {
   },
   created() {
     debug('created!', this.profile)
-    if (!this.profile) {
+    if (!this.profile || this.profile.id == this.user.uid) {
       this.loading = true
-      debug('no profile seen. Loading profile for user')
+      debug(
+        'no profile seen, or the current needs a refresh. Loading profile for user'
+      )
       this.$store
         .dispatch('fetchProfile', this.user.uid)
         .then(() => {
@@ -216,16 +219,7 @@ export default {
           debug("couldn't load profile", error)
         })
     } else {
-      this.loading = true
-      this.$store
-        .dispatch('fetchProfile', this.user.uid)
-        .then(() => {
-          debug('loaded the user profile')
-          this.loading = false
-        })
-        .catch(err => {
-          debug("couldn't load profile", error)
-        })
+      this.loading = false
     }
   }
 }

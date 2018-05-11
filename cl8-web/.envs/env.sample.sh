@@ -1,7 +1,7 @@
 ##############
 # MUNSTER
 ##############
-
+export SLACK_NOTIFY_CALLBACK_URL="TAKEN_FROM_SLACK"
 export PROJECT_PATH="INSERT_PATH"
 
 ### Firebase

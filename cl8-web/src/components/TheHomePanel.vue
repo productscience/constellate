@@ -6,7 +6,7 @@
         class="navnav fixed relative-l"
          />
 
-      <div class="profile-holder fr-ns w-two-thirds-ns w-100-m pa">
+      <div class="profile-holder fr-ns w-two-thirds-ns w-100-m pa" v-if="profileShowing">
         <profile-detail />
       </div>
 
@@ -41,7 +41,11 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    profileShowing() {
+      return this.$store.getters.profileShowing
+    }
+  },
   watch: {},
   methods: {},
   created() {

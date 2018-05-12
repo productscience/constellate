@@ -15,7 +15,7 @@ module.exports = FirebaseWrapper
  * 'https://constellate-test.firebaseio.com'
  * @returns
  */
-function FirebaseWrapper (admin) {
+function FirebaseWrapper(admin) {
   /**
    * Fetches the first 1000 users in an account.
    * We assume we don't have more than 1000 users, and instead return the user array
@@ -26,7 +26,8 @@ function FirebaseWrapper (admin) {
    *
    * @returns Array of user objects
    */
-  function getUsers () {
+
+  function getUsers() {
     return admin
       .auth()
       .listUsers()
@@ -38,7 +39,7 @@ function FirebaseWrapper (admin) {
       })
   }
 
-  function deleteUser (user) {
+  function deleteUser(user) {
     debug(user)
     // We can't control the ids these use, so we're better off:
     // fetching by email, then
@@ -58,7 +59,7 @@ function FirebaseWrapper (admin) {
             })
         }
       })
-      .catch(function (error) {
+      .catch(function(error) {
         // eslint-disable-next-line
         if (error.errorInfo.code == 'auth/user-not-found') {
           debug('user no longer exists:', user.fields.email)
@@ -74,7 +75,7 @@ function FirebaseWrapper (admin) {
    * @param {String} value
    * @returns {Promise}
    */
-  function deleteByfield (field, value) {
+  function deleteByfield(field, value) {
     debug(`query for field: ${field} with value: ${value}`)
 
     return admin
@@ -90,11 +91,11 @@ function FirebaseWrapper (admin) {
       })
   }
 
-  function checkForUser (user) {
+  function checkForUser(user) {
     return admin
       .auth()
       .getUserByEmail(user.fields.email)
-      .then(function (userRecord) {
+      .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
         debug(
           'Successfully fetched user data:',
@@ -111,7 +112,7 @@ function FirebaseWrapper (admin) {
    * @param {any} user
    * @returns
    */
-  async function getOrCreateUser (user) {
+  async function getOrCreateUser(user) {
     try {
       const fetchedUser = await checkForUser(user)
       return fetchedUser
@@ -152,7 +153,7 @@ function FirebaseWrapper (admin) {
    * @async
    * @returns Array of objects
    */
-  async function getUserList () {
+  async function getUserList() {
     debug('fetching user list from database')
     const userListRef = await admin
       .database()
@@ -174,7 +175,7 @@ function FirebaseWrapper (admin) {
    * @param {Object} userList, containing users, with keyed by ID
    * @returns {object} result, with boolean} saying if this was retreived or a new value, and 'user' key
    */
-  async function getOrCreateUserinUserList (user, userList) {
+  async function getOrCreateUserinUserList(user, userList) {
     // check for existence of user
     // eslint-disable-next-line
     const matchesUserId = returnedUser => returnedUser.id == user.id
@@ -199,7 +200,7 @@ function FirebaseWrapper (admin) {
    * @param {Object} user, with an id,
    * @returns {Object} user
    */
-  async function createUserInUserList (user) {
+  async function createUserInUserList(user) {
     const userListRef = await admin.database().ref('userlist')
 
     // Firebase will error if we send along an airtable object
@@ -230,7 +231,7 @@ function FirebaseWrapper (admin) {
    * @param {Array|null} userList
    * @returns {Object}
    */
-  async function addUserToUserList (user, userList) {
+  async function addUserToUserList(user, userList) {
     if (typeof userList === 'undefined') {
       throw Error("I couldn't see an userList provided, please provide one")
     }
@@ -246,11 +247,11 @@ function FirebaseWrapper (admin) {
   // TODO: implement this, when we need it
   // function removeUserfromUserList (user) {}
 
-  function updateUserInUserList (user) {
-    return getUserList(admin).then(function (userlist) {
+  function updateUserInUserList(user) {
+    return getUserList(admin).then(function(userlist) {
       let usersArray = _.values(userlist.val())
       // debug(usersArray[1])
-      let filteredUsers = usersArray.filter(function (returnedUser) {
+      let filteredUsers = usersArray.filter(function(returnedUser) {
         // eslint-disable-next-line
         return returnedUser.id == user.id
       })

@@ -12,7 +12,7 @@ module.exports = Cl8Importer
  * for Airtable and Firebase
  * @returns {Object} with methods to run the import scripts
  */
-function Cl8Importer (importerCredentials) {
+function Cl8Importer(importerCredentials) {
   const atbl = AirTableWrapper(
     importerCredentials.airTableCreds[0],
     importerCredentials.airTableCreds[1]
@@ -28,7 +28,7 @@ function Cl8Importer (importerCredentials) {
    *  a) the imported users, and
    *  b) users already imported previously
    */
-  async function importUsersAndTags () {
+  async function importUsersAndTags() {
     const collectedData = await fetchAllDataforSyncing()
 
     const enrichedPeeps = buildEnrichedPeeps(
@@ -79,7 +79,7 @@ function Cl8Importer (importerCredentials) {
    * * @param {Array} userList
    * @returns {Array} importedPeeps - an array of newly created user objects
    */
-  async function importUsersAcrossServices (peepsToImport, userList) {
+  async function importUsersAcrossServices(peepsToImport, userList) {
     debug('importUsersAcrossServices: importing ', peepsToImport.length)
     let importedPeeps = []
 
@@ -119,7 +119,7 @@ function Cl8Importer (importerCredentials) {
    * @returns {Object} with keyed with data structures to represent users from
    * Airtable, and Firebase.
    */
-  async function fetchAllDataforSyncing () {
+  async function fetchAllDataforSyncing() {
     const tags = await atbl.getTags()
     const peeps = await atbl.getUsers()
 
@@ -141,8 +141,8 @@ function Cl8Importer (importerCredentials) {
    * @param firebaseUserList array of user objects
    * @returns array of users to import
    */
-  function filterOutPeepsToImport (enrichedPeeps, firebaseUserList) {
-    function pulloutEmails (list) {
+  function filterOutPeepsToImport(enrichedPeeps, firebaseUserList) {
+    function pulloutEmails(list) {
       return _.map(_.values(list), rec => {
         // we need to check if rec is undefined, as I think the numerical indexes we started with,
         // can result in one of the values of 'list' here being `undefined`, which crashes the importer
@@ -198,7 +198,7 @@ function Cl8Importer (importerCredentials) {
    * @param {any} fullTagList
    * @returns
    */
-  function buildEnrichedPeeps (peepsList, fullTagList) {
+  function buildEnrichedPeeps(peepsList, fullTagList) {
     if (!peepsList) {
       throw new Error(`No list of users provided - peepsList: ${peepsList}`)
     }
@@ -207,7 +207,7 @@ function Cl8Importer (importerCredentials) {
     }
 
     let enrichedPeeps = []
-    peepsList.forEach(function (peep) {
+    peepsList.forEach(function(peep) {
       // debug("peep", peep)
       let newPeep = enrichPeep(peep, fullTagList)
       // debug("newpeep", newPeep)
@@ -224,7 +224,7 @@ function Cl8Importer (importerCredentials) {
    * @param {Array} tagsList
    * @returns {Object} peep with tag objects, instead of just tag ids
    */
-  function enrichPeep (peep, tagsList) {
+  function enrichPeep(peep, tagsList) {
     if (!peep) {
       throw new Error(`No user provided - peep: ${peep}`)
     }
@@ -232,14 +232,14 @@ function Cl8Importer (importerCredentials) {
       throw new Error(`No list of tags provided - tagsList: ${tagsList}`)
     }
 
-    function enrichTag (tagname) {
-      return tagsList.filter(function (tag) {
+    function enrichTag(tagname) {
+      return tagsList.filter(function(tag) {
         return tag.id === tagname
       })
     }
 
     if (typeof peep.fields.tags !== 'undefined') {
-      peep.fields.tags = peep.fields.tags.map(function (peepTag) {
+      peep.fields.tags = peep.fields.tags.map(function(peepTag) {
         let etag = enrichTag(peepTag)[0]
         return {
           id: etag.id,

@@ -14,7 +14,7 @@ module.exports = ProfileThumbnailer
  * @param {any} photoPath
  * @returns {Object}
  */
-function ProfileThumbnailer (admin, objectMetaData) {
+function ProfileThumbnailer(admin, objectMetaData) {
   /**
    * accepts a profile ID, and object representing a cloud file
    * fetches the file, and adds the thumbnails to the user's file
@@ -24,7 +24,7 @@ function ProfileThumbnailer (admin, objectMetaData) {
    * @returns
    */
 
-  async function updateProfile (profileId) {
+  async function updateProfile(profileId) {
     const photoPath = objectMetaData.name
 
     const pushKey = await lookupProfile('id', profileId)
@@ -52,7 +52,7 @@ function ProfileThumbnailer (admin, objectMetaData) {
    * @param {String} profileId
    * @returns {Promise} Snapshot
    */
-  function fetchProfile (firebaseKey) {
+  function fetchProfile(firebaseKey) {
     return admin
       .database()
       .ref('userlist')
@@ -69,7 +69,7 @@ function ProfileThumbnailer (admin, objectMetaData) {
    * @param {String} lookupValue
    * @returns {String} firebaseKey
    */
-  function lookupProfile (lookupKey, lookupValue) {
+  function lookupProfile(lookupKey, lookupValue) {
     debug('looking key: ', lookupKey, ' - with value:', lookupValue)
     return admin
       .database()
@@ -93,7 +93,7 @@ function ProfileThumbnailer (admin, objectMetaData) {
    * @param {MetaDataObject} fileObjectMetaData
    * @returns {string} profileId
    */
-  function isProfilePic (fileObjectMetaData) {
+  function isProfilePic(fileObjectMetaData) {
     const filePath = objectMetaData.name
     const fileName = path.basename(filePath)
 
@@ -120,7 +120,7 @@ function ProfileThumbnailer (admin, objectMetaData) {
    * @returns  {Promise} containing void
    *
    */
-  async function addPhotoUrls (profile, photoObject) {
+  async function addPhotoUrls(profile, photoObject) {
     debug('addPhotoUrls')
     debug('addPhotoUrls:profile', profile.val())
 

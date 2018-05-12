@@ -5,7 +5,7 @@ If you dont' want to use google cloud functions, you can run these scripts on th
 These use the `debug` library, so you can see much more logging be setting the DEBUG variable when running it:
 
 ```
-DEBUG="cl8*" babel-node clearUsersandDatabase.js
+DEBUG="cl8*" node importUsersAndTags.js
 ```
 
 #### Running quietly
@@ -13,14 +13,14 @@ DEBUG="cl8*" babel-node clearUsersandDatabase.js
 If you don't want this verbose logging, you can normally like so:
 
 ```
-babel-node clearUsersandDatabase.js
+node importUsersAndTags.js
 ```
 
 ### clearUsersandDatabase.js
 
-This script, whem run will delete all the user accounts, and the accompanying data from the real time database.
+This script, when run, will delete all the user accounts, and the accompanying data from the real time database.
 
-Use it to clear an installation before re-importing
+Use it to clear an installation before re-importing.
 
 ### importUsersAndTags.js
 

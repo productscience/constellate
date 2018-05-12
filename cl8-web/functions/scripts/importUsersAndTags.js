@@ -1,15 +1,14 @@
 const debug = require('debug')('cl8.importerUsersandTags')
 
-const Cl8Importer = require('../functions/src/importer.js')
+const Cl8Importer = require('../src/importer.js')
 
 const firebaseAdmin = require('firebase-admin')
 
-const devBase = process.env.AIRTABLE_BASE_DEV
-const devKey = process.env.AIRTABLE_API_KEY_DEV
+const devBase = process.env.AIRTABLE_BASE
+const devKey = process.env.AIRTABLE_APIKEY
 
-const serviceAccount = require('../functions/' +
-  process.env.FIREBASE_SERVICE_ACCOUNT_PATH_DEV)
-const databaseURL = process.env.FIREBASE_DATABASEURL_DEV
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+const databaseURL = process.env.FIREBASE_DATABASEURL
 
 // initialised it here instead of in functions
 firebaseAdmin.initializeApp({
@@ -19,12 +18,12 @@ firebaseAdmin.initializeApp({
 
 const importerCredentials = {
   airTableCreds: [devKey, devBase],
-  fbaseApp: firebaseAdmin
+  fbaseCreds: firebaseAdmin
 }
 
 const importer = Cl8Importer(importerCredentials)
 
-async function main () {
+async function main() {
   debug('Importing Users and Data:')
   await importer.importUsersAndTags()
   debug('Imported')

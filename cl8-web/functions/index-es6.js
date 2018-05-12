@@ -6,10 +6,7 @@ const CheckConfig = require('./dist/check-config.js')
 let serviceAccount = require('./service-account.json')
 
 // initialised it here instead of in functions
-admin.initializeApp({
-  serviceAccount: serviceAccount,
-  databaseURL: 'https://munster-setup.firebaseio.com',
-})
+admin.initializeApp()
 
 // just a check so you can run it in `firebase experimental:functions:shell`
 exports.helloWorld = functions.https.onRequest((request, response) => {
@@ -23,7 +20,7 @@ exports.generateSampleData = functions.storage.object().onFinalize(object => {
 })
 
 exports.checkConfig = functions.storage.object().onFinalize(object => {
-  console.log(functions.config())
+  // console.log(functions.config())
   return CheckConfig()
 })
 
@@ -31,6 +28,7 @@ exports.generateThumbnail = functions.storage
   .object()
   .onFinalize(async object => {
     console.log('running func - generateThumbnail')
+    console.log('admin', admin)
     const profThumb = ProfileThumbnailer(admin, object)
 
     console.log('generateThumbnail', profThumb)
@@ -54,9 +52,9 @@ exports.importUsers = functions.https.onRequest(async (request, response) => {
   const importerCredentials = {
     airTableCreds: [
       functions.config().airtable.key,
-      functions.config().airtable.base,
+      functions.config().airtable.base
     ],
-    fbaseApp: admin,
+    fbaseApp: admin
   }
 
   const importer = Cl8Importer(importerCredentials)

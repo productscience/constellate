@@ -17,7 +17,7 @@ module.exports = ThumbnailGenerator
  *
  * @returns {Object} with methods to run the import scripts
  */
-function ThumbnailGenerator (admin, fileObject) {
+function ThumbnailGenerator(admin, fileObject) {
   // const fileBucket = fileObject.bucket // The Storage bucket that contains the file.
 
   const filePath = fileObject.name // File path in the bucket.
@@ -43,7 +43,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @returns {Boolean} True/false based on if whether the objject is suitable for
    * making a thumbnail
    */
-  function validateObject () {
+  function validateObject() {
     // Exit if this is triggered on a file that is not an image.
     if (!contentType.startsWith('image/')) {
       debug('This is not an image.')
@@ -63,7 +63,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @param {String} destPath the intendedPath to download to
    * @returns {Promise} downloadFile returns the local path to the objectx
    */
-  function fetchImage (fetchPath, destPath) {
+  function fetchImage(fetchPath, destPath) {
     // debug('Object deets', fileObject)
     debug('Fetching image', fetchPath, 'to put at', destPath)
 
@@ -95,7 +95,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @returns {Promise} which resolves to exit code of the thumbnail code
    * returns the local path to the newly created thumbnails
    */
-  function makeThumbnails (origPath) {
+  function makeThumbnails(origPath) {
     const ext = path.extname(origPath)
     const baseName = path.basename(origPath, '.png')
 
@@ -142,7 +142,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @returns {Promise} of signed urls where the uploaded file can be accessed
    */
 
-  function saveThumb (thumbPath) {
+  function saveThumb(thumbPath) {
     // construct path on cloud storage
     const cloudThumbPath = path.join(filePath, 'thumbnails', thumbPath)
     const metadata = {
@@ -186,7 +186,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @param {Array} Array of paths of files
    * @returns {Promise} of signed urls where the uploaded file can be accessed
    */
-  function saveThumbs (pathArray) {
+  function saveThumbs(pathArray) {
     debug('uploading our thumbnails')
     // make our fetching promises, so we can use Promise.all to wait for the
     // results to come back
@@ -207,7 +207,7 @@ function ThumbnailGenerator (admin, fileObject) {
    * @param {any} profileId
    * @param {any} photo
    */
-  function createThumbsForProfile (fetchPath, destPath) {
+  function createThumbsForProfile(fetchPath, destPath) {
     // do we have a valid object to work with?
     if (!validateObject()) {
       throw new Error(
@@ -244,7 +244,7 @@ function ThumbnailGenerator (admin, fileObject) {
     )
   }
 
-  async function clearTempDir () {
+  async function clearTempDir() {
     debug('tmpdir exists? ', tmpDir, fs.existsSync(tmpDir))
     debug('clearing temp directory:', tmpDir)
     clearLocalThumbs(tmpDir)
@@ -252,7 +252,7 @@ function ThumbnailGenerator (admin, fileObject) {
     debug('tmpdir exists? ', tmpDir, fs.existsSync(tmpDir))
     debug('cleared')
   }
-  function clearLocalThumbs (filePath) {
+  function clearLocalThumbs(filePath) {
     fs.readdirSync(filePath).forEach(thumb => {
       fs.unlinkSync(path.join(tmpDir, thumb))
     })

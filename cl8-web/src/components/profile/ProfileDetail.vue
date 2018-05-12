@@ -23,12 +23,12 @@
 
           <img v-if="hasPhoto()"
             :src="showPhoto('large')"
-            class="supplied-photo b--light-gray ba" />
+            class="supplied-photo b--light-gray ba w-100" />
 
           <v-gravatar v-else
             :email="profile.fields.email"
             :size="200"
-            class="gravatar b--light-gray ba" />
+            class="gravatar b--light-gray ba w-100" />
 
           <div v-if="canEdit()">
               <div v-if="isVisible()"
@@ -197,8 +197,8 @@ export default {
       try {
         return this.profile.fields.photo[0].thumbnails[size].url
       } catch (e) {
-        debug(`error`, this.profile.fields, e)
-        return false
+        debug(`No thumbnails: `, this.profile.fields, e)
+        return this.profile.fields.photo[0].url
       }
     }
   },

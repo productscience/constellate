@@ -292,11 +292,11 @@ export default new Vuex.Store({
         })
     },
     updateProfilePhoto: function(context, payload) {
-      debug('sending photo update to Firebase', payload)
+      debug('updateProfilePhoto: sending photo update to Firebase', payload)
       const profileId = payload.profile.id
       const uploadedFileName = `profilePhotos/${profileId}-${Date.now()}`
-      debug('uploadedFileName', payload.photo)
-      debug('uploadedFileName', uploadedFileName)
+      debug('updateProfilePhoto: uploadedFileName', payload.photo)
+      debug('updateProfilePhoto: uploadedFileName', uploadedFileName)
       const metadata = {
         contentType: 'image/jpeg'
       }
@@ -308,39 +308,52 @@ export default new Vuex.Store({
           .child(uploadedFileName)
           .put(payload.photo, metadata)
           .then(snapshot => {
-            debug('Succesfully uploaded photo', snapshot)
+            debug('updateProfilePhoto: Succesfully uploaded photo', snapshot)
             // build the photo array to pass in with the profile
-            let returnedPhoto = {
-              url: snapshot.downloadURL,
-              thumbnails: {}
-            }
-            // if there is no previous photo added from airtable, we need to create the
-            // property
-            if (typeof payload.profile.fields.photo === 'undefined') {
-              payload.profile.fields.photo = []
-            }
-            payload.profile.fields.photo[0] = returnedPhoto
-            debug(
-              'payload.profile.fields.photo[0]',
-              payload.profile.fields.photo[0]
-            )
-            context
-              .dispatch('updateProfile', payload.profile)
-              .then(() => {
-                debug('profile updated')
-                resolve()
-              })
-              .catch(err => {
-                debug('Updating profile failed', err)
-                reject()
-              })
+            return snapshot.ref
+              .getDownloadURL()
+              .then(function(downloadURL) {
+                console.log(
+                  'updateProfilePhoto: File available at',
+                  downloadURL
+                )
+                let returnedPhoto = {
+                  url: downloadURL,
+                  thumbnails: {}
+                }
+                // if there is no previous photo added from airtable, we need to create the
+                // property
+                if (typeof payload.profile.fields.photo === 'undefined') {
+                  payload.profile.fields.photo = []
+                }
+                payload.profile.fields.photo[0] = returnedPhoto
+                debug(
+                  'updateProfilePhoto: payload.profile.fields.photo[0]',
+                  payload.profile.fields.photo[0]
+                )
+                context
+                  .dispatch('updateProfile', payload.profile)
+                  .then(() => {
+                    debug('updateProfilePhoto: profile updated')
+                    resolve()
+                  })
+                  .catch(err => {
+                    debug('updateProfilePhoto: Updating profile failed', err)
+                    reject()
+                  })
 
-            // TODO now we need to save the updated photo on the profile
-            // typically by dispatching a new action
-          })
-          .catch(error => {
-            reject()
-            debug('Saving uploaded photo: ', payload, 'failed', error)
+                // TODO now we need to save the updated photo on the profile
+                // typically by dispatching a new action
+              })
+              .catch(error => {
+                reject()
+                debug(
+                  'updateProfilePhoto: Saving uploaded photo: ',
+                  payload,
+                  'failed',
+                  error
+                )
+              })
           })
       })
     }

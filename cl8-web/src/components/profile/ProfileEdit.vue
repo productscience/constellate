@@ -232,7 +232,7 @@ export default {
         return this.profile.fields.photo[0].thumbnails[size].url
       } catch (e) {
         debug(`error`, this.profile.fields, e)
-        return false
+        return this.profile.fields.photo[0].url
       }
     },
     setUserProfile() {

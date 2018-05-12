@@ -10,7 +10,7 @@
       <img
         v-if="hasPhoto()"
         :src="showPhoto('large')"
-        class='supplied-photo'>
+        class='supplied-photo w-100'>
 
       <v-gravatar
         v-else
@@ -95,8 +95,8 @@ export default {
       try {
         return this.item.fields.photo[0].thumbnails[size].url
       } catch (e) {
-        debug(`error`, this.item.fields, e)
-        return false
+        debug(`No thumbnails`, this.item.fields, e)
+        return this.item.fields.photo[0].url
       }
     }
   }

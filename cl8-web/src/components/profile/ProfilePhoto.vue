@@ -96,7 +96,7 @@ export default {
         return this.profile.fields.photo[0].thumbnails[size].url
       } catch (e) {
         debug(`error`, e)
-        return false
+        return this.profile.fields.photo[0].url
       }
     },
     updatePhoto(ev) {

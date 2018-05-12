@@ -10,15 +10,13 @@
     "test": "vue-cli-service test",
     "lint": "vue-cli-service lint",
     "deploy": "firebase deploy --only hosting",
-    "release":
-      "vue-cli-service build && npm run deploy --scripts-prepend-node-path && npm run notify --scripts-prepend-node-path",
-    "firebase-cli": "firebase",
-    "notify": "node admin_scripts/notifySlackOfDeploy.js"
+    "release": "vue-cli-service build && npm run deploy",
+    "notify": "node scripts/notifySlackOfDeploy.js"
   },
   "dependencies": {
-    "firebase": "^4.13.1",
+    "firebase": "^5.0.2",
+    "lodash": "^4.17.4",
     "marked": "^0.3.19",
-    "market": "^1.0.0",
     "tachyons": "^4.9.1",
     "vee-validate": "^2.0.9",
     "vue": "^2.5.16",
@@ -37,8 +35,6 @@
     "@vue/cli-service": "^3.0.0-beta.9",
     "@vue/eslint-config-prettier": "^3.0.0-beta.9",
     "@vue/test-utils": "^1.0.0-beta.10",
-    "babel-core": "^7.0.0-0",
-    "babel-jest": "^22.0.4",
     "firebase-tools": "^3.18.4",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",

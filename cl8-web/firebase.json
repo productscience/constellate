@@ -2,14 +2,15 @@
   "hosting": {
     "public": "dist",
     "cleanUrls": true,
-    "ignore": [
-      "firebase.json"
-    ],
+    "ignore": ["firebase.json"],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "functions": {
+      "source": "server"
+    }
   }
 }

@@ -1,9 +1,8 @@
-const AirtableWrapper = require('../../functions/src/airtable-wrapper.js')
+const AirtableWrapper = require('../src/airtable-wrapper.js')
 const debug = require('debug')('cl8.test.airtable.wrapper')
 
-const devBase = process.env.AIRTABLE_BASE_TEST
-const devkey = process.env.AIRTABLE_API_KEY_TEST
-const peepTable = process.env.AIRTABLE_PERSON_NAME_TEST
+const devBase = process.env.AIRTABLE_BASE
+const devkey = process.env.AIRTABLE_APIKEY
 
 const atbl = AirtableWrapper(devkey, devBase)
 

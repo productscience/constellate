@@ -1,14 +1,14 @@
 const prompt = require('prompt')
 const debug = require('debug')('cl8.clearUsersAndDatabase')
 
-const Cl8Importer = require('../functions/src/importer.js')
+const Cl8Importer = require('../src/importer.js')
 
-const devBase = process.env.AIRTABLE_BASE_DEV
-const devKey = process.env.AIRTABLE_API_KEY_DEV
+const devBase = process.env.AIRTABLE_BASE
+const devKey = process.env.AIRTABLE_APIKEY
 
 const serviceAccount = require('../' +
-  process.env.FIREBASE_SERVICE_ACCOUNT_PATH_DEV)
-const databaseURL = process.env.FIREBASE_DATABASEURL_DEV
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+const databaseURL = process.env.FIREBASE_DATABASEURL
 
 const importerCredentials = {
   airTableCreds: [devKey, devBase],
@@ -17,7 +17,7 @@ const importerCredentials = {
 
 const importer = Cl8Importer(importerCredentials)
 
-async function clearFirebaseUserList () {
+async function clearFirebaseUserList() {
   debug('clearing the realtime database')
   // we don't use this later on, so we don't assign it to to a value
   await importer.fbase.admin
@@ -26,7 +26,7 @@ async function clearFirebaseUserList () {
     .set(null)
 }
 
-async function clearFirebaseAccounts () {
+async function clearFirebaseAccounts() {
   debug('clearFirebaseAccounts: clearing firebase accounts')
   // clear any users in the test account
   const userAccountsToClear = await importer.fbase.getUsers()
@@ -46,7 +46,7 @@ async function clearFirebaseAccounts () {
 }
 
 // for this constellation:
-async function main () {
+async function main() {
   console.log('This will clear the database at', databaseURL)
   console.log('Are you sure you want this?')
   const domainToCheck = databaseURL.split('.')[0].replace('https://', '')
@@ -55,7 +55,7 @@ async function main () {
 
   prompt.start()
 
-  prompt.get('confirmation', async function (err, result) {
+  prompt.get('confirmation', async function(err, result) {
     if (err) {
       throw err
     }

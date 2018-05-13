@@ -29,8 +29,8 @@ export AIRTABLE_BASE="appzxxxxxxxxxxxxx"
 # Google Analytics - optional
 export GOOGLE_ANALYTICS_UA="UA-XXXXXXXX-X"
 
-npm run firebase-cli use "$FIREBASE_PROJECTID" --scripts-prepend-node-path
-npm run firebase-cli list --scripts-prepend-node-path
+npx firebase use "$FIREBASE_PROJECTID"
+npx firebase list
 
 rm -rf "$PROJECT_PATH/.env.local"
 

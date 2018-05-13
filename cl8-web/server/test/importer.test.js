@@ -2,13 +2,12 @@ const debug = require('debug')('cl8.importer.test')
 
 const Cl8Importer = require('../../functions/src/importer.js')
 
-const devBase = process.env.AIRTABLE_BASE_TEST
-const devKey = process.env.AIRTABLE_API_KEY_TEST
-const peepTable = process.env.AIRTABLE_PERSON_NAME_TEST
+const devBase = process.env.AIRTABLE_BASE
+const devKey = process.env.AIRTABLE_APIKEY
 
 const serviceAccount = require('../' +
-  process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
-const databaseURL = process.env.FIREBASE_DATABASE_URL_TEST
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+const databaseURL = process.env.FIREBASE_DATABASE_URL
 
 const firebaseAdmin = require('firebase-admin')
 
@@ -26,7 +25,7 @@ const importer = Cl8Importer(importerCredentials)
 
 jest.setTimeout(30000)
 
-async function clearAirtable () {
+async function clearAirtable() {
   debug('clearAirtable: clearing airtable')
   const noStaleTestUsers = "{email} = 'importme@example.com'"
   const usersToNuke = await importer.atbl.fetchRecords(
@@ -47,7 +46,7 @@ async function clearAirtable () {
   debug('clearAirtable: cleared airtable')
 }
 
-async function clearFirebaseAccounts () {
+async function clearFirebaseAccounts() {
   debug('clearFirebaseAccounts: clearing firebase accounts')
   // clear any users in the test account
   const userAccountsToClear = await importer.fbase.getUsers()
@@ -66,7 +65,7 @@ async function clearFirebaseAccounts () {
   debug('clearFirebaseAccounts: cleared firebase accounts')
 }
 
-async function clearFirebaseUserList () {
+async function clearFirebaseUserList() {
   // we don't use this later on, so we don't assign it to to a value
   await importer.fbase.admin
     .database()
@@ -74,7 +73,7 @@ async function clearFirebaseUserList () {
     .set(null)
 }
 
-async function addPeepsToFireBaseUserList (peeps, tags) {
+async function addPeepsToFireBaseUserList(peeps, tags) {
   debug('addPeepsToFireBaseUserList: add to userlist')
   const initialUserList = await importer.fbase.getUserList()
   debug('initialUserList', initialUserList)

@@ -1,6 +1,6 @@
 const serviceAccount = require('../' +
-  process.env.FIREBASE_SERVICE_ACCOUNT_PATH_TEST)
-const databaseURL = process.env.FIREBASE_DATABASE_URL_TEST
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+const databaseURL = process.env.FIREBASE_DATABASE_URL
 
 const admin = require('firebase-admin')
 
@@ -9,7 +9,7 @@ admin.initializeApp({
   databaseURL: databaseURL
 })
 
-const wrapper = require('../../functions/src/firebase-wrapper.js')(admin)
+const wrapper = require('../src/firebase-wrapper.js')(admin)
 
 // const admin = wrapper.admin
 

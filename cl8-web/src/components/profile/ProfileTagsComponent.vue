@@ -1,9 +1,9 @@
 <template>
   <div id="tags">
     <input type="text" v-model="input" v-on:keydown.enter="newtag($event, input)" placeholder="add a new tag"/>
-    <div id="tagoptions" v-if="options">
+    <div id="tagoptions" v-if="sortedOptions">
       <button
-        v-for="(option, index) in options"
+        v-for="(option, index) in sortedOptions"
         :key="index"
         v-on:click="toggle($event, option)"
         v-bind:class="{active: list.filter(x => x.name === option.name).length > 0}">
@@ -13,6 +13,7 @@
   </div>
 </template>
 <script>
+import { sortBy } from 'lodash'
 // TODO
 export default {
   name: 'ProfileTagsComponent',
@@ -20,6 +21,9 @@ export default {
   computed: {
     list: function() {
       return this.data
+    },
+    sortedOptions: function() {
+      return sortBy(this.options, function(x){ return x.name.toLowerCase() })
     }
   },
   data: () => {
@@ -73,6 +77,7 @@ export default {
 }
 input {
   margin-bottom: 1em;
+  width: 100%;
 }
 #tags {
   $tagbgcolor: #333 !default;

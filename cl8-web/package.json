@@ -9,7 +9,7 @@
     "build": "vue-cli-service build",
     "test": "vue-cli-service test",
     "lint": "vue-cli-service lint",
-    "deploy": "firebase deploy --only hosting && npm run notify",
+    "deploy": "firebase deploy --only hosting",
     "release": "vue-cli-service build && npm run deploy",
     "notify": "node scripts/server/notifySlackOfDeploy.js"
   },
@@ -40,5 +40,9 @@
     "sass-loader": "^6.0.6",
     "vue-template-compiler": "^2.5.13"
   },
-  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }

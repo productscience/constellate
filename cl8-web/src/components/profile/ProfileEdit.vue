@@ -30,14 +30,14 @@
                     class="pointer f6 link dim br2 ph3 pv2 mb2 dib white bg-green ma2 w-80" >
                         Visible
                     </div>
-                    <div v-else class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-red w-80 ma2">
+                    <div v-else class="f6 link dim br2 ph3 pv2 mb2 dib white bg-red w-80 ma2">
                       Invisible
                     </div>
                 </div>
               </div>
 
               <div class="fl w-100 w-75-ns mt0 pt0">
-                <ul class="list mt0 pt0 f4">
+                <ul class="list mt0 pt0 f4 pa0 border-box">
                   <li class="list name">
                     <label class="f5" for="">name</label>
                     <input class="w-100 mt1 pa1"  v-model="profile.fields.name" />
@@ -57,18 +57,18 @@
                   </li>
                 </ul>
 
-                <ul class="list mt0 pt0">
+                <ul class="list mt0 pt0 pa0">
                   <li class="list twitter">
                     <label class="f5" for="">twitter <small>(just add your @username)</small></label>
-                    <input class="w-100 mt1 pa1"  v-model="profile.fields.twitter" />
+                    <input class="w-100 mt1"  v-model="profile.fields.twitter" />
                   </li>
                   <li class="list facebook mt2">
                     <label class="f5" for="">facebook <small>(ditto for facebook)</small></label>
-                    <input class="w-100 mt1 pa1" v-model="profile.fields.facebook" />
+                    <input class="w-100 mt1" v-model="profile.fields.facebook" />
                   </li>
                   <li class="list linkedin mt2">
                     <label class="f5" for="">linkedin <small>(just the bit after http://www.linked.com/in/)</small></label>
-                    <input class="w-100 mt1 pa1"  v-model="profile.fields.linkedin" />
+                    <input class="w-100 mt1"  v-model="profile.fields.linkedin" />
                   </li>
 
                   <li class="list mt2">
@@ -89,7 +89,7 @@
 
               <div class="cf pt2 bg-white mb4 mb5">
                 <label class="typo__label">Skills and interests </label>
-                <p class="f6 mb0"><em>(type below to add new tags)</em></p>
+                <p class="f6 mb3"><em>(type below to add new tags)</em></p>
                 <profile-tags-component
                   :data="profile.fields.tags"
                   :options="profileTags"
@@ -262,18 +262,36 @@ export default {
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
-<style media="screen">
+<style media="screen" lang="scss" scoped>
 @import '../../../node_modules/tachyons/css/tachyons.css';
 p span.list {
   display: inline-block;
 }
 
-.new-pic-upload input.file {
-  /* // invisible but it's there! */
-  opacity: 1;
-  /* width: 100%; */
-  height: 100px;
-  position: absolute;
-  cursor: pointer;
+// .new-pic-upload input.file {
+//   /* // invisible but it's there! */
+//   opacity: 1;
+//   /* width: 100%; */
+//   height: 100px;
+//   position: absolute;
+//   cursor: pointer;
+// }
+
+@mixin rounded($r: 5px) {
+	-webkit-border-radius: $r;
+	-moz-border-radius: $r;
+	border-radius: $r;
+}
+
+/deep/ input, textarea {
+  box-sizing: border-box;
+  background: #fafafa;
+  border: 1px solid rgba(#000,0.1);
+  @include rounded(3px);
+  padding: 0.25em 0.5em;
+  font-size: 1.25rem;
+}
+/deep/ textarea {
+  font-size: 1rem;
 }
 </style>

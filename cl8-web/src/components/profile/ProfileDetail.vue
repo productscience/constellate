@@ -274,11 +274,11 @@ img.gravatar {
     @include animation(profilein, 1, 0.25s, ease-in-out) {
       from {
         opacity: 0;
-        @include transform(translateX(0vw));
+        // @include transform(translateX(0vw));
       }
       to {
         opacity: 1;
-        @include transform(translateX(0vw));
+        // @include transform(translateX(0vw));
       }
     }
   }

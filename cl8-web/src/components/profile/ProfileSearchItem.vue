@@ -5,7 +5,7 @@
     class="list peep cf pa3 bb b--light-gray mid-gray hover-bg-white"
     @click="profileChosen">
 
-    <div class="dib w-20">
+    <div class="dib w-20 mw4">
 
       <img
         v-if="hasPhoto()"

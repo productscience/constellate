@@ -1,1 +1,4 @@
 node_modules
+cruft
+
+*.DS_Store

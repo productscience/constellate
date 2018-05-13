@@ -18,6 +18,10 @@ selenium-debug.log
 *.njsproj
 *.sln
 
+# this might not apply to other machines
+.python-version
+.node-version
+
 
 # keep credentials out of source code
 .env
@@ -43,3 +47,5 @@ functions/dist/*
 
 *.DS_Store
 coverage
+
+cruft

@@ -77,6 +77,7 @@ export default {
 }
 input {
   margin-bottom: 1em;
+  width: 100%;
 }
 #tags {
   $tagbgcolor: #333 !default;

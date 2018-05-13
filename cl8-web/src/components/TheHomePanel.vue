@@ -55,11 +55,19 @@ export default {
 </script>
 
 
-<style media="screen">
+<style media="screen" lang="scss">
 @import '../../node_modules/tachyons/css/tachyons.css';
-.side-column {
-  height: 100vh;
+.side-column, .profile-holder {
+  height: calc(100vh - 4.5rem - 1px);
   overflow: auto;
+  @media (max-width: 960px){
+    margin-top: calc(4.25rem);
+    height: calc(100vh - 4.25rem - 1px);
+  }
+  @media (max-width: 480px){
+    margin-top: calc(6.5rem + 1px);
+    height: calc(100vh - 6.5rem - 1px);
+  }
 }
 
 p span.list {

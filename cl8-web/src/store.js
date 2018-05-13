@@ -16,7 +16,7 @@ export default new Vuex.Store({
     searchTags: [],
     profile: null,
     profilePhoto: null,
-    profileShowing: true,
+    profileShowing: false,
     profileList: [],
     visibleProfileList: [],
     requestUrl: null

@@ -10,8 +10,6 @@ admin.initializeApp({
 
 const wrapper = require('../src/firebase-wrapper.js')(admin)
 
-// const admin = wrapper.admin
-
 const _ = require('lodash')
 const debug = require('debug')('cl8.firebase.wrapper.test')
 
@@ -276,4 +274,88 @@ describe('importing users', () => {
     expect(secondAddTestUserReq.user.fields.email).toBe(testUser.fields.email)
     expect(secondAddTestUserReq.user.fields.website).toBe('oldsite.com')
   })
+})
+
+describe('updating users in realtime database', () => {
+  beforeEach(() => {
+    testUser = {
+      id: 'recXXXXXXXXXXXXXX',
+      fields: {
+        name: 'Dan',
+        email: 'totallynew@domain.com',
+        website: 'oldsite.com',
+        tags: ['foo', 'bar'],
+        visible: 'true'
+      }
+    }
+    // clear the userlist
+    return wrapper.admin
+      .database()
+      .ref('userlist')
+      .set(null)
+  })
+
+  test(
+    'make visible user invisible',
+    async () => {
+      const initialUserList = await wrapper.getUserList()
+
+      const newUserListRef = await admin
+        .database()
+        .ref('userlist')
+        .push()
+
+      const key = newUserListRef.key
+      await newUserListRef.set(testUser)
+
+      const userList = await wrapper.getUserList()
+      expect(userList).toHaveLength(1)
+
+      await wrapper.makeInvisible(newUserListRef)
+      const newRef = await admin
+        .database()
+        .ref(`userlist/${key}`)
+        .once('value')
+
+      expect(newRef.toJSON().fields.visible).toBe('false')
+    },
+    5000
+  )
+  test(
+    'make users in list invisible',
+    async () => {
+      const initialUserList = await wrapper.getUserList()
+
+      let newUserListRef = await admin
+        .database()
+        .ref('userlist')
+        .push(testUser)
+
+      let key = newUserListRef.key
+      await newUserListRef.set(testUser)
+
+      newUserListRef = await admin
+        .database()
+        .ref('userlist')
+        .push(testUser)
+
+      const userList = await wrapper.getUserList()
+      expect(userList).toHaveLength(2)
+
+      let refs = await admin.database().ref('userlist')
+      await refs.once('value', async refKey => {
+        const pushKeys = _.keys(refKey.val())
+        await pushKeys.forEach(async pk => {
+          const newRef = await admin.database().ref(`userlist/${pk}`)
+          await wrapper.makeInvisible(newRef)
+        })
+      })
+      const newUserList = await wrapper.getUserList()
+      expect(newUserList.length).toBe(2)
+      newUserList.forEach(u => {
+        expect(u.fields.visible).toBe('false')
+      })
+    },
+    5000
+  )
 })

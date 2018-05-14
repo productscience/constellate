@@ -260,6 +260,17 @@ function FirebaseWrapper(admin) {
   // TODO: implement this, when we need it
   // function removeUserfromUserList (user) {}
 
+  async function makeInvisible(userRef) {
+    debug(userRef.toJSON())
+    try {
+      await userRef.child('fields/visible').set('false')
+      debug('updated ', userRef.key)
+    } catch (e) {
+      debug(e)
+      return e
+    }
+  }
+
   function updateUserInUserList(user) {
     return getUserList(admin).then(function(userlist) {
       let usersArray = _.values(userlist.val())
@@ -282,6 +293,7 @@ function FirebaseWrapper(admin) {
     getUserList: getUserList,
     addUserToUserList: addUserToUserList,
     updateUserInUserList: updateUserInUserList,
+    makeInvisible: makeInvisible,
     admin: admin
   }
 }

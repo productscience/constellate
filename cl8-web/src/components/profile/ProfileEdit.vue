@@ -91,7 +91,7 @@
                 <label class="typo__label">Skills and interests </label>
                 <p class="f6 mb3"><em>(type below to add new tags)</em></p>
                 <profile-tags-component
-                  :data="profile.fields.tags"
+                  :data.sync="profile.fields.tags"
                   :options="profileTags"
                   @newtag="addTag">
                 </profile-tags-component>

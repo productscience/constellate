@@ -6,7 +6,7 @@
         v-for="(option, index) in sortedOptions"
         :key="index"
         v-on:click="toggle($event, option)"
-        v-bind:class="{active: list.filter(x => x.name === option.name).length > 0}">
+        v-bind:class="{active: checkInList(option)}">
           {{option.name}}
       </button>
     </div>
@@ -18,9 +18,12 @@ import { sortBy } from 'lodash'
 export default {
   name: 'ProfileTagsComponent',
   props: ['data', 'options'],
+  created () {
+    if (this.list === undefined ) this.list = []
+  },
   computed: {
-    list: function() {
-      return this.data
+    list: function () {
+      return this.data || []
     },
     sortedOptions: function() {
       return sortBy(this.options, function(x){ return x.name.toLowerCase() })
@@ -28,17 +31,22 @@ export default {
   },
   data: () => {
     return {
-      input: ''
+      input: '',
     }
   },
   methods: {
     toggle: function(event, val) {
       event.preventDefault()
-      if (this.list.find(x => x.name === val.name) === undefined) {
-        this.list.push(val)
+      if (this.list !== undefined) {
+        if (this.list.find(x => x.name === val.name) === undefined) {
+          this.list.push(val)
+        } else {
+          this.list.splice(this.list.findIndex(x => x.name === val.name), 1)
+        }
       } else {
-        this.list.splice(this.list.findIndex(x => x.name === val.name), 1)
+        this.list = [val]
       }
+      this.$emit('update:data', this.list)
     },
     newtag: function(event, val) {
       event.preventDefault()
@@ -48,18 +56,15 @@ export default {
           this.$emit('newtag', val)
         }
       }
+    },
+    checkInList: function(option){
+      if (this.list !== undefined) {
+        return this.list.filter(x => x.name === option.name).length > 0
+      } else {
+        return false
+      }
+
     }
-    // remove: function (tag) {
-    //   this.list.splice(this.list.indexOf(tag), 1)
-    //   console.log('LIST:', this.list)
-    //   this.update()
-    // },
-    // update: function () {
-    //   let val = ''
-    //   if (this.list.indexOf('') > -1) this.list.splice(this.list.indexOf(''), 1)
-    //   if (this.list.length > 0) val = this.list.join(',')
-    //   this.$emit('update:data', val)
-    // }
   }
 }
 </script>
@@ -114,7 +119,7 @@ input {
     button {
       opacity: 0.5;
       &.active {
-        background: $activecolor;
+        background: $activecolor !important;
         &:hover {
           background: $deletecolor;
         }

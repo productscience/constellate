@@ -263,8 +263,9 @@ function FirebaseWrapper(admin) {
   async function makeInvisible(userRef) {
     debug(userRef.toJSON())
     try {
-      await userRef.child('fields/visible').set('false')
+      const res = await userRef.child('fields/visible').set('false')
       debug('updated ', userRef.key)
+      return res
     } catch (e) {
       debug(e)
       return e

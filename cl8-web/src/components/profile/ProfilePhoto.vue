@@ -1,45 +1,45 @@
 <template>
-  <div class="pa3 center w-80 cf">
+  <div class="pa4 center w-80 cf tc" >
 
     <form @submit.prevent="confirmPhoto" v-if="profile">
-      <input type="file"
+      
+
+      <img
+        v-if="localPhoto"
+        :src="this.localPhoto"
+        class="supplied-photo dib b--light-silver ba" />
+
+      <img
+        v-if="hasPhoto() && !localPhoto"
+        :src="showPhoto('large')"
+        class="supplied-photo dib b--light-silver ba" />
+
+      <v-gravatar v-else-if="!localPhoto"
+        :email="profile.fields.email"
+        :size="200"
+        class="gravatar dib b--light-silver ba" />
+      <input 
+        type="file"
         @change="updatePhoto($event)"
-        class="ma2"
-        accept="image/*" />
-
-    <img
-      v-if="localPhoto"
-      :src="this.localPhoto"
-      class="supplied-photo b--light-silver ba" />
-
-
-    <img
-    v-if="hasPhoto()"
-    :src="showPhoto('large')"
-    class="supplied-photo b--light-silver ba" />
-
-    <v-gravatar v-else
-    :email="profile.fields.email"
-    :size="200"
-    class="gravatar b--light-silver ba" />
-
-    <button
-      class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green"
-      >
-      Confirm
-      </button>
-
+        class="ma2 br2"
+        accept="image/*" 
+        id="file"/>
+      <div class="nav tc">
+        <button
+          class="f6 link dim br2 ph3 pv2 mb2 dib bn white bg-green"
+          >
+          Confirm
+        </button>
+        <router-link :to="{ name: 'editProfile' }"
+        class="f6 link dim br2 ph3 pv2 mb2 dib white bg-gray">
+        Cancel
+        </router-link>
+      </div>
     </form>
 
     <!-- <h2>profile: {{ profile }}</h2>
     <hr>
     <h2>user: {{ user }}</h2> -->
-
-    <hr>
-    <router-link :to="{ name: 'editProfile' }"
-    class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green">
-    Cancel
-    </router-link>
 
 
   </div>
@@ -134,9 +134,28 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 @import '../../../node_modules/tachyons/css/tachyons.css';
+@mixin padding() {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
 img.supplied-photo {
   max-width: 200px;
+}
+input[type='file'] {
+  border: 1px solid rgba(#09f,0.1);
+  display:block;
+  width: 100%;
+  background: rgba(#09f, 0.1);
+  cursor:pointer;
+  padding: 1em;
+  max-width: 24rem;
+  margin: 1em auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  @include padding();
 }
 </style>

@@ -1,6 +1,5 @@
-const serviceAccount = require('../' +
-  process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
-const databaseURL = process.env.FIREBASE_DATABASE_URL
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+const databaseURL = process.env.FIREBASE_DATABASEURL
 
 const admin = require('firebase-admin')
 
@@ -33,6 +32,7 @@ describe('create or delete a user', () => {
   test('getOrCreateUser', () => {
     expect.assertions(1)
     return wrapper.getOrCreateUser(testUser).then(newUser => {
+      debug(newUser)
       expect(newUser.email).toBe(testUser.fields.email)
     })
   })

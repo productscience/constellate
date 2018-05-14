@@ -2,23 +2,29 @@ const prompt = require('prompt')
 const debug = require('debug')('cl8.clearUsersAndDatabase')
 
 const Cl8Importer = require('../src/importer.js')
+const firebaseAdmin = require('firebase-admin')
 
 const devBase = process.env.AIRTABLE_BASE
 const devKey = process.env.AIRTABLE_APIKEY
 
-const serviceAccount = require('../' +
-  process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
 const databaseURL = process.env.FIREBASE_DATABASEURL
+
+// initialised it here instead of in functions
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+  databaseURL: databaseURL
+})
 
 const importerCredentials = {
   airTableCreds: [devKey, devBase],
-  fbaseCreds: [serviceAccount, databaseURL]
+  fbaseCreds: firebaseAdmin
 }
 
 const importer = Cl8Importer(importerCredentials)
 
 async function clearFirebaseUserList() {
-  debug('clearing the realtime database')
+  debug('clearFirebaseUserList: clearing the realtime database')
   // we don't use this later on, so we don't assign it to to a value
   await importer.fbase.admin
     .database()
@@ -70,11 +76,18 @@ async function main() {
     console.log('clearing accounts and data:')
     // - remove all the user accounts
 
-    await clearFirebaseAccounts()
+    try {
+      await clearFirebaseAccounts()
+    } catch (e) {
+      console.log
+    }
 
     // - clear the realtime database
-    await clearFirebaseUserList()
-
+    try {
+      await clearFirebaseUserList()
+    } catch (e) {
+      console.log(e)
+    }
     console.log('The deed is done.')
     process.exit()
   })

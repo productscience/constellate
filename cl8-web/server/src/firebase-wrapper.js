@@ -125,35 +125,39 @@ function FirebaseWrapper(admin) {
         email: user.fields.email,
         emailVerified: true
       }
+
       debug('getOrCreateUser: making user', u)
-      try {
-        const newUser = await admin.auth().createUser(u)
-        debug('getOrCreateUser: newUser', newUser)
-        return newUser
-      } catch (err) {
-        // eslint-disable-next-line
-        if (err.errorInfo.code == '"auth/uid-already-exists"') {
-          debug(
-            ('getOrCreateUser: ', error.errorInfo.message),
-            user.id,
-            user.email
-          )
-          return user
-        }
-        // eslint-disable-next-line
-        if (err.errorInfo.code == 'auth/email-already-exists') {
-          debug(
-            ('getOrCreateUser: ', error.errorInfo.message),
-            user.id,
-            user.email
-          )
-          return user
-        }
+      const newUser = await createUser(u)
+      debug('getOrCreateUser: newUser returned', newUser)
+      return newUser
+    }
+  }
+
+  async function createUser(userObject) {
+    try {
+      const newUser = await admin.auth().createUser(userObject)
+      debug('getOrCreateUser: newUser', newUser)
+      return newUser
+    } catch (err) {
+      // eslint-disable-next-line
+      if (err.errorInfo.code == '"auth/uid-already-exists"') {
+        debug(
+          ('getOrCreateUser: ', error.errorInfo.message),
+          user.id,
+          user.email
+        )
+        return user
+      }
+      // eslint-disable-next-line
+      if (err.errorInfo.code == 'auth/email-already-exists') {
+        debug(
+          ('getOrCreateUser: ', error.errorInfo.message),
+          user.id,
+          user.email
+        )
+        return user
       }
     }
-
-    // if (error.errorInfo.code == 'auth/user-not-found') {
-    // }
   }
 
   /**

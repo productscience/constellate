@@ -12,7 +12,7 @@ const databaseURL = process.env.FIREBASE_DATABASEURL
 
 // initialised it here instead of in functions
 firebaseAdmin.initializeApp({
-  serviceAccount: serviceAccount,
+  credential: firebaseAdmin.credential.cert(serviceAccount),
   databaseURL: databaseURL
 })
 

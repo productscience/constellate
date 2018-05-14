@@ -8,10 +8,10 @@
             <div class="cf w-100" style="min-height:11em;">
               <div class="fl w-100 w-25-ns mb3">
 
-                <router-link :to="{ name: 'editProfilePhoto' }">
+                <router-link :to="{ name: 'editProfilePhoto' }" class='edithover w-80 mr4'>
                   <img v-if="hasPhoto()"
                   :src="showPhoto('large')"
-                  class="supplied-photo b--light-silver ba w-40 w-80-ns v-top fn-ns" />
+                  class="supplied-photo b--light-silver ba w-100 v-top fn-ns" />
 
                   <v-gravatar v-else
                     :email="profile.fields.email"
@@ -283,6 +283,12 @@ p span.list {
 	border-radius: $r;
 }
 
+@mixin padding() {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
 /deep/ input, textarea {
   box-sizing: border-box;
   background: #fafafa;
@@ -293,5 +299,32 @@ p span.list {
 }
 /deep/ textarea {
   font-size: 1rem;
+}
+.edithover {
+  position:relative;
+  display:inline-block;
+  width: auto;
+  color: #fff;
+  text-align: center;
+  &:before {
+    content:"change";
+    position:absolute;
+    top:0;
+    left:0;
+    width: 101%;
+    height:100%;
+    background-color: rgba(#09f,0.3);
+    pointer-events: none;
+    opacity: 0;
+    padding: 1em;
+    @include padding();
+    transition: all 0.2s;
+  }
+  &:hover {
+    &:before {
+      opacity: 1;
+    }
+  }
+
 }
 </style>

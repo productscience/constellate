@@ -13,7 +13,7 @@
 
 Sign into google firebase, so you're on the dashboard page, at https://console.firebase.google.com/
 
-Hit 'add project', giving it a name (referred to as YOUR_PROJECT_NAME from here onwards) , and decide the region/country for this app. 
+Hit 'add project', giving it a name (referred to as YOUR_PROJECT_NAME from here onwards) , and decide the region/country for this app.
 
 ### Naming the project
 
@@ -25,7 +25,7 @@ You may also want to update the password reset email text, at:
 
 https://console.firebase.google.com/project/YOUR_PROJECT_NAME/authentication/emails
 
-#### Making sure people can sign in 
+#### Making sure people can sign in
 
 Finally, you'll want to allow people sign in with email, before you can proceed. Make sure Email/Password is set to `enabled` among the sign-in providers.
 
@@ -55,20 +55,16 @@ cd cl8-web
 npm install
 ```
 
-If you don't have firebase installed, install it with:
+Once you have this, you'll be able to run binaries like `firebase` from the command line, buy prefixing any invocation with `npx`, so if you wanted to use the firebase command line tools like `firebase login`, you'd run `npx firebase login` instead. This makes sure you're running the version for this specific project which is useful if you have multiple projects.
 
-```
-npm install firebase-tools -g
-```
-
-## Setting up your local config 
+## Setting up your local config
 
 Once you have the code and dependencies, sure you need to associate it with the project you just created, by running a few commands in the terminal
 
-Note: If you get a `HTTP Error: 404` message when running the below commands, it's likely you're not signed in. You can sign in with `firebase login` - you'll be prompted to sign in with a google account.
+Note: If you get a `HTTP Error: 404` message when running the below commands, it's likely you're not signed in. You can sign in with `npx firebase login` - you'll be prompted to sign in with a google account.
 
 ``` bash
-firebase login
+npx firebase login
 ```
 
 ### Initialising your local project
@@ -76,7 +72,7 @@ firebase login
 Once you're logged in, you can initialise your local setup:
 
 ``` bash
-firebase init
+npx firebase init
 ```
 
 You want:
@@ -100,7 +96,7 @@ You'll be prompted for some further answers. Add the answers to the correspondin
 
 #### Hosting Setup
 
-You'll be asked what you want as your public directory. We're using a webpack, a build toool to optimize the assets we serve, and we currently put them into the `dist`, instead of `public`.
+You'll be asked what you want as your public directory. We're using a webpack, a build tool to optimize the assets we serve, and we currently put them into the `dist`, instead of `public`.
 
 - What do you want to use as your public directory? `dist`
 - Configure as a single page app? `Y`
@@ -115,14 +111,13 @@ Go to [project overview > project settings](https://console.firebase.google.com/
 
 click "Add firebase to your web app"
 
-Copy the credentials to your clipboard and copy the two sample env files `.envs` files, so you have
+Copy the credentials to your clipboard and copy the two sample `env.sample.sh`, in the `envs` directory, like so
 
 ```
-.envs/dev.sh
-.envs/prod.sh
+cp .envs/env.sample.sh .envs/env.myproject.sh
 ```
 
-Now, add the corresponding credentials these newly created env files, so for `FIREBASE_DATABASEURL_DEV` you'd add whatever was matched by the `databaseURL` in the project settings, and so on.
+Now, add the corresponding credentials to this newly created `env.myproject.sh`  shell script , so for `FIREBASE_DATABASEURL` you'd add whatever was matched by the `databaseURL` in the project settings, and so on.
 
 For airtable, you'll need data the name of the airtable base, and your API key.
 
@@ -141,7 +136,7 @@ export AIRTABLE_API_KEY_DEV="keyxxxxxxxxxxxxxx"
 
 You'll likely want to be able to run admin commands, like importing the initial set of users, and so on. You can do this by downloading a service account key, from the admin section.
 
-Go to [project overview > project settings > service accounts](https://console.firebase.google.com/project/YOUR_PROJECT_NAME/settings/serviceaccounts/adminsdk). 
+Go to [project overview > project settings > service accounts](https://console.firebase.google.com/project/YOUR_PROJECT_NAME/settings/serviceaccounts/adminsdk).
 
 You can also reach this at the link below:
 
@@ -150,14 +145,9 @@ On the service accounts page, hit GENERATE NEW PRIVATE KEY and save the file in 
 You'll need to add this to your env files, so adding a line like this below for `.envs/dev.sh`:
 
 ``` bash
-export FIREBASE_SERVICE_ACCOUNT_PATH_DEV='trying-this-out-service-account.json'
+export FIREBASE_SERVICE_ACCOUNT_PATH='trying-this-out-service-account.json'
 ```
 
-And the same for the `.envs/prod.sh`:
-
-``` bash
-export FIREBASE_SERVICE_ACCOUNT_PATH_PROD='trying-this-out-service-account.json'
-```
 
 ## Running it to test it out
 
@@ -167,9 +157,8 @@ Later on, you can trigger this import from a cloud function instead, if you want
 
 
 ```
-source .envs/dev.sh
-cd admin_scripts/
-node ./importUsersAndTags.js
+source .envs/env.myproject.sh
+node server/scripts/importUsersAndTags.js
 ```
 
 Depending how many users you have to import this will take a few minutes to run, as it loops through the users in airtable, and create firebase accounts for them, and builds a data structure for the app to search through.
@@ -179,25 +168,31 @@ Depending how many users you have to import this will take a few minutes to run,
 Once you have users imported, you can try running the constellate application locally - this will connect to the database hosted with google, that you just imported users to. Make sure you're in `cl8-web` then run:
 
 ```
-npm start
+npm run serve
 ```
 
 This will spin up a development server, typically running locally on port 8080. you can visit it by visiting the address below in your browser:
 
-http://localhost:8080 
+http://localhost:8080
 
 
 ## Deploying somewhere others can see it
 
 Once you see it working, likely you'll want others to be able to see it too.
 
-You can deploy the app by calling the npm command below when in the `cl8-web` directory, but first, you'll need to load the environment variables defined in the `prod.sh` file you created when fetching credentials from airtable and firebase.
+You can deploy the app by calling the npm command below when in the `cl8-web` directory, but first, you'll need to make sure you're targeting the correct environment to deploy to.
+
+If you have more than one target (maybe you have a dev, or a production environment,or you've set up multiple constellations, you might want to switch betweem them.
+
+You'd set the target by calling:
 
 ```
-source .envs/prod.sh
+source .envs/env.myproject.sh
 ```
 
-Now you have this, you can make your first deploy
+Where `myproject` is the project you want to deploy the code to,
+
+If you have a target set, you can make your first deploy:
 
 
 ```
@@ -208,40 +203,19 @@ This will make a smaller, compiled version of the javascript for production, the
 
 [http://YOUR_PROJECT_NAME.firebaseapp.com](http://YOUR_PROJECT_NAME.firebaseapp.com)
 
-
-### Working with more than one project
-
-In these steps, we've set both `dev.sh` and `prod.sh` to use the same project to data, so we can see what the data in it looks like locally, before seeing the same data 'on production' after a deploy.
-
-You may want to have more than one environment, either to preview changes to data, or code changes, before pushing them, or perhaps you want to setup more than one 'constellation', for different groups of users.
-
-To do this, you'll need to create a new firebase project for each separate environment you want to test, and then load the corresponding environment variables - usually by creating a second set of files that contain these:
-
-```
-source .envs/dev-other-project.sh 
-firebase use YOUR_OTHER_PROJECT
-```
-
-You can switch back by loading in the original environment variables, and set firebase to  use the original project:
-
-```
-source .envs/dev.sh 
-firebase use YOUR_PROJECT_NAME
-```
-
 #### Seeing what the current project and variables are:
 
 If you're not sure what the project is you can check what the current project with firebase is by calling `firebase use` by itself
 
 
 ```
-firebase use
+npx firebase use
 ```
 
-Similarly, you can check what environment variables are set by calling `env` on the terminal, usually filtering it through the `grep` command:
+Similarly, you can check what environment variables are set by calling `env` on the terminal, usually filtering it through the `grep` command for say, `FIREBASE`:
 
 ```
-env | grep _DEV
+env | grep FIREBASE
 ```
 
 ## Changing the domain

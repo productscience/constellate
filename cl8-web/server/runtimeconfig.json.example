@@ -1,6 +1,10 @@
 {
-  "auth0": {
-    "domain": "some_url_to_go_here.auth0.com",
-    "clientID": "thirty_two_char_long_hash"
+  "fbase": {
+    "path": "./path/to/service-account.json",
+    "databasename": "project-name"
+  },
+  "airtable": {
+    "base": "xxxxxxxx",
+    "key": "xxxxxxxx"
   }
 }

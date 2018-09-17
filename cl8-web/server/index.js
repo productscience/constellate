@@ -9,8 +9,16 @@ const ProfileThumbnailer = require('./dist/profile-thumbnailer.js');
 const CheckConfig = require('./dist/check-config.js');
 let serviceAccount = require('./service-account.json');
 
-// initialised it here instead of in functions
-admin.initializeApp();
+const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+adminConfig.credential = admin.credential.cert(serviceAccount);
+
+admin.initializeApp(adminConfig);
+
+// // initialised it here instead of in functions
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: "https://constellation-oers.firebaseio.com"
+// })
 
 // just a check so you can run it in `firebase experimental:functions:shell`
 exports.helloWorld = functions.https.onRequest((request, response) => {
@@ -24,7 +32,7 @@ exports.generateSampleData = functions.storage.object().onFinalize(object => {
 });
 
 exports.checkConfig = functions.storage.object().onFinalize(object => {
-  // console.log(functions.config())
+  console.log(admin);
   return CheckConfig();
 });
 
@@ -58,6 +66,7 @@ exports.generateThumbnail = functions.storage.object().onFinalize((() => {
 
 exports.importUsers = functions.https.onRequest((() => {
   var _ref2 = _asyncToGenerator(function* (request, response) {
+
     const importerCredentials = {
       airTableCreds: [functions.config().airtable.key, functions.config().airtable.base],
       fbaseApp: admin

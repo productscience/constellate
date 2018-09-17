@@ -3,22 +3,10 @@ const functions = require('firebase-functions')
 
 debug('process.env.FIREBASE_CONFIG:', process.env.FIREBASE_CONFIG)
 
-// const parsedFirebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG)
-
-const firebaseConfig = {
-  databaseURL: 'https://munster-setup.firebaseio.com',
-  storageBucket: 'munster-setup.appspot.com',
-  projectId: 'munster-setup'
-}
-
-console.log('firebaseConfig', firebaseConfig)
-console.log('parsedFirebaseConfig', process.env.FIREBASE_CONFIG)
-
-debug('parsed')
-debug(firebaseConfig)
+const parsedFirebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG)
 
 const cloudfunctest = require('firebase-functions-test')(
-  firebaseConfig,
+  parsedFirebaseConfig,
   './service-account.json'
 )
 
@@ -34,5 +22,14 @@ describe('profileThumbnailer', async () => {
     expect(funcRes).toHaveProperty('databaseURL')
     expect(funcRes).toHaveProperty('storageBucket')
     expect(funcRes).toHaveProperty('projectId')
+  })
+
+  test('generateThumbnail', async () => {
+    console.log(cloudfunctest.storage.exampleObjectMetadata ())
+
+    const wrapped = cloudfunctest.wrap(fbfuncs.generateThumbnail)
+    const objMeta = cloudfunctest.storage.exampleObjectMetadata()
+
+    const funcRes = await wrapped(objMeta)
   })
 })

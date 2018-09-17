@@ -7,5 +7,10 @@ function CheckConfig() {
   // console.log('firebaseConfig', firebaseConfig)
   // console.log('serviceAccount', serviceAccount)
 
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://" + functions.config().fbase.databasename +".firebaseio.com"
+  })
+
   return firebaseConfig
 }

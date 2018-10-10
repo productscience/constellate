@@ -263,7 +263,19 @@ function FirebaseWrapper(admin) {
   async function makeInvisible(userRef) {
     debug(userRef.toJSON())
     try {
-      const res = await userRef.child('fields/visible').set('no')
+      const res = await userRef.child('fields/visible').set(false)
+      debug('updated ', userRef.key)
+      return res
+    } catch (e) {
+      debug(e)
+      return e
+    }
+  }
+
+  async function makeVisible(userRef) {
+    debug(userRef.toJSON())
+    try {
+      const res = await userRef.child('fields/visible').set(true)
       debug('updated ', userRef.key)
       return res
     } catch (e) {
@@ -295,6 +307,7 @@ function FirebaseWrapper(admin) {
     addUserToUserList: addUserToUserList,
     updateUserInUserList: updateUserInUserList,
     makeInvisible: makeInvisible,
+    makeVisible: makeVisible,
     admin: admin
   }
 }

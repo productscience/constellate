@@ -40,6 +40,19 @@
               </div>
           </div>
 
+                  <div v-if="canEdit()">
+              <div
+                v-if="profile.fields.pitchable"
+                class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green w-100 mt2 tc">
+                  Pitchable
+              </div>
+
+              
+          </div>
+
+
+
+
         </div>
 
 
@@ -178,7 +191,7 @@ export default {
       }
     },
     isVisible: function() {
-      return this.profile.fields.visible === 'yes'
+      return this.profile.fields.visible
     },
     hasPhoto() {
       if (typeof this.profile.fields === 'undefined') {

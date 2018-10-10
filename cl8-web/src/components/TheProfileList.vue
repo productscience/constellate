@@ -144,7 +144,7 @@ export default {
         })
       })
       let visiblePeeps = peepsWithTags.filter(function(peep) {
-        return peep.fields.visible === 'yes'
+        return peep.fields.visible
       })
       return visiblePeeps
     }

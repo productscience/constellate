@@ -203,7 +203,7 @@ export default new Vuex.Store({
           .database()
           .ref('userlist')
           .orderByChild('fields/visible')
-          .equalTo('yes')
+          .equalTo(true)
           .once('value')
           .then(visibleProfileList => {
             let profileArray = []

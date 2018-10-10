@@ -20,19 +20,30 @@
                 </router-link>
 
                 <div class="w-40 w-100-ns fn-ns pl2 pl0-ns dib v-btm">
-                    <input tabindex="1" class="ma2" type="radio" id="yes" value="yes" v-model="profile.fields.visible">
-                    <label for="yes">Visible</label>
-                    <br>
-                    <input class="ma2" type="radio" id="no" value="no" v-model="profile.fields.visible">
-                    <label for="no">Invisible</label>
 
-                    <div v-if="this.profile.fields.visible == 'yes'"
-                    class="pointer f6 link dim br2 ph3 pv2 mb2 dib white bg-green ma2 w-80" >
-                        Visible
-                    </div>
-                    <div v-else class="f6 link dim br2 ph3 pv2 mb2 dib white bg-red w-80 ma2">
-                      Invisible
-                    </div>
+                  <div
+                    class="f6 dim br2 ph3 pv2 mb2 dib w-80 mt2 white ma2 "
+                    v-bind:class="{ 'bg-green': profile.fields.visible, 'bg-red': !profile.fields.visible }"
+                    >
+                    <input type="checkbox" id="visible-checkbox" v-model="profile.fields.visible">
+                    <label for="visible-checkbox">Visible</label>
+                  </div>
+
+
+                  <div
+                    class="f6 dim br2 ph3 pv2 mb2 dib w-80 mt2 ma2 white"
+                    v-bind:class="{ 'bg-green': profile.fields.pitchable, 'bg-red': !profile.fields.pitchable }"
+                    >
+                    <input type="checkbox" id="checkbox" v-model="profile.fields.pitchable">
+                    <label for="checkbox">Pitchable</label>
+                  </div>
+
+                  <p class="f7 ma2 ml3 w-80">
+                    <a href="http://www.dgen.net/0/dgen-constellation-member-overview/">
+                        What does "pitchable" mean?
+                    </a>
+                  </p>
+
                 </div>
               </div>
 

@@ -3,6 +3,7 @@
     v-if="hasfields()"
     :data-atid="item.id"
     class="list peep cf pa3 bb b--light-gray mid-gray hover-bg-white"
+
     @click="profileChosen">
 
     <div class="dib w-20 mw4">
@@ -10,7 +11,9 @@
       <img
         v-if="hasPhoto()"
         :src="showPhoto('large')"
-        class='supplied-photo w-100'>
+        class='supplied-photo w-100'
+        v-bind:class="{ 'b--green ba bw1': item.fields.pitchable }"
+        >
 
       <v-gravatar
         v-else
@@ -20,7 +23,11 @@
     </div>
     <div class="dib w-70 ph2 flex-auto v-top h3 h-auto-m overflow-hidden">
       <ul class="list pt1 mt0 ml0 pl0 pb1 f4-m">
-        <li class="name mid-gray">{{ item.fields.name }}</li>
+        <li class="name mid-gray">
+          {{ item.fields.name }}
+
+
+        </li>
       </ul>
       <div class="dib mt1-m">
         <div

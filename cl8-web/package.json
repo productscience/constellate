@@ -14,6 +14,7 @@
     "notify": "node ./server/scripts/notifySlackOfDeploy.js"
   },
   "dependencies": {
+    "@vue/cli": "^3.0.5",
     "firebase": "^5.0.2",
     "lodash": "^4.17.4",
     "marked": "^0.3.19",
@@ -40,5 +41,9 @@
     "sass-loader": "^6.0.6",
     "vue-template-compiler": "^2.5.13"
   },
-  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }

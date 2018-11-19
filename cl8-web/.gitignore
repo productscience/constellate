@@ -49,3 +49,8 @@ functions/dist/*
 coverage
 
 cruft
+
+.firebaserc
+firebase.json
+package-lock.json
+package.json

@@ -24,7 +24,7 @@
           </p>
         </div>
       </div>
-      <form v-on:submit.prevent="signIn" class='w-100 pa3 dib border-box mw5'>
+      <form v-on:submit.prevent="signIn" class='w-100 pa3 dib border-box mw6 ph5'>
 
         <div class="w-100 mb3">
 
@@ -63,18 +63,18 @@
 
         </div>
 
-        <div class="mt2">
+        <div class="mt2 cf">
           <button
-            class="f6 link br2 bn ph3 pv2 mb2 bg-light-silver white w-80 ml0 mt2"
-            :class="{'bg-blue pointer grow hover-bg-dark-blue': formValid}"
+            class="f6 link br3 bn pv2 mb2 mt2 bg-light-silver b white w-60 ml0 mr1 fl"
+            :class="{'bg-green pointer grow hover-bg-dark-green': formValid}"
             :disabled="!formValid"
             :id="formValid" type="submit"
             name="button">
             Sign in
           </button>
-        </div>
 
-        <router-link :to="{ name: 'resetPassword' }" class="f6 gray link">Reset password</router-link>
+          <router-link :to="{ name: 'resetPassword' }" class="f7 gray link w-30 dib fr pv3">Reset password</router-link>
+        </div>
 
 
       </form>

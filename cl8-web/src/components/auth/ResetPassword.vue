@@ -8,12 +8,11 @@
         <div
           role="status"
           aria-live="polite"
-          class="vh">
+          class="vh" v-html="announcement">
           <!--
-      when there is an error, we want list it in here, to a screen reader
+      when there is an error, we want list it in here, so a screen reader
       can pick it up and read out the announcement
       -->
-          {{ announcement }}
           <div
             v-if="errors"
             class="errors">
@@ -24,9 +23,13 @@
             </p>
           </div>
         </div>
-        {{ announcement }}
+        <div
+        	v-html="announcement">
+        </div>
+
         <form
-          @submit.prevent="sendPasswordReset" class='mw5 tc center'>
+			v-if="!requestSuccess"
+          @submit.prevent="sendPasswordReset" class='mw6 tc center ph5'>
 
           <div class="w-100 mb3">
 
@@ -52,22 +55,23 @@
             </div>
           </div>
 
-          <div class="mt2">
+          <div class="mt2 cf">
             <button
               :disabled="!formValid"
-              :class="{'bg-blue hover-bg-dark-blue pointer grow': formValid}"
-              class="f6 link br2 bn ph3 pv2 mb2 bg-light-silver white w-80 ml0 mt2"
+              :class="{'bg-orange hover-bg-dark-orange pointer grow': formValid}"
+              class="f6 link br2 bn pv2 mb2 bg-light-silver white w-50 ml0 mt2 mr3 fl"
               type="submit"
               name="button">
               Reset Password
             </button>
+
+            <router-link
+	            :to="{ name: 'signin' }"
+	            class="f7 gray link w-40 fr dib pv3">
+	            Back to Sign in
+	        </router-link>
           </div>
 
-          <router-link
-            :to="{ name: 'signin' }"
-            class="f6 link">
-            Back to Sign in
-          </router-link>
         </form>
       </div>
     </div>
@@ -86,17 +90,21 @@ export default {
     return {
       email: '',
       announcement: '',
-      formIsValid: false
+      formIsValid: false,
+      requestSuccess: false
     }
   },
   methods: {
     sendPasswordReset: function() {
       debug('reset password for ', this.email)
       this.$store.dispatch('resetPassword', this.email)
-      this.announcement = `OK. Password reset for ${
+      this.announcement = `Password reset for ${
         this.email
-      } requested. Please check your email.`
+      } requested. <br/><br/>
+       Please check your email. <br/><br/>
+       You may close this window.`
       this.email = ''
+      this.requestSuccess = true
     },
     checkForValidFormSubmission: function() {
       let validation = {

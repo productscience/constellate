@@ -24,6 +24,15 @@
           </p>
         </div>
       </div>
+
+			<div v-if="signInData.message" role="status" aria-live="polite" class="flex items-center justify-center pa3 bg-lightest-blue navy f6">
+				<svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
+		    		<title>info icon</title>
+						<path d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"></path>
+					</svg>
+					<span class="ml3">{{signInData.message}}</span>
+			</div>
+
       <form v-on:submit.prevent="signIn" class='w-100 pa3 dib border-box mw6 ph5'>
 
         <div class="w-100 mb3">
@@ -135,6 +144,9 @@ export default {
   computed: {
     formValid: function() {
       return this.formIsValid
+    },
+    signInData: function() {
+	    return this.$store.getters.signInData
     },
     loading: function() {
       return this.$store.getters.isLoading

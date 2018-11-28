@@ -19,7 +19,11 @@ export default new Vuex.Store({
     profileShowing: false,
     profileList: [],
     visibleProfileList: [],
-    requestUrl: null
+    requestUrl: null,
+    signInData: {
+	    message: null,
+	    email: null
+	  }
   },
   getters: {
     currentUser: function(state) {
@@ -55,6 +59,9 @@ export default new Vuex.Store({
     },
     requestUrl: function(state) {
       return state.requestUrl
+    },
+    signInData: function(state) {
+	    return state.signInData
     }
   },
   mutations: {
@@ -164,6 +171,29 @@ export default new Vuex.Store({
           // An error happened.
           debug('Problem sending password: ', error)
         })
+    },
+    newPassword: function(context, payload) {
+	    console.log(payload);
+	    context.state.loading = true
+	    fbase
+    	.auth()
+    	.verifyPasswordResetCode(payload.code).then(email => {
+	    	fbase
+	    	.auth()
+	    	.confirmPasswordReset(payload.code, payload.password).then(function(resp) {
+		    	// TODO: Then do something with the response.
+		    	context.state.signInData.message = 'Password changed. Please sign in with new password'
+		    	context.state.signInData.email = email
+		    	router.push('signin')
+		    	context.state.loading = false
+		    })
+    	})
+    	.catch(error => {
+	    	console.error(error.code)
+	    	console.error(error.message)
+	    	context.state.loading = false
+    	})
+	    debug(context, payload)
     },
     updateActiveTags: function(context, payload) {
       debug('updateActiveTags', payload)

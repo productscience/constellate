@@ -12,23 +12,23 @@
     "firebase-cli": "firebase"
   },
   "dependencies": {
-    "@google-cloud/storage": "^0.4.0",
+    "@google-cloud/storage": "^2.3.1",
     "airtable": "^0.5.7",
     "child-process-promise": "^2.2.0",
-    "debug": "^3.2.6",
-    "firebase-admin": "^5.13.1",
-    "firebase-functions": "^1.1.0",
+    "debug": "^4.1.0",
+    "firebase-admin": "^6.3.0",
+    "firebase-functions": "^2.1.0",
     "lodash": "^4.17.11"
   },
   "private": true,
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
-    "babel-jest": "^22.4.4",
+    "babel-jest": "^23.6.0",
     "babel-preset-env": "^1.6.1",
-    "eslint": "^4.13.1",
-    "eslint-plugin-promise": "^3.8.0",
+    "eslint": "^5.9.0",
+    "eslint-plugin-promise": "^4.0.1",
     "firebase-functions-test": "^0.1.5",
-    "firebase-tools": "^3.19.3"
+    "firebase-tools": "^6.1.1"
   }
 }

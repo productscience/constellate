@@ -1,0 +1,10 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "cl8-web/package.json",
+        "cl8-web/server/package.json"
+      ]
+    }
+  }
+}

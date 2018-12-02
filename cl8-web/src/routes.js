@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Login from '@/components/auth/Login'
 import ResetPassword from '@/components/auth/ResetPassword'
+import NewPassword from '@/components/auth/NewPassword'
 
 import TheHomePanel from '@/components/TheHomePanel'
 
@@ -44,6 +45,11 @@ const router = new Router({
       path: '/reset-password',
       name: 'resetPassword',
       component: ResetPassword
+    },
+    {
+      path: '/new-password',
+      name: 'newPassword',
+      component: NewPassword
     },
     {
       path: '*',

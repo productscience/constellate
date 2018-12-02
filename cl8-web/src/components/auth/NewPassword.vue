@@ -1,6 +1,12 @@
 <template>
   <div class="w-100">
 
+	<div v-if="loading" class="">
+    <div class="spinner">
+      <img src="../../assets/loading.svg" alt="loading"/>
+    </div>
+  </div>
+
     <div class="v-mid sign-in-prompt pa3">
 
       <h2 class="pt5 fw3 tracked tc">Constellation</h2>
@@ -28,31 +34,42 @@
         </div>
 
         <form
-			v-if="!requestSuccess"
-          @submit.prevent="sendPasswordReset" class='mw6 tc center ph5'>
+			v-if="!requestSuccess && !loading"
+          @submit.prevent="setNewPassword" class='mw6 tc center ph5'>
 
           <div class="w-100 mb3">
 
-            <input
-              v-validate="'required|email'"
-              v-model="email"
-              :class=" {'bg-washed-red': errors ? errors.has('email') : null}"
-              class="input-reset pa2 ba mt1 w-100 b--light-gray br2"
-              type="text"
-              name="email"
-              placeholder="your email address"
-              autocomplete="email"
-              aria-label="your email address"
-              @input="checkForValidFormSubmission"
-            >
+            <input type="password" name="password" v-model="password"
+            	class="input-reset pa2 ba br2 b--light-gray w-100" :class=" {'bg-washed-red b--red': errors && errors.has('password') }"
+							placeholder="your new password"
+							v-validate="'required|min:6'"
+							aria-label="your new password"
+							autocomplete="new-password"
+							@change="checkForValidFormSubmission"
+							ref="password" />
 
-            <div>
-              <small
-                v-if="errors && errors.has('email')"
-                class="red w-40">
-                {{ errors.first('email') }}
-              </small>
-            </div>
+						<div>
+            	<small v-if="errors && errors.has('password')" class="red">
+								{{ errors.first('password') }}
+							</small>
+						</div>
+          </div>
+
+          <div class="w-100 mb3">
+
+            <input type="password" name="confirmPassword" v-model="confirmPassword"
+            	class="input-reset pa2 ba br2 b--light-gray w-100" :class=" {'bg-washed-red b--red': errors && errors.has('confirmPassword') }"
+							placeholder="confirm your new password"
+							v-validate="'required|confirmed:password'"
+							aria-label="confirm your new password"
+							autocomplete="confirm-password"
+							@input="checkForValidFormSubmission" />
+
+						<div>
+            	<small v-if="errors && errors.has('confirmPassword')" class="red">
+								{{ errors.first('confirmPassword') }}
+							</small>
+						</div>
           </div>
 
           <div class="mt2 cf">
@@ -82,33 +99,40 @@
 <script>
 /* eslint-disable */
 import debugLib from 'debug'
-const debug = debugLib('cl8.PasswordReset')
+const debug = debugLib('cl8.PasswordNew')
 
 export default {
-  name: 'PasswordReset',
+  name: 'PasswordNew',
   data: function() {
     return {
-      email: '',
+      password: null,
+      confirmPassword: null,
       announcement: '',
       formIsValid: false,
-      requestSuccess: false
+      requestSuccess: false,
+      oobCode: this.$route.query.oobCode
     }
   },
   methods: {
-    sendPasswordReset: function() {
-      debug('reset password for ', this.email)
-      this.$store.dispatch('resetPassword', this.email)
-      this.announcement = `Password reset for ${
+    setNewPassword: function() {
+      debug('reset password for ', this.oobCode)
+      let data = {
+	      password: this.password,
+	      code: this.oobCode
+      }
+      this.$store.dispatch('newPassword', data)
+      /*this.announcement = `Password reset for ${
         this.email
-      } requested.<br/>
+      } requested. <br/><br/>
        Please check your email. <br/><br/>
        You may close this window.`
       this.email = ''
-      this.requestSuccess = true
+      this.requestSuccess = true*/
     },
     checkForValidFormSubmission: function() {
       let validation = {
-        email: this.email
+        password: this.password,
+        confirmPassword: this.confirmPassword
       }
       return this.$validator
         .validateAll(validation)
@@ -129,6 +153,9 @@ export default {
   computed: {
     formValid: function() {
       return this.formIsValid
+    },
+    loading: function() {
+	    return this.$store.getters.isLoading
     }
   }
 }

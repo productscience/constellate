@@ -21,6 +21,17 @@ const vvConfig = {
   events: 'blur',
   class: true
 }
+
+const dict = {
+  custom: {
+    confirmPassword: {
+      required: 'Please enter your password again.',
+      confirmed: 'Passwords do not match'
+    }
+  }
+};
+
+
 Vue.use(VeeValidate, vvConfig)
 Vue.use(VueFuse)
 Vue.use(VueFire)
@@ -68,5 +79,7 @@ fbase.auth().onAuthStateChanged(firebaseUser => {
       store,
       render: h => h(App)
     }).$mount('#app')
+
+    app.$validator.localize('en', dict);
   }
 })

@@ -38,6 +38,7 @@
     "@vue/cli-service": "*",
     "@vue/eslint-config-prettier": "^4.0.1",
     "@vue/test-utils": "*",
+    "firebase-admin": "^7.3.0",
     "node-sass": "*",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "*"

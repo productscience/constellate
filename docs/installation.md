@@ -1,5 +1,10 @@
 # Installation
 
+This document describes how to set up a local development environment and how
+to deploy constellate to a public server.
+
+## Table of Contents
+
 - Setup the project on Firebase
 - Checkout the code and install dependencies
 - Setting up your local config 
@@ -105,6 +110,9 @@ You'll be asked what you want as your public directory. We're using a webpack, a
 
 You'll next need the credentials for either running a local version for development, for carrying out deploys to firebase.
 
+As users are fetched from Airtable, you need to be a member of an existing
+Airtable project with the correct data structure for cl8.
+
 #### Fetching the credentials from firebase:
 
 Go to [project overview > project settings](https://console.firebase.google.com/project/YOUR_PROJECT_NAME/settings/general/)
@@ -118,6 +126,23 @@ cp .envs/env.sample.sh .envs/env.myproject.sh
 ```
 
 Now, add the corresponding credentials to this newly created `env.myproject.sh`  shell script , so for `FIREBASE_DATABASEURL` you'd add whatever was matched by the `databaseURL` in the project settings, and so on.
+
+Additionally, make sure you have set up permissions in Firebase to allow
+access to all data for authenticated users. For this, you go to 
+*Project Overview > Database* and then click on the *Rules* tab. Make sure 
+they are setup like this:
+
+```
+{
+  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+```
+
+#### Fetching credentials for Airtable
 
 For airtable, you'll need data the name of the airtable base, and your API key.
 
@@ -140,7 +165,7 @@ Go to [project overview > project settings > service accounts](https://console.f
 
 You can also reach this at the link below:
 
-On the service accounts page, hit GENERATE NEW PRIVATE KEY and save the file in your project, in the `.envs` directory, with a name like `project-name-service-account.json`, so that if your project name was `trying-this-out`, your key would be called `trying-this-out-service-account.json`.
+On the service accounts page, hit GENERATE NEW PRIVATE KEY and save the file in your project, in the `.envs/service-accounts` directory, with a name like `project-name-service-account.json`, so that if your project name was `trying-this-out`, your key would be called `trying-this-out-service-account.json`.
 
 You'll need to add this to your env files, so adding a line like this below for `.envs/dev.sh`:
 
@@ -174,6 +199,15 @@ npm run serve
 This will spin up a development server, typically running locally on port 8080. you can visit it by visiting the address below in your browser:
 
 http://localhost:8080
+
+#### Enabling debug output
+
+If you encounter any issues, you can enable debug output by starting the server
+with this environment variable setup:
+
+```
+DEBUG="cl8.*" npm run server
+```
 
 
 ## Deploying somewhere others can see it

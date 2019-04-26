@@ -110,7 +110,7 @@ You'll be asked what you want as your public directory. We're using a webpack, a
 
 You'll next need the credentials for either running a local version for development, for carrying out deploys to firebase.
 
-As users are fetched from Airtable, you need to be a member of an existing
+When users are fetched from Airtable, you need to be a member of an existing
 Airtable project with the correct data structure for cl8.
 
 #### Fetching the credentials from firebase:
@@ -206,7 +206,7 @@ If you encounter any issues, you can enable debug output by starting the server
 with this environment variable setup:
 
 ```
-DEBUG="cl8.*" npm run server
+DEBUG="cl8.*" npm run serve
 ```
 
 

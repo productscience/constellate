@@ -2,6 +2,10 @@
 <nav class="dt w-100 border-box pa3 bb b--light-gray bg-white">
 
   <div class="v-mid flex-ns items-stretch tr-s">
+    <router-link :to="{ name: 'addUser' }"
+      class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr">
+      add user
+    </router-link>
     <span
       class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
       @click="myProfile" title="my profile">

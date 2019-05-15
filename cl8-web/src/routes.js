@@ -7,6 +7,7 @@ import NewPassword from '@/components/auth/NewPassword'
 
 import TheHomePanel from '@/components/TheHomePanel'
 
+import AddUser from '@/components/profile/AddUser'
 import ProfileEdit from '@/components/profile/ProfileEdit'
 import ProfilePhoto from '@/components/profile/ProfilePhoto'
 
@@ -50,6 +51,11 @@ const router = new Router({
       path: '/new-password',
       name: 'newPassword',
       component: NewPassword
+    },
+    {
+      path: '/add-user',
+      name: 'addUser',
+      component: AddUser
     },
     {
       path: '*',

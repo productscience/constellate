@@ -1,4 +1,8 @@
 node_modules
 cruft
 
+*.code-workspace
+*.log
+*.cache
+
 *.DS_Store

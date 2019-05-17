@@ -1,32 +1,55 @@
 <template>
   <div class="cf bg-white">
-    <nav-header-edit title='Add user' />
+    <div class="editprofile cf bg-white">
+      <nav class="pa3 ph3 ph4-ns bb b--light-gray flex items-center">
+        <span class="w-100">Add user</span>
+        <a
+          href="#"
+          v-on:submit.prevent="onSubmit"
+          @click="onSubmit"
+          class="fr v-btm f6 mr3 link br2 ph3 pv2 dib white bg-green hover-bg-green"
+        >Save</a>
+        <router-link
+          :to="{ name: 'home' }"
+          class="fr v-btm f6 link br2 ph3 pv2 dib white bg-gray hover-bg-dark-gray"
+        >cancel</router-link>
+      </nav>
+    </div>
     <div class="fl pa2">
       <div class="pa3 center w-80-l cf">
         <div>
           <form class v-if="profile">
             <div class="cf w-100" style="min-height:11em;">
               <div class="fl w-100 w-25-ns mb3">
-                <v-gravatar
-                :email="profile.fields.email"
-                :size="200"
-                class="gravatar b--light-silver ba w-80 mr4"
-                />
+                <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
+                  <img
+                    v-if="hasPhoto()"
+                    :src="showPhoto('large')"
+                    class="supplied-photo b--light-silver ba w-100 v-top fn-ns"
+                  >
+
+                  <v-gravatar
+                    v-else
+                    :email="profile.email"
+                    :size="200"
+                    class="gravatar b--light-silver ba"
+                  />
+                </router-link>
 
                 <div class="w-40 w-100-ns fn-ns pl2 pl0-ns dib v-btm">
                   <div
                     class="f6 dim br2 ph3 pv2 mb2 dib w-80 mt2 white ma2"
-                    v-bind:class="{ 'bg-green': profile.fields.visible, 'bg-red': !profile.fields.visible }"
+                    v-bind:class="{ 'bg-green': profile.visible, 'bg-red': !profile.visible }"
                   >
-                    <input type="checkbox" id="visible-checkbox" v-model="profile.fields.visible">
+                    <input type="checkbox" id="visible-checkbox" v-model="profile.visible">
                     <label for="visible-checkbox">Visible</label>
                   </div>
 
                   <div
                     class="f6 dim br2 ph3 pv2 mb2 dib w-80 mt2 ma2 white"
-                    v-bind:class="{ 'bg-green': profile.fields.pitchable, 'bg-red': !profile.fields.pitchable }"
+                    v-bind:class="{ 'bg-green': profile.pitchable, 'bg-red': !profile.pitchable}"
                   >
-                    <input type="checkbox" id="checkbox" v-model="profile.fields.pitchable">
+                    <input type="checkbox" id="checkbox" v-model="profile.pitchable">
                     <label for="checkbox">Pitchable</label>
                   </div>
 
@@ -42,26 +65,23 @@
                 <ul class="list mt0 pt0 f4 pa0 border-box">
                   <li class="list name">
                     <label class="f5" for>name</label>
-                    <input class="w-100 mt1 pa1" v-model="profile.fields.name">
+                    <input class="w-100 mt1 pa1" v-model="profile.name">
                   </li>
 
                   <li class="list email mt2">
                     <label class="f5" for>email</label>
-                    <input
-                      class="w-100 mt1 pa1"
-                      :value="profile.fields.email"
-                    >
+                    <input class="w-100 mt1 pa1" v-model="profile.email">
                   </li>
                   <li class="list phone mt2">
                     <label class="f5 mb2" for>phone</label>
-                    <input class="w-100 mt1 pa1" v-model="profile.fields.phone">
+                    <input class="w-100 mt1 pa1" v-model="profile.phone">
                   </li>
                   <li class="list website mt2">
                     <label class="f5" for>
                       website
                       <small>(http:// is added automatically)</small>
                     </label>
-                    <input class="w-100 mt1 pa1" v-model="profile.fields.website">
+                    <input class="w-100 mt1 pa1" v-model="profile.website">
                   </li>
                 </ul>
 
@@ -71,21 +91,21 @@
                       twitter
                       <small>(just add your @username)</small>
                     </label>
-                    <input class="w-100 mt1" v-model="profile.fields.twitter">
+                    <input class="w-100 mt1" v-model="profile.twitter">
                   </li>
                   <li class="list facebook mt2">
                     <label class="f5" for>
                       facebook
                       <small>(ditto for facebook)</small>
                     </label>
-                    <input class="w-100 mt1" v-model="profile.fields.facebook">
+                    <input class="w-100 mt1" v-model="profile.facebook">
                   </li>
                   <li class="list linkedin mt2">
                     <label class="f5" for>
                       linkedin
                       <small>(just the bit after http://www.linked.com/in/)</small>
                     </label>
-                    <input class="w-100 mt1" v-model="profile.fields.linkedin">
+                    <input class="w-100 mt1" v-model="profile.linkedin">
                   </li>
 
                   <li class="list mt2">
@@ -98,7 +118,7 @@
                     </label>
                     <textarea
                       class="w-100 mt1 pa1 ba b--light-gray"
-                      v-model="profile.fields.blurb"
+                      v-model="profile.blurb"
                       placeholder="Add a short summary here - 2 paragraphs is plenty"
                       name
                       id
@@ -109,15 +129,17 @@
                 </ul>
               </div>
             </div>
-              <div class="cf pt2 bg-white mb4 mb5">
-                <label class="typo__label">Skills and interests </label>
-                <p class="f6 mb3"><em>(type below to add new tags)</em></p>
-                <profile-tags-component
-                  :data.sync="profile.fields.tags"
-                  :options="profileTags"
-                  @newtag="addTag">
-                </profile-tags-component>
-              </div>
+            <div class="cf pt2 bg-white mb4 mb5">
+              <label class="typo__label">Skills and interests</label>
+              <p class="f6 mb3">
+                <em>(type below to add new tags)</em>
+              </p>
+              <profile-tags-component
+                :data.sync="profile.tags"
+                :options="profileTags"
+                @newtag="addTag"
+              ></profile-tags-component>
+            </div>
           </form>
         </div>
       </div>
@@ -127,28 +149,22 @@
 
 <script>
 /* eslint-disable */
-import NavHeaderEdit from "../shared/NavHeaderEdit.vue";
 import ProfileTagsComponent from "@/components/profile/ProfileTagsComponent.vue";
 import { includes } from "lodash";
 import debugLib from "debug";
 import fbase from "@/fbase";
 
-const debug = debugLib("cl8.ProfileEdit");
+const debug = debugLib("cl8.AddUser");
 
 export default {
-  name: "ProfileEdit",
+  name: "AddUser",
   components: {
-    NavHeaderEdit,
     ProfileTagsComponent
   },
   firebase: function() {
     return {
       fbpeeps: {
-        source: fbase.database().ref("userlist"),
-        readyCallback: function() {
-          debug("data retrieved from fbase");
-          this.setUserProfile();
-        }
+        source: fbase.database().ref("userlist")
       }
     };
   },
@@ -157,7 +173,20 @@ export default {
       items: [], // this needs to be the list from firebase
       tagList: [],
       unsyncedTags: [],
-      localPhoto: null
+      localPhoto: null,
+      profile: {
+        name: "Vincent Test",
+        email: "cl8-test1@vincentahrend.com",
+        phone: "",
+        website: "",
+        twitter: "",
+        facebook: "",
+        linkedin: "",
+        blurb: "",
+        visible: true,
+        pitchable: false,
+        tags: []
+      }
     };
   },
   computed: {
@@ -165,9 +194,6 @@ export default {
       return this.$store.getters.currentUser
         ? this.$store.getters.currentUser
         : false;
-    },
-    profile() {
-      return this.$store.getters.profile;
     },
     profileTags: function() {
       let tagList = [];
@@ -205,12 +231,12 @@ export default {
         code: tempVal,
         id: "tempval" + tempVal
       };
-      this.profile.fields.tags.push(tag);
+      this.profile.tags.push(tag);
       this.unsyncedTags.push(tag);
     },
     onSubmit: function(item) {
-      debug("updating profile", this.profile);
-      this.$store.dispatch("updateProfile", this.profile);
+      debug("updating profile");
+      this.$store.dispatch("addUser", this.profile);
     },
     updatePhoto(ev) {
       debug("image added");
@@ -224,51 +250,20 @@ export default {
       }
     },
     hasPhoto() {
-      if (typeof this.profile === "undefined") {
-        return false;
-      }
-      if (typeof this.profile.fields === "undefined") {
-        return false;
-      }
-      if (typeof this.profile.fields.photo === "undefined") {
-        return false;
-      }
-      if (this.profile.fields.photo.length > 0) {
-        return true;
-      }
-      // otherwise jjust return false
-      return false;
+      return this.profile.photo != null && this.profile.photo.length > 0;
     },
     showPhoto(size) {
       debug(size);
       try {
-        return this.profile.fields.photo[0].thumbnails[size].url;
+        return this.profile.photo[0].thumbnails[size].url;
       } catch (e) {
-        debug(`error`, this.profile.fields, e);
-        return this.profile.fields.photo[0].url;
-      }
-    },
-    setUserProfile() {
-      debug("setting own profile for ", this.user);
-      let user = this.user;
-      let matchingProfiles = this.items.filter(function(peep) {
-        return peep.id === user.uid;
-      });
-      if (matchingProfiles.length > 0) {
-        debug("We have a match!", matchingProfiles[0]);
-        this.$store.commit("setProfile", matchingProfiles[0]);
-      } else {
-        debug("No matches", matchingProfiles);
+        debug(`error`, this.profile, e);
+        return this.profile.photo[0].url;
       }
     }
   },
   created() {
     this.$bindAsArray("items", this.$firebaseRefs.fbpeeps);
-    debug("checking for a user:");
-    debug(this.$store.getters.profile);
-    debug(fbase.auth().currentUser);
-    // this.$store.commit('setFBUser', fbase.auth().currentUser)
-    // debug('profile', this.$store.getters.profile)
   }
 };
 </script>

@@ -209,6 +209,9 @@ with this environment variable setup:
 DEBUG="cl8.*" npm run serve
 ```
 
+similarly, set the local storage variable `debug` to `cl8.*` to enable debug
+output in the browser console.
+
 
 ## Deploying somewhere others can see it
 

@@ -29,6 +29,6 @@
     "eslint": "^5.9.0",
     "eslint-plugin-promise": "^4.0.1",
     "firebase-functions-test": "*",
-    "firebase-tools": "^6.1.1"
+    "firebase-tools": "^6.9.2"
   }
 }

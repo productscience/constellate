@@ -255,7 +255,23 @@ export default new Vuex.Store({
           })
       })
     },
+    addUser: function(context, payload) {
+      // const createdUserAccount = await fbase.getOrCreateUser(peep)
 
+      debug('Adding new user', payload)
+      debug(fbase.auth())
+
+      fbase.auth().createUser({
+        email: payload.email,
+        emailVerified: true,
+        displayName: payload.name
+      }).then(function(userRecord) {
+        debug('Created user', userRecord)
+        // const createdUser = await fbase.addUserToUserList(peep, userList)
+      }).catch(function(error) {
+        debug('Error creating user', error)
+      })
+    },
     fetchProfile: function(context, payload) {
       debug('fetching profile for:', payload)
       return new Promise((resolve, reject) => {

@@ -7,9 +7,6 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "build": "babel src --out-dir dist && babel index-es6.js --out-file index.js",
-    "release": "npm run build && npm run deploy",
-    "firebase-cli": "firebase",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -23,10 +20,6 @@
   },
   "private": true,
   "devDependencies": {
-    "babel-cli": "*",
-    "babel-core": "*",
-    "babel-jest": "^23.6.0",
-    "babel-preset-env": "*",
     "eslint": "^5.9.0",
     "eslint-plugin-promise": "^4.0.1",
     "firebase-functions-test": "*",

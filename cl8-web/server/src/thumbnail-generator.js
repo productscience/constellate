@@ -1,3 +1,5 @@
+'use strict'
+
 const spawn = require('child-process-promise').spawn
 const path = require('path')
 const os = require('os')
@@ -162,11 +164,13 @@ function ThumbnailGenerator(admin, fileObject) {
       .then(uploadResponse => {
         // debug('file uploaded', uploadResponse[0].metadata.mediaLink)
         // return the signedUrl
-        const signedUrlconfig = { action: 'read', expires: '03-01-2500' }
-        // if this is from the bucket, and I can *download* files, fine,
-        // why would the project not be set?
-        // debug(uploadResponse[0])
-
+        const signedUrlconfig = {
+          action: 'read',
+          expires: '03-01-2500'
+          // if this is from the bucket, and I can *download* files, fine,
+          // why would the project not be set?
+          // debug(uploadResponse[0])
+        }
         return uploadResponse[0].getSignedUrl(signedUrlconfig).then(res => {
           // getSignedUrl, returns a string in an Array, like ["somestring"]
           // and we only want the string

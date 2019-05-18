@@ -1,3 +1,5 @@
+'use strict'
+
 const path = require('path')
 const debug = require('debug')('cl8.profile-thumbnailer')
 

@@ -1,6 +1,8 @@
+'use strict'
+
 const Airtable = require('airtable')
 
-function AirTableWrapper (apiKey, apiBase) {
+function AirTableWrapper(apiKey, apiBase) {
   const airtable = new Airtable({
     apiKey: apiKey
   }).base(apiBase)
@@ -16,7 +18,7 @@ function AirTableWrapper (apiKey, apiBase) {
    * @param {any} filterFormula
    * @returns Array of Airtable Records
    */
-  function fetchRecords (tableName, filterFormula) {
+  function fetchRecords(tableName, filterFormula) {
     let results = airtable(tableName)
 
     if (typeof filterFormula !== 'undefined') {
@@ -30,11 +32,11 @@ function AirTableWrapper (apiKey, apiBase) {
     }
   }
 
-  function getTags (filterFormula) {
+  function getTags(filterFormula) {
     return fetchRecords('Tags')
   }
 
-  function getUsers (filterFormula) {
+  function getUsers(filterFormula) {
     // return a list, by default filtering out ones with no email
     return fetchRecords('Peeps', "NOT({email} = '')")
   }

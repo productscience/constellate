@@ -1,3 +1,5 @@
+'use strict'
+
 const AirTableWrapper = require('./airtable-wrapper')
 const FireBaseWrapper = require('./firebase-wrapper')
 const _ = require('lodash')

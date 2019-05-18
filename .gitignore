@@ -20,7 +20,7 @@ selenium-debug.log
 # this might not apply to other machines
 .python-version
 .node-version
-
+*.code-workspace
 
 # keep credentials out of source code
 .env
@@ -34,10 +34,6 @@ selenium-debug.log
 .firebase/
 .firebaserc
 
-# functions
-cl8-web/server/index.js
-cl8-web/server/dist
-
 # for google cloud functions
 .runtimeconfig.json
 *service-account.json
@@ -45,11 +41,9 @@ cl8-web/server/dist
 *.log
 .cache
 
+# minified files
 cl8-web/dist/
 
-*.DS_Store
 coverage
 
 cruft
-
-.firebaserc

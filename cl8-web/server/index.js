@@ -1,8 +1,10 @@
+'use strict'
+
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-const Cl8Importer = require('./dist/importer.js')
-const ProfileThumbnailer = require('./dist/profile-thumbnailer.js')
-const CheckConfig = require('./dist/check-config.js')
+const Cl8Importer = require('./src/importer.js')
+const ProfileThumbnailer = require('./src/profile-thumbnailer.js')
+const CheckConfig = require('./src/check-config.js')
 let serviceAccount = require('./service-account.json')
 
 // initialised it here instead of in functions
@@ -10,7 +12,7 @@ admin.initializeApp()
 
 // just a check so you can run it in `firebase experimental:functions:shell`
 exports.helloWorld = functions.https.onRequest((request, response) => {
-  response.send('Hello from Firebase!')
+  response.send('Hello from Constellate Cloud Function!')
 })
 
 // this is only used to generate a realistic objectMetaData

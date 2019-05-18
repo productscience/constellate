@@ -32,7 +32,6 @@
     "vuex": "*"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "*",
     "@vue/cli-plugin-eslint": "*",
     "@vue/cli-plugin-unit-jest": "*",
     "@vue/cli-service": "*",

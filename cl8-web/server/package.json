@@ -9,7 +9,8 @@
     "logs": "firebase functions:log",
     "build": "babel src --out-dir dist && babel index-es6.js --out-file index.js",
     "release": "npm run build && npm run deploy",
-    "firebase-cli": "firebase"
+    "firebase-cli": "firebase",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@google-cloud/storage": "^2.3.1",
@@ -30,5 +31,8 @@
     "eslint-plugin-promise": "^4.0.1",
     "firebase-functions-test": "*",
     "firebase-tools": "^6.9.2"
+  },
+  "engines": {
+    "node": "10"
   }
 }

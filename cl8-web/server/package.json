@@ -14,7 +14,7 @@
     "airtable": "*",
     "child-process-promise": "*",
     "debug": "^4.1.0",
-    "firebase-admin": "^6.3.0",
+    "firebase-admin": "^7.3.0",
     "firebase-functions": "^2.1.0",
     "lodash": "*"
   },
@@ -23,7 +23,7 @@
     "eslint": "^5.9.0",
     "eslint-plugin-promise": "^4.0.1",
     "firebase-functions-test": "*",
-    "firebase-tools": "^6.9.2"
+    "firebase-tools": "^6.10.0"
   },
   "engines": {
     "node": "10"

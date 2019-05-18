@@ -3,5 +3,8 @@ module.exports = {
     ecmaVersion: 8
   },
   root: true,
-  extends: ['plugin:vue/essential', 'prettier/standard']
+  extends: ['plugin:vue/essential', 'prettier/standard'],
+  rules: {
+    semi: "off"
+  }
 }

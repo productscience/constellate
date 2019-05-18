@@ -62,3 +62,19 @@ exports.importUsers = functions.https.onRequest(async (request, response) => {
   const importResults = await importer.importUsersAndTags()
   response.send(importResults.length)
 })
+
+exports.addUsers = functions.https.onRequest(async (req, resp) => {
+  // const userlist = [
+  //   {
+  //     fields: {
+  //       name: 'Vincent Test',
+  //       email: 'cl8-test3@vincentahrend.com'
+  //     }
+  //   }
+  // ]
+  const userlist = req.body.map(fields => ({ fields }))
+
+  const importer = Cl8Importer(admin)
+  const importResults = await importer.addUsersAndTags(userlist)
+  resp.send(importResults)
+})

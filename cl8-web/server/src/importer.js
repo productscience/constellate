@@ -10,16 +10,12 @@ module.exports = Cl8Importer
  * Wrapper around the SDK wrapper, to allow us to run imports on the command line,
  * and call import functions from code, in a cloud function
  *
- * @param {Object} importerCredentials, with keys with credentials
- * for Airtable and Firebase
+ * @param {Object} admin, firebase-admin instance
  * @returns {Object} with methods to run the import scripts
  */
-function Cl8Importer(importerCredentials) {
-  const atbl = AirTableWrapper(
-    importerCredentials.airTableCreds[0],
-    importerCredentials.airTableCreds[1]
-  )
-  const fbase = FireBaseWrapper(importerCredentials.fbaseCreds)
+function Cl8Importer(admin) {
+  // const atbl = null
+  const fbase = FireBaseWrapper(admin)
 
   /**
    * Fetches the data from the necessary Airtable and Firebase APIs, builds the
@@ -60,6 +56,47 @@ function Cl8Importer(importerCredentials) {
       skipped: collectedData.fbUserList
     }
   }
+
+  /**
+   * Fetches the data from the necessary Airtable and Firebase APIs, builds the
+   * data structures to put into Firebase, skipping user who already exist in Firebase
+   *
+   *
+   * @returns {Object} with keys listing:
+   *  a) the imported users, and
+   *  b) users already imported previously
+   */
+  async function addUsersAndTags(userlist) {
+    const collectedData = await fetchAllDataforSyncing()
+
+    // 2) find ones who don't already exist in the realtime user list already
+    const peepsToImport = await filterOutPeepsToImport(
+      userlist,
+      collectedData.fbUserList
+    )
+
+    // 3) import each of the new Peeps:
+    // - add them to the Firebase RTB with the airtable ID as the key
+    // - add them to Firebase Auth
+
+    const importedPeeps = await importUsersAcrossServices(
+      peepsToImport,
+      collectedData.fbUserList
+    )
+
+    // - TODO update airtable with when they were imported into Firebase
+
+    const importedEmails = importedPeeps.map(recImp => recImp.fields.email)
+    const skipped = userlist.filter(
+      rec => !importedEmails.includes(rec.fields.email)
+    )
+
+    return {
+      imported: importedPeeps,
+      skipped
+    }
+  }
+
   /**
    * Accepts a user, with an id as created in Airtable, and deletes
    * it from Firebase Realtime Database as well as the their account
@@ -88,13 +125,15 @@ function Cl8Importer(importerCredentials) {
     for (let peep of peepsToImport) {
       debug(`import user: ${peep.id}, ${peep.fields.email}`)
       try {
-        debug(`importUsersAcrossServices: calling addUserToUserList`)
-        const createdUser = await fbase.addUserToUserList(peep, userList)
-        debug(`importUsersAcrossServices: finished addUserToUserList`)
-
         debug(`importUsersAcrossServices: calling getOrCreateUser`)
         const createdUserAccount = await fbase.getOrCreateUser(peep)
         debug(`importUsersAcrossServices: finished getOrCreateUser`)
+
+        peep.id = createdUserAccount.uid
+
+        debug(`importUsersAcrossServices: calling addUserToUserList`)
+        const createdUser = await fbase.addUserToUserList(peep, userList)
+        debug(`importUsersAcrossServices: finished addUserToUserList`)
 
         importedPeeps.push({ data: createdUser, account: createdUserAccount })
 
@@ -122,16 +161,16 @@ function Cl8Importer(importerCredentials) {
    * Airtable, and Firebase.
    */
   async function fetchAllDataforSyncing() {
-    const tags = await atbl.getTags()
-    const peeps = await atbl.getUsers()
+    // const tags = await atbl.getTags()
+    // const peeps = await atbl.getUsers()
 
     // then fetch the user list from Firebase RTB so we can make
     // comparisons about them being in the system
     const fbUserList = await fbase.getUserList()
 
     return {
-      peeps,
-      tags,
+      // peeps,
+      // tags,
       fbUserList
     }
   }
@@ -150,7 +189,6 @@ function Cl8Importer(importerCredentials) {
         // can result in one of the values of 'list' here being `undefined`, which crashes the importer
         if (typeof rec !== 'undefined') {
           if (
-            typeof rec.id !== 'undefined' &&
             typeof rec.fields !== 'undefined' &&
             typeof rec.fields.email !== 'undefined'
           ) {
@@ -253,13 +291,14 @@ function Cl8Importer(importerCredentials) {
   }
 
   return {
-    atbl: atbl,
-    fbase: fbase,
-    enrichPeep: enrichPeep,
-    buildEnrichedPeeps: buildEnrichedPeeps,
-    importUsersAndTags: importUsersAndTags,
-    fetchAllDataforSyncing: fetchAllDataforSyncing,
-    filterOutPeepsToImport: filterOutPeepsToImport,
-    importUsersAcrossServices: importUsersAcrossServices
+    // atbl: atbl,
+    fbase,
+    enrichPeep,
+    buildEnrichedPeeps,
+    importUsersAndTags,
+    addUsersAndTags,
+    fetchAllDataforSyncing,
+    filterOutPeepsToImport,
+    importUsersAcrossServices
   }
 }

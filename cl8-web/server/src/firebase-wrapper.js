@@ -122,10 +122,14 @@ function FirebaseWrapper(admin) {
       debug('getOrCreateUser: no user, making one')
 
       let u = {
-        uid: user.id,
         displayName: user.fields.name,
         email: user.fields.email,
         emailVerified: true
+      }
+
+      if (user.id != null) {
+        debug(`Creating user with predefined id ${user.id}`)
+        u.id = user.id
       }
 
       debug('getOrCreateUser: making user', u)

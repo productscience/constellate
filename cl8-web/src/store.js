@@ -21,9 +21,9 @@ export default new Vuex.Store({
     visibleProfileList: [],
     requestUrl: null,
     signInData: {
-	    message: null,
-	    email: null
-	  }
+      message: null,
+      email: null
+    }
   },
   getters: {
     currentUser: function(state) {
@@ -61,7 +61,7 @@ export default new Vuex.Store({
       return state.requestUrl
     },
     signInData: function(state) {
-	    return state.signInData
+      return state.signInData
     }
   },
   mutations: {
@@ -173,27 +173,30 @@ export default new Vuex.Store({
         })
     },
     newPassword: function(context, payload) {
-	    console.log(payload);
-	    context.state.loading = true
-	    fbase
-    	.auth()
-    	.verifyPasswordResetCode(payload.code).then(email => {
-	    	fbase
-	    	.auth()
-	    	.confirmPasswordReset(payload.code, payload.password).then(function(resp) {
-		    	// TODO: Then do something with the response.
-		    	context.state.signInData.message = 'Password changed. Please sign in with new password'
-		    	context.state.signInData.email = email
-		    	router.push('signin')
-		    	context.state.loading = false
-		    })
-    	})
-    	.catch(error => {
-	    	console.error(error.code)
-	    	console.error(error.message)
-	    	context.state.loading = false
-    	})
-	    debug(context, payload)
+      console.log(payload)
+      context.state.loading = true
+      fbase
+        .auth()
+        .verifyPasswordResetCode(payload.code)
+        .then(email => {
+          fbase
+            .auth()
+            .confirmPasswordReset(payload.code, payload.password)
+            .then(function(resp) {
+              // TODO: Then do something with the response.
+              context.state.signInData.message =
+                'Password changed. Please sign in with new password'
+              context.state.signInData.email = email
+              router.push('signin')
+              context.state.loading = false
+            })
+        })
+        .catch(error => {
+          console.error(error.code)
+          console.error(error.message)
+          context.state.loading = false
+        })
+      debug(context, payload)
     },
     updateActiveTags: function(context, payload) {
       debug('updateActiveTags', payload)
@@ -255,22 +258,53 @@ export default new Vuex.Store({
           })
       })
     },
+    /**
+     * Create a new Firebase user account and constellate user profile
+     *
+     * @param {*} context
+     * @param {*} payload dictionary with new user data as follows
+     *
+     * Fields (as string if not mentioned):
+     * - name
+     * - email
+     * - phone
+     * - website (without protocol)
+     * - twitter
+     * - facebook
+     * - linkedin
+     * - blurb (summary)
+     * - visible (boolean)
+     * - pitchable (boolean)
+     */
     addUser: function(context, payload) {
-      // const createdUserAccount = await fbase.getOrCreateUser(peep)
+      const serverUrl = 'http://localhost:5000'
+      const url = `${serverUrl}/cl8-testing/us-central1/addUsers`
 
-      debug('Adding new user', payload)
-      debug(fbase.auth())
-
-      fbase.auth().createUser({
-        email: payload.email,
-        emailVerified: true,
-        displayName: payload.name
-      }).then(function(userRecord) {
-        debug('Created user', userRecord)
-        // const createdUser = await fbase.addUserToUserList(peep, userList)
-      }).catch(function(error) {
-        debug('Error creating user', error)
+      return fetch(url, {
+        method: 'POST',
+        body: JSON.stringify([
+          {
+            name: payload.name,
+            email: payload.email,
+            phone: payload.phone,
+            website: payload.website,
+            twitter: payload.twitter,
+            facebook: payload.facebook,
+            linkedin: payload.linkedin,
+            blurb: payload.blurb,
+            visible: payload.visible || true,
+            pitchable: payload.pitchable || false
+          }
+        ])
       })
+        .then(resp => {
+          debug('Created new user account for', resp.body.email)
+          return resp
+        })
+        .catch(err => {
+          debug('Error creating new user account', err)
+          throw err
+        })
     },
     fetchProfile: function(context, payload) {
       debug('fetching profile for:', payload)

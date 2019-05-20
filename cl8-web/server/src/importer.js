@@ -69,30 +69,25 @@ function Cl8Importer(admin) {
   async function addUsersAndTags(userlist) {
     const collectedData = await fetchAllDataforSyncing()
 
-    // 2) find ones who don't already exist in the realtime user list already
     const peepsToImport = await filterOutPeepsToImport(
       userlist,
       collectedData.fbUserList
     )
-
-    // 3) import each of the new Peeps:
-    // - add them to the Firebase RTB with the airtable ID as the key
-    // - add them to Firebase Auth
 
     const importedPeeps = await importUsersAcrossServices(
       peepsToImport,
       collectedData.fbUserList
     )
 
-    // - TODO update airtable with when they were imported into Firebase
+    console.log('imported', JSON.stringify(importedPeeps, null, 2))
 
-    const importedEmails = importedPeeps.map(recImp => recImp.fields.email)
+    const importedEmails = importedPeeps.map(recImp => recImp.account.email)
     const skipped = userlist.filter(
       rec => !importedEmails.includes(rec.fields.email)
     )
 
     return {
-      imported: importedPeeps,
+      imported: importedPeeps.map(recImp => recImp.data),
       skipped
     }
   }

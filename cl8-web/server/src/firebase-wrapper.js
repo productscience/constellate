@@ -163,6 +163,7 @@ function FirebaseWrapper(admin) {
         )
         return user
       }
+      throw err
     }
   }
 

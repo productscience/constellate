@@ -79,8 +79,6 @@ function Cl8Importer(admin) {
       collectedData.fbUserList
     )
 
-    console.log('imported', JSON.stringify(importedPeeps, null, 2))
-
     const importedEmails = importedPeeps.map(recImp => recImp.account.email)
     const skipped = userlist.filter(
       rec => !importedEmails.includes(rec.fields.email)
@@ -139,6 +137,10 @@ function Cl8Importer(admin) {
       } catch (e) {
         debug('importUsersAcrossServices: error')
         debug(e)
+        // Only throw errors when importing single peeps
+        if (peepsToImport.length == 1) {
+          throw e
+        }
       }
 
       debug('importedPeeps', importedPeeps)

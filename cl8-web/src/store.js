@@ -299,6 +299,9 @@ export default new Vuex.Store({
       })
         .then(resp => resp.json())
         .then(data => {
+          if (data.error != null) {
+            throw Error(data.error)
+          }
           if (data.skipped.length > 0) {
             debug('No user account created')
             return 'There already is an account with this email.'

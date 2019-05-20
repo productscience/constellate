@@ -84,12 +84,12 @@
 
                 <ul class="list mt0 pt0 f4 pa0 border-box">
                   <li class="list name">
-                    <label class="f5" for>name</label>
+                    <label class="f5" for>name (required)</label>
                     <input class="w-100 mt1 pa1" v-model="profile.name">
                   </li>
 
                   <li class="list email mt2">
-                    <label class="f5" for>email</label>
+                    <label class="f5" for>email (required)</label>
                     <input class="w-100 mt1 pa1" v-model="profile.email">
                   </li>
                   <li class="list phone mt2">
@@ -257,7 +257,20 @@ export default {
       this.unsyncedTags.push(tag);
     },
     onSubmit: function(item) {
-      debug("updating profile");
+      this.error = null;
+      this.warning = null;
+
+      if (this.profile.name.length == 0) {
+        this.warning = "Please enter a name for the new user";
+        return;
+      }
+
+      if (this.profile.email.length == 0) {
+        this.warning = "Please enter an email address for the new user";
+        return;
+      }
+
+      debug("creating profile");
       this.$store
         .dispatch("addUser", this.profile)
         .then(resp => {

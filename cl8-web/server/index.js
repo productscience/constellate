@@ -91,6 +91,14 @@ exports.addUsers = functions.https.onRequest(async (req, resp) => {
   const userlist = payload.map(fields => ({ fields }))
 
   const importer = Cl8Importer(admin)
-  const importResults = await importer.addUsersAndTags(userlist)
-  resp.send(importResults)
+  try {
+    const importResults = await importer.addUsersAndTags(userlist)
+    resp.send(importResults)
+  } catch (err) {
+    console.error(err)
+    rv = {
+      error: err
+    }
+    resp.send(400, JSON.stringify({ error: err.message }))
+  }
 })

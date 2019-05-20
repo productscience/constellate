@@ -297,9 +297,19 @@ export default new Vuex.Store({
           }
         ])
       })
-        .then(resp => {
-          debug('Created new user account for', resp.body.email)
-          return resp
+        .then(resp => resp.json())
+        .then(data => {
+          if (data.skipped.length > 0) {
+            debug('No user account created')
+            return 'There already is an account with this email.'
+          } else {
+            debug(
+              'Created new user accounts. Redirecting to first created user'
+            )
+            const profile = data.imported[0].user
+            context.commit('setProfile', profile)
+            router.push({ name: 'home' })
+          }
         })
         .catch(err => {
           debug('Error creating new user account', err)

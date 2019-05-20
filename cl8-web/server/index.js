@@ -78,8 +78,9 @@ exports.importUsers = functions.https.onRequest(async (request, response) => {
   ]
  */
 exports.addUsers = functions.https.onRequest(async (req, resp) => {
+  let payload
   try {
-    const payload = JSON.parse(req.body)
+    payload = JSON.parse(req.body)
   } catch (err) {
     console.error('Error parsing request body while creating user:', req.body)
     resp.send(400, 'Could not parse request body')

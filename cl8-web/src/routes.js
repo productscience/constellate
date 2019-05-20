@@ -7,7 +7,7 @@ import NewPassword from '@/components/auth/NewPassword'
 
 import TheHomePanel from '@/components/TheHomePanel'
 
-import AddUser from '@/components/profile/AddUser'
+import AddUser from '@/components/admin/AddUser'
 import ProfileEdit from '@/components/profile/ProfileEdit'
 import ProfilePhoto from '@/components/profile/ProfilePhoto'
 

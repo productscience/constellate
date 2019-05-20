@@ -293,7 +293,8 @@ export default new Vuex.Store({
             linkedin: payload.linkedin,
             blurb: payload.blurb,
             visible: payload.visible || true,
-            pitchable: payload.pitchable || false
+            pitchable: payload.pitchable || false,
+            tags: payload.tags
           }
         ])
       })
@@ -311,6 +312,7 @@ export default new Vuex.Store({
             )
             const profile = data.imported[0].user
             context.commit('setProfile', profile)
+            context.commit('fetchVisibleProfileList')
             router.push({ name: 'home' })
           }
         })

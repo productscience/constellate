@@ -62,6 +62,26 @@
               </div>
 
               <div class="fl w-100 w-75-ns mt0 pt0">
+                <div v-if="warning" class="flex items-center pa3 bg-light-blue">
+                  <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
+                    <title>info icon</title>
+                    <path
+                      d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
+                    ></path>
+                  </svg>
+                  <span class="lh-title ml2">{{ warning }}</span>
+                </div>
+
+                <div v-if="error" class="flex items-center pa3 bg-light-red">
+                  <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
+                    <title>info icon</title>
+                    <path
+                      d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
+                    ></path>
+                  </svg>
+                  <span class="lh-title ml2">{{ error }}</span>
+                </div>
+
                 <ul class="list mt0 pt0 f4 pa0 border-box">
                   <li class="list name">
                     <label class="f5" for>name</label>
@@ -174,6 +194,8 @@ export default {
       tagList: [],
       unsyncedTags: [],
       localPhoto: null,
+      warning: null,
+      error: null,
       profile: {
         name: "Vincent Test",
         email: "cl8-test1@vincentahrend.com",
@@ -236,7 +258,16 @@ export default {
     },
     onSubmit: function(item) {
       debug("updating profile");
-      this.$store.dispatch("addUser", this.profile);
+      this.$store
+        .dispatch("addUser", this.profile)
+        .then(resp => {
+          // Any response is a warning as `addUser` will redirect to the new
+          // profile if all goes well
+          this.warning = resp;
+        })
+        .catch(err => {
+          this.error = err.message;
+        });
     },
     updatePhoto(ev) {
       debug("image added");

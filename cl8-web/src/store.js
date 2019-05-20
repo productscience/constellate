@@ -32,6 +32,17 @@ export default new Vuex.Store({
     isLoading: function(state) {
       return state.loading
     },
+    isAdmin: function(state) {
+      if (state.user == null) return false
+      if (state.visibleProfileList == null) return false
+
+      // Legacy profiles from Airtable have 'yes' in the admin field
+      const truthy = ['yes', true]
+      return state.visibleProfileList
+        .filter(profile => truthy.includes(profile.fields.admin))
+        .map(profile => profile.id)
+        .includes(state.user.uid)
+    },
     currentTerm: function(state) {
       return state.searchTerm
     },

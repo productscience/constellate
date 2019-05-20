@@ -11,7 +11,6 @@
         <a
           href="#"
           v-on:submit.prevent="onSubmit"
-          disabled="true"
           @click="onSubmit"
           class="fr v-btm f6 mr3 link br2 ph3 pv2 dib white bg-green hover-bg-green"
         >Save</a>

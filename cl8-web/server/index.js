@@ -63,16 +63,31 @@ exports.importUsers = functions.https.onRequest(async (request, response) => {
   response.send(importResults.length)
 })
 
+/** 
+ * Endpoint that creates a Firebase user account and user profile
+ * 
+ * Expects POST request with JSON formatted payload  as list of objects
+ * 
+ * [
+    {
+      fields: {
+        name: 'Vincent Test',
+        email: 'cl8-test3@vincentahrend.com',
+      }
+    }
+  ]
+ */
 exports.addUsers = functions.https.onRequest(async (req, resp) => {
-  // const userlist = [
-  //   {
-  //     fields: {
-  //       name: 'Vincent Test',
-  //       email: 'cl8-test3@vincentahrend.com'
-  //     }
-  //   }
-  // ]
-  const userlist = req.body.map(fields => ({ fields }))
+  try {
+    const payload = JSON.parse(req.body)
+  } catch (err) {
+    console.error('Error parsing request body while creating user:', req.body)
+    resp.send(400, 'Could not parse request body')
+    throw err
+  }
+
+  // Wrap fields in object for CL8Importer
+  const userlist = payload.map(fields => ({ fields }))
 
   const importer = Cl8Importer(admin)
   const importResults = await importer.addUsersAndTags(userlist)

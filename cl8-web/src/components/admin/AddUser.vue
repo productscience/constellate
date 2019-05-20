@@ -1,11 +1,17 @@
 <template>
-  <div class="cf bg-white">
+  <div v-if="loading" class>
+    <div class="spinner">
+      <img src="../../assets/loading.svg" alt="loading">
+    </div>
+  </div>
+  <div v-else class="cf bg-white">
     <div class="editprofile cf bg-white">
       <nav class="pa3 ph3 ph4-ns bb b--light-gray flex items-center">
         <span class="w-100">Add user</span>
         <a
           href="#"
           v-on:submit.prevent="onSubmit"
+          disabled="true"
           @click="onSubmit"
           class="fr v-btm f6 mr3 link br2 ph3 pv2 dib white bg-green hover-bg-green"
         >Save</a>
@@ -21,20 +27,11 @@
           <form class v-if="profile">
             <div class="cf w-100" style="min-height:11em;">
               <div class="fl w-100 w-25-ns mb3">
-                <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
-                  <img
-                    v-if="hasPhoto()"
-                    :src="showPhoto('large')"
-                    class="supplied-photo b--light-silver ba w-100 v-top fn-ns"
-                  >
-
-                  <v-gravatar
-                    v-else
-                    :email="profile.email"
-                    :size="200"
-                    class="gravatar b--light-silver ba"
-                  />
-                </router-link>
+                <v-gravatar
+                  :email="profile.email"
+                  :size="200"
+                  class="gravatar b--light-silver ba w-80 mr4"
+                />
 
                 <div class="w-40 w-100-ns fn-ns pl2 pl0-ns dib v-btm">
                   <div
@@ -196,6 +193,7 @@ export default {
       localPhoto: null,
       warning: null,
       error: null,
+      loading: false,
       profile: {
         name: "Vincent Test",
         email: "cl8-test1@vincentahrend.com",
@@ -271,14 +269,17 @@ export default {
       }
 
       debug("creating profile");
+      this.loading = true;
       this.$store
         .dispatch("addUser", this.profile)
         .then(resp => {
+          this.loading = false;
           // Any response is a warning as `addUser` will redirect to the new
           // profile if all goes well
           this.warning = resp;
         })
         .catch(err => {
+          this.loading = false;
           this.error = err.message;
         });
     },

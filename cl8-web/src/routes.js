@@ -15,7 +15,6 @@ const debug = require('debug')('cl8.route')
 
 Vue.use(Router)
 
-debug('routing')
 const router = new Router({
   mode: 'history',
   routes: [

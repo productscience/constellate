@@ -33,7 +33,7 @@
                       id="visible-checkbox"
                       v-model="profile.fields.visible"
                     >
-                    <label for="visible-checkbox" class="dib w-75">Visible</label>
+                    <label for="visible-checkbox" class="dib w-70">Visible</label>
                   </div>
 
                   <div
@@ -46,7 +46,7 @@
                       id="checkbox"
                       v-model="profile.fields.pitchable"
                     >
-                    <label for="checkbox" class="dib w-75">Pitchable</label>
+                    <label for="checkbox" class="dib w-70">Pitchable</label>
                   </div>
 
                   <p class="f7 ma2 ml3 w-80">

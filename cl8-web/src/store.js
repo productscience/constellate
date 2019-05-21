@@ -289,7 +289,7 @@ export default new Vuex.Store({
      */
     addUser: async function(context, payload) {
       let endpoint
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV == 'development') {
         endpoint = `http://localhost:5000/${
           process.env.VUE_APP_FIREBASE_PROJECTID
         }/us-central1/addUsers`

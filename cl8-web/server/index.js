@@ -93,6 +93,8 @@ exports.addUsers = functions.https.onRequest((req, resp) => {
     // Wrap fields in object for CL8Importer
     const userlist = req.body.map(fields => ({ fields }))
 
+    console.log('Creating new user', JSON.stringify(userlist[0], null, 2))
+
     const importer = Cl8Importer(admin)
     try {
       const importResults = await importer.addUsersAndTags(userlist)

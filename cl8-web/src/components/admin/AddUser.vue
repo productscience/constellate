@@ -67,8 +67,9 @@
                 </div>
               </div>
 
+              <!-- Warning message box -->
               <div class="fl w-100 w-75-ns mt0 pt0">
-                <div v-if="warning" class="flex items-center pa3 bg-light-blue">
+                <div v-if="warning" class="flex items-center pa3 bg-light-blue mb2">
                   <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
                     <title>info icon</title>
                     <path
@@ -78,7 +79,8 @@
                   <span class="lh-title ml2">{{ warning }}</span>
                 </div>
 
-                <div v-if="error" class="flex items-center pa3 bg-light-red">
+                <!-- Error message box -->
+                <div v-if="error" class="flex items-center pa3 bg-light-red mb2">
                   <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
                     <title>info icon</title>
                     <path
@@ -174,25 +176,24 @@
 </template>
 
 <script>
-/* eslint-disable */
-import ProfileTagsComponent from "@/components/profile/ProfileTagsComponent.vue";
-import { includes } from "lodash";
-import debugLib from "debug";
-import fbase from "@/fbase";
+import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
+import { includes } from 'lodash'
+import debugLib from 'debug'
+import fbase from '@/fbase'
 
-const debug = debugLib("cl8.AddUser");
+const debug = debugLib('cl8.AddUser')
 
 export default {
-  name: "AddUser",
+  name: 'AddUser',
   components: {
     ProfileTagsComponent
   },
   firebase: function() {
     return {
       fbpeeps: {
-        source: fbase.database().ref("userlist")
+        source: fbase.database().ref('userlist')
       }
-    };
+    }
   },
   data() {
     return {
@@ -204,141 +205,113 @@ export default {
       error: null,
       loading: false,
       profile: {
-        name: "Vincent Test",
-        email: "cl8-test1@vincentahrend.com",
-        phone: "",
-        website: "",
-        twitter: "",
-        facebook: "",
-        linkedin: "",
-        blurb: "",
+        name: 'Vincent Test',
+        email: 'cl8-test1@vincentahrend.com',
+        phone: '',
+        website: '',
+        twitter: '',
+        facebook: '',
+        linkedin: '',
+        blurb: '',
         visible: true,
         pitchable: false,
         tags: []
       }
-    };
+    }
   },
   computed: {
     user() {
       return this.$store.getters.currentUser
         ? this.$store.getters.currentUser
-        : false;
+        : false
     },
     profileTags: function() {
-      let tagList = [];
+      let tagList = []
 
       if (this.items.length > 0) {
         this.items.forEach(function(peep) {
-          if (typeof peep.fields !== "undefined") {
-            if (typeof peep.fields.tags !== "undefined") {
+          if (typeof peep.fields !== 'undefined') {
+            if (typeof peep.fields.tags !== 'undefined') {
               peep.fields.tags.forEach(function(t) {
                 let tagListNames = tagList.map(function(tt) {
-                  return tt.name;
-                });
+                  return tt.name
+                })
                 if (!includes(tagListNames, t.name)) {
-                  tagList.push(t);
+                  tagList.push(t)
                 }
-              });
+              })
             }
           }
-        });
+        })
       }
       if (this.unsyncedTags.length > 0) {
         this.unsyncedTags.forEach(function(t) {
-          tagList.push(t);
-        });
+          tagList.push(t)
+        })
       }
-      return tagList;
+      return tagList
     }
   },
   methods: {
     addTag(newTag) {
       let tempVal =
-        newTag.substring(0, 2) + Math.floor(Math.random() * 10000000);
+        newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
       const tag = {
         name: newTag,
         code: tempVal,
-        id: "tempval" + tempVal
-      };
-      this.profile.tags.push(tag);
-      this.unsyncedTags.push(tag);
+        id: 'tempval' + tempVal
+      }
+      this.profile.tags.push(tag)
+      this.unsyncedTags.push(tag)
     },
-    onSubmit: function(item) {
-      this.error = null;
-      this.warning = null;
+    onSubmit: async function() {
+      this.error = null
+      this.warning = null
 
       if (this.profile.name.length == 0) {
-        this.warning = "Please enter a name for the new user";
-        return;
+        this.warning = 'Please enter a name for the new user'
+        return
       }
 
       if (this.profile.email.length == 0) {
-        this.warning = "Please enter an email address for the new user";
-        return;
+        this.warning = 'Please enter an email address for the new user'
+        return
       }
 
-      debug("creating profile");
-      this.loading = true;
-      this.$store
-        .dispatch("addUser", this.profile)
-        .then(resp => {
-          this.loading = false;
-          // Any response is a warning as `addUser` will redirect to the new
-          // profile if all goes well
-          this.warning = resp;
-        })
-        .catch(err => {
-          debug("Error creating account", err);
-          this.loading = false;
-          this.error = err.message;
-        });
-    },
-    updatePhoto(ev) {
-      debug("image added");
-      // assign the photo
-      debug(ev.target.files);
-      if (ev.target.files.length === 1) {
-        let newPhoto = ev.target.files[0];
-        this.localPhoto = window.URL.createObjectURL(newPhoto);
-        let payload = { profile: this.profile, photo: newPhoto };
-        this.$store.dispatch("updateProfilePhoto", payload);
+      debug('creating profile')
+      this.loading = true
+      try {
+        const resp = await this.$store.dispatch('addUser', this.profile)
+        // Any response is a warning as `addUser` will redirect to the new
+        // profile if all goes well
+        this.warning = resp
+      } catch (err) {
+        debug('Error creating account', err)
+        this.error = err.message
       }
+      this.loading = false
     },
     hasPhoto() {
-      return this.profile.photo != null && this.profile.photo.length > 0;
-    },
-    showPhoto(size) {
-      debug(size);
-      try {
-        return this.profile.photo[0].thumbnails[size].url;
-      } catch (e) {
-        debug(`error`, this.profile, e);
-        return this.profile.photo[0].url;
-      }
+      return this.profile.photo != null && this.profile.photo.length > 0
     }
   },
   created() {
-    this.$bindAsArray("items", this.$firebaseRefs.fbpeeps);
+    this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
   }
-};
+}
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style media="screen" lang="scss" scoped>
-@import "../../../node_modules/tachyons/css/tachyons.css";
+@import '../../../node_modules/tachyons/css/tachyons.css';
 p span.list {
   display: inline-block;
 }
 
-// .new-pic-upload input.file {
-//   /* // invisible but it's there! */
-//   opacity: 1;
-//   /* width: 100%; */
-//   height: 100px;
-//   position: absolute;
-//   cursor: pointer;
-// }
+.gravatar:hover {
+  cursor: not-allowed;
+}
 
 @mixin rounded($r: 5px) {
   -webkit-border-radius: $r;
@@ -371,7 +344,7 @@ textarea {
   color: #fff;
   text-align: center;
   &:before {
-    content: "change";
+    content: 'change';
     position: absolute;
     top: 0;
     left: 0;

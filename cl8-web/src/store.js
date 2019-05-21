@@ -294,7 +294,7 @@ export default new Vuex.Store({
           process.env.VUE_APP_FIREBASE_PROJECTID
         }/us-central1/addUsers`
       } else {
-        endpoint = `us-central1-${
+        endpoint = `https://us-central1-${
           process.env.VUE_APP_FIREBASE_PROJECTID
         }.cloudfunctions.net/addUsers`
       }

@@ -287,50 +287,57 @@ export default new Vuex.Store({
      * - visible (boolean)
      * - pitchable (boolean)
      */
-    addUser: function(context, payload) {
+    addUser: async function(context, payload) {
       const serverUrl = 'http://localhost:5000'
       const url = `${serverUrl}/cl8-testing/us-central1/addUsers`
+      const authToken = await fbase.auth().currentUser.getIdToken()
 
-      return fetch(url, {
-        method: 'POST',
-        body: JSON.stringify([
-          {
-            name: payload.name,
-            email: payload.email,
-            phone: payload.phone,
-            website: payload.website,
-            twitter: payload.twitter,
-            facebook: payload.facebook,
-            linkedin: payload.linkedin,
-            blurb: payload.blurb,
-            visible: payload.visible || true,
-            pitchable: payload.pitchable || false,
-            tags: payload.tags
-          }
-        ])
-      })
-        .then(resp => resp.json())
-        .then(data => {
-          if (data.error != null) {
-            throw Error(data.error)
-          }
-          if (data.skipped.length > 0) {
-            debug('No user account created')
-            return 'There already is an account with this email.'
-          } else {
-            debug(
-              'Created new user accounts. Redirecting to first created user'
-            )
-            const profile = data.imported[0].user
-            context.commit('setProfile', profile)
-            context.commit('fetchVisibleProfileList')
-            router.push({ name: 'home' })
-          }
+      const requestData = [
+        {
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          website: payload.website,
+          twitter: payload.twitter,
+          facebook: payload.facebook,
+          linkedin: payload.linkedin,
+          blurb: payload.blurb,
+          visible: payload.visible || true,
+          pitchable: payload.pitchable || false,
+          tags: payload.tags
+        }
+      ]
+
+      let data
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: new Headers({
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }),
+          body: JSON.stringify(requestData)
         })
-        .catch(err => {
-          debug('Error creating new user account', err)
-          throw err
-        })
+        if (!resp.ok) throw Error(await resp.text())
+        data = await resp.json()
+      } catch (err) {
+        debug('Error requesting new user account: ', err.message)
+        throw err
+      }
+
+      if (data.error != null) {
+        throw Error(data.error)
+      }
+      if (data.imported.length == 0) {
+        debug('No user account created')
+        return 'There already is an account with this email.'
+      } else {
+        debug('Created new user accounts. Redirecting to first created user')
+        const profile = data.imported[0].user
+        context.commit('setProfile', profile)
+        context.commit('fetchVisibleProfileList')
+        router.push({ name: 'home' })
+      }
     },
     fetchProfile: function(context, payload) {
       debug('fetching profile for:', payload)

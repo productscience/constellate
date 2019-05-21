@@ -4,9 +4,6 @@ const _ = require('lodash')
 const firebaseAdmin = require('firebase-admin')
 const firebaseWrapper = require('../src/firebase-wrapper')(firebaseAdmin)
 
-const devBase = process.env.AIRTABLE_BASE
-const devKey = process.env.AIRTABLE_APIKEY
-
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
 const databaseURL = process.env.FIREBASE_DATABASEURL
 

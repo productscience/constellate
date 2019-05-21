@@ -1,47 +1,33 @@
 <template>
-  <div class="pa4 center w-80 cf tc" >
-
+  <div class="pa4 center w-80 cf tc">
     <form @submit.prevent="confirmPhoto" v-if="profile">
-      
-
-      <img
-        v-if="localPhoto"
-        :src="this.localPhoto"
-        class="supplied-photo dib b--light-silver ba" />
+      <img v-if="localPhoto" :src="this.localPhoto" class="supplied-photo dib b--light-silver ba">
 
       <img
         v-if="hasPhoto() && !localPhoto"
         :src="showPhoto('large')"
-        class="supplied-photo dib b--light-silver ba" />
+        class="supplied-photo dib b--light-silver ba"
+      >
 
-      <v-gravatar v-else-if="!localPhoto"
+      <v-gravatar
+        v-else-if="!localPhoto"
         :email="profile.fields.email"
         :size="200"
-        class="gravatar dib b--light-silver ba" />
-      <input 
-        type="file"
-        @change="updatePhoto($event)"
-        class="ma2 br2"
-        accept="image/*" 
-        id="file"/>
+        class="gravatar dib b--light-silver ba"
+      />
+      <input type="file" @change="updatePhoto($event)" class="ma2 br2" accept="image/*" id="file">
       <div class="nav tc">
-        <button
-          class="f6 link dim br2 ph3 pv2 mb2 dib bn white bg-green"
-          >
-          Confirm
-        </button>
-        <router-link :to="{ name: 'editProfile' }"
-        class="f6 link dim br2 ph3 pv2 mb2 dib white bg-gray">
-        Cancel
-        </router-link>
+        <button class="f6 link dim br2 ph3 pv2 mb2 mr2 dib bn white bg-green">Confirm</button>
+        <router-link
+          :to="{ name: 'editProfile' }"
+          class="f6 link dim br2 ph3 pv2 mb2 dib white bg-gray"
+        >Cancel</router-link>
       </div>
     </form>
 
     <!-- <h2>profile: {{ profile }}</h2>
     <hr>
-    <h2>user: {{ user }}</h2> -->
-
-
+    <h2>user: {{ user }}</h2>-->
   </div>
 </template>
 
@@ -137,19 +123,19 @@ export default {
 <style lang="scss">
 @import '../../../node_modules/tachyons/css/tachyons.css';
 @mixin padding() {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 img.supplied-photo {
   max-width: 200px;
 }
 input[type='file'] {
-  border: 1px solid rgba(#09f,0.1);
-  display:block;
+  border: 1px solid rgba(#09f, 0.1);
+  display: block;
   width: 100%;
   background: rgba(#09f, 0.1);
-  cursor:pointer;
+  cursor: pointer;
   padding: 1em;
   max-width: 24rem;
   margin: 1em auto;

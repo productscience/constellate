@@ -48,13 +48,13 @@ describe('create or delete a user', () => {
       .createUser(u)
       .then(newUser => {
         // then call our delete method
-        let airtableUser = {
+        let u2 = {
           id: newUser.uid,
           fields: {
             email: newUser.email
           }
         }
-        return wrapper.deleteUser(airtableUser).then(() => {
+        return wrapper.deleteUser(u2).then(() => {
           return admin
             .auth()
             .listUsers()

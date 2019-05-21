@@ -139,8 +139,6 @@ function FireBaseAuthWrapper(admin) {
     var _ref4 = _asyncToGenerator(function* (user) {
       const userListRef = yield admin.database().ref('userlist');
 
-      // Firebase will error if we send along an airtable object
-      // TODO decide if we should convert ALL airtable entries in the wrapper
       const userObj = {
         id: user.id,
         fields: user.fields

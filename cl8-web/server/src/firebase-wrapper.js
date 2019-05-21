@@ -223,8 +223,6 @@ function FirebaseWrapper(admin) {
   async function createUserInUserList(user) {
     const userListRef = await admin.database().ref('userlist')
 
-    // Firebase will error if we send along an airtable object
-    // TODO decide if we should convert ALL airtable entries in the wrapper
     const userObj = {
       id: user.id,
       fields: user.fields

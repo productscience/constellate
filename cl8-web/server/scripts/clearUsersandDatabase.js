@@ -4,9 +4,6 @@ const debug = require('debug')('cl8.clearUsersAndDatabase')
 const Cl8Importer = require('../src/importer.js')
 const firebaseAdmin = require('firebase-admin')
 
-const devBase = process.env.AIRTABLE_BASE
-const devKey = process.env.AIRTABLE_APIKEY
-
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
 const databaseURL = process.env.FIREBASE_DATABASEURL
 
@@ -17,7 +14,6 @@ firebaseAdmin.initializeApp({
 })
 
 const importerCredentials = {
-  airTableCreds: [devKey, devBase],
   fbaseCreds: firebaseAdmin
 }
 

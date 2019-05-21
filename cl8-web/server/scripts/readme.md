@@ -21,9 +21,3 @@ node importUsersAndTags.js
 This script, when run, will delete all the user accounts, and the accompanying data from the real time database.
 
 Use it to clear an installation before re-importing.
-
-### importUsersAndTags.js
-
-This script, when run on the command line fetches data from the corresponding airtable base, and imports it into firebase, so you have a full list of users and tags.
-
-It's designed to allow you to run idempotently, so running the script will not change data the second time if a tag or user has already been imported.

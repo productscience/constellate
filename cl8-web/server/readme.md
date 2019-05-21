@@ -15,8 +15,6 @@ You'll need to set the relevant settings by putting them into `.runtimeconfig.js
 First, set the google cloud equivalent to env vars:
 
 ```
-firebase functions:config:set airtable.key="KEYGOESHERE"
-firebase functions:config:set airtable.base="BASEGOESHERE"
 firebase functions:config:set fbase.path="RELATIVE/PATH/TO/SERVICE_ACCOUNT.JSON"
 ```
 

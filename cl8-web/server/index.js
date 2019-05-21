@@ -50,21 +50,6 @@ exports.generateThumbnail = functions.storage
     return false
   })
 
-exports.importUsers = functions.https.onRequest(async (request, response) => {
-  const importerCredentials = {
-    airTableCreds: [
-      functions.config().airtable.key,
-      functions.config().airtable.base
-    ],
-    fbaseApp: admin
-  }
-
-  const importer = Cl8Importer(importerCredentials)
-
-  const importResults = await importer.importUsersAndTags()
-  response.send(importResults.length)
-})
-
 /** 
  * Endpoint that creates a Firebase user account and user profile
  * 

@@ -17,22 +17,21 @@
 </template>
 
 <script>
-import debugLib from "debug";
-const debug = debugLib("cl8.NavHeaderEdit");
+import debugLib from 'debug'
+const debug = debugLib('cl8.NavHeaderEdit')
 
 export default {
-  name: "NavHeaderEdit",
-  props: ["title"],
+  name: 'NavHeaderEdit',
   computed: {
     profile() {
-      return this.$store.getters.profile;
+      return this.$store.getters.profile
     }
   },
   methods: {
     onSubmit: function(item) {
-      debug("updating profile", this.profile);
-      this.$store.dispatch("updateProfile", this.profile);
+      debug('updating profile', this.profile)
+      this.$store.dispatch('updateProfile', this.profile)
     }
   }
-};
+}
 </script>

@@ -275,7 +275,7 @@ export default new Vuex.Store({
      * @param {*} context
      * @param {*} payload dictionary with new user data as follows
      *
-     * Fields (as string if not mentioned):
+     * Fields (as string if not noted otherwise):
      * - name
      * - email
      * - phone
@@ -335,9 +335,6 @@ export default new Vuex.Store({
         throw err
       }
 
-      if (data.error != null) {
-        throw Error(data.error)
-      }
       if (data.imported.length == 0) {
         debug('No user account created')
         return 'There already is an account with this email.'

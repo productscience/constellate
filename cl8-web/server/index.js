@@ -5,6 +5,8 @@ const functions = require('firebase-functions')
 const Cl8Importer = require('./src/importer.js')
 const ProfileThumbnailer = require('./src/profile-thumbnailer.js')
 const CheckConfig = require('./src/check-config.js')
+const { checkAdmin } = require('./src/auth.js')
+const cors = require('cors')({ origin: true })
 
 const admin = setupFbaseAdmin()
 
@@ -72,33 +74,32 @@ exports.importUsers = functions.https.onRequest(async (request, response) => {
     {
       fields: {
         name: 'Vincent Test',
-        email: 'cl8-test3@vincentahrend.com',
+        email: 'cl8-test3@zmail.com',
       }
     }
   ]
  */
-exports.addUsers = functions.https.onRequest(async (req, resp) => {
-  let payload
-  try {
-    payload = JSON.parse(req.body)
-  } catch (err) {
-    console.error('Error parsing request body while creating user:', req.body)
-    resp.send(400, 'Could not parse request body')
-    throw err
-  }
-
-  // Wrap fields in object for CL8Importer
-  const userlist = payload.map(fields => ({ fields }))
-
-  const importer = Cl8Importer(admin)
-  try {
-    const importResults = await importer.addUsersAndTags(userlist)
-    resp.send(importResults)
-  } catch (err) {
-    console.error(err)
-    rv = {
-      error: err
+exports.addUsers = functions.https.onRequest((req, resp) => {
+  cors(req, resp, async () => {
+    // Check authentication
+    try {
+      if ((await checkAdmin(req, admin)) == false) {
+        return resp.status(403).send('Only allowed for admin users')
+      }
+    } catch (err) {
+      return resp.status(403).send(err.message)
     }
-    resp.send(400, JSON.stringify({ error: err.message }))
-  }
+
+    // Wrap fields in object for CL8Importer
+    const userlist = req.body.map(fields => ({ fields }))
+
+    const importer = Cl8Importer(admin)
+    try {
+      const importResults = await importer.addUsersAndTags(userlist)
+      resp.send(importResults)
+    } catch (err) {
+      console.error(err)
+      resp.status(400).send(err.message)
+    }
+  })
 })

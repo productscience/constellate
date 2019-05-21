@@ -278,6 +278,7 @@ export default {
           this.warning = resp;
         })
         .catch(err => {
+          debug("Error creating account", err);
           this.loading = false;
           this.error = err.message;
         });

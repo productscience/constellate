@@ -32,21 +32,31 @@
                   class="gravatar b--light-silver ba w-80 mr4"
                 />
 
-                <div class="w-40 w-100-ns fn-ns pl2 pl0-ns dib v-btm">
+                <div class="w-40 w-100-ns fn-ns dib v-btm mt2">
                   <div
-                    class="f6 dim br2 ph3 pv2 mb2 dib w-80 mt2 white ma2"
+                    class="f6 dim br2 dib w-80 white mb2"
                     v-bind:class="{ 'bg-green': profile.visible, 'bg-red': !profile.visible }"
                   >
-                    <input type="checkbox" id="visible-checkbox" v-model="profile.visible">
-                    <label for="visible-checkbox">Visible</label>
+                    <input
+                      type="checkbox"
+                      class="dib w-20 mv2 ml2"
+                      id="visible-checkbox"
+                      v-model="profile.visible"
+                    >
+                    <label for="visible-checkbox" class="dib w-75">Visible</label>
                   </div>
 
                   <div
-                    class="f6 dim br2 ph3 pv2 mb2 dib w-80 mt2 ma2 white"
+                    class="f6 dim br2 dib w-80 white"
                     v-bind:class="{ 'bg-green': profile.pitchable, 'bg-red': !profile.pitchable}"
                   >
-                    <input type="checkbox" id="checkbox" v-model="profile.pitchable">
-                    <label for="checkbox">Pitchable</label>
+                    <input
+                      type="checkbox"
+                      class="dib w-20 mv2 ml2"
+                      id="checkbox"
+                      v-model="profile.pitchable"
+                    >
+                    <label for="checkbox" class="dib w-75">Pitchable</label>
                   </div>
 
                   <p class="f7 ma2 ml3 w-80">

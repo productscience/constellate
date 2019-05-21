@@ -288,8 +288,16 @@ export default new Vuex.Store({
      * - pitchable (boolean)
      */
     addUser: async function(context, payload) {
-      const serverUrl = 'http://localhost:5000'
-      const url = `${serverUrl}/cl8-testing/us-central1/addUsers`
+      let endpoint
+      if (process.env.NODE_ENV === 'development') {
+        endpoint = `http://localhost:5000/${
+          process.env.VUE_APP_FIREBASE_PROJECTID
+        }/us-central1/addUsers`
+      } else {
+        endpoint = `us-central1-${
+          process.env.VUE_APP_FIREBASE_PROJECTID
+        }.cloudfunctions.net/addUsers`
+      }
       const authToken = await fbase.auth().currentUser.getIdToken()
 
       const requestData = [
@@ -302,15 +310,17 @@ export default new Vuex.Store({
           facebook: payload.facebook,
           linkedin: payload.linkedin,
           blurb: payload.blurb,
-          visible: payload.visible || true,
-          pitchable: payload.pitchable || false,
+          visible: payload.visible,
+          pitchable: payload.pitchable,
           tags: payload.tags
         }
       ]
 
+      debug('Creating new user', payload)
+
       let data
       try {
-        const resp = await fetch(url, {
+        const resp = await fetch(endpoint, {
           method: 'POST',
           headers: new Headers({
             Authorization: `Bearer ${authToken}`,

@@ -205,8 +205,8 @@ export default {
       error: null,
       loading: false,
       profile: {
-        name: 'Vincent Test',
-        email: 'cl8-test1@vincentahrend.com',
+        name: '',
+        email: '',
         phone: '',
         website: '',
         twitter: '',

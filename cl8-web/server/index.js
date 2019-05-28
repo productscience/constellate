@@ -28,12 +28,9 @@ exports.checkConfig = functions.storage.object().onFinalize(object => {
 
 exports.generateThumbnail = functions.storage
   .object()
-  .onFinalize(async object => {
-    console.log('running func - generateThumbnail')
-    console.log('admin', admin)
+  .onFinalize(async (object, context) => {
+    console.log('running func - generateThumbnail for ', JSON.stringify(object))
     const profThumb = ProfileThumbnailer(admin, object)
-
-    console.log('generateThumbnail', profThumb)
 
     const profileId = profThumb.isProfilePic(object)
 

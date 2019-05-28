@@ -96,7 +96,9 @@ function ProfileThumbnailer(admin, objectMetaData) {
    * @returns {string} profileId
    */
   function isProfilePic(fileObjectMetaData) {
-    const filePath = objectMetaData.name
+    if (fileObjectMetaData == null) return false
+
+    const filePath = fileObjectMetaData.name
     const fileName = path.basename(filePath)
 
     const splitName = fileName.split('-')
@@ -108,7 +110,10 @@ function ProfileThumbnailer(admin, objectMetaData) {
 
     // first part of object begins with rec,
     // and is as long as a typical airtable ID
-    if (maybeProfileId.match(/rec/) && maybeProfileId.length === 17) {
+    if (
+      (maybeProfileId.match(/rec/) && maybeProfileId.length === 17) ||
+      maybeProfileId.length >= 28
+    ) {
       return maybeProfileId
     }
 

@@ -30,7 +30,7 @@ function ProfileThumbnailer(admin, objectMetaData) {
     const photoPath = objectMetaData.name
 
     const pushKey = await lookupProfile('id', profileId)
-    const profile = fetchProfile(pushKey)
+    const profile = await fetchProfile(pushKey)
 
     debug('prof', profile)
     const thumbgen = ThumbnailGenerator(admin, objectMetaData)
@@ -129,7 +129,7 @@ function ProfileThumbnailer(admin, objectMetaData) {
    */
   async function addPhotoUrls(profile, photoObject) {
     debug('addPhotoUrls')
-    debug('addPhotoUrls:profile', profile.val())
+    debug('addPhotoUrls:profile', profile)
 
     const newPhotoObj = _.merge(profile.val().fields.photo, photoObject)
     let profileVal = profile.val()

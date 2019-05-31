@@ -1,2 +1,2 @@
-const testData = require('./testData.json')
+const testData = require('./test/testdata.json')
 generateThumbnail(testData) /* eslint-disable-line */

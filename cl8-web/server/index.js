@@ -4,32 +4,33 @@ const setupFbaseAdmin = require('./src/config.js').default
 const functions = require('firebase-functions')
 const Cl8Importer = require('./src/importer.js')
 const ProfileThumbnailer = require('./src/profile-thumbnailer.js')
-const CheckConfig = require('./src/check-config.js')
 const { checkAdmin } = require('./src/auth.js')
 const cors = require('cors')({ origin: true })
 
 const admin = setupFbaseAdmin()
 
-// just a check so you can run it in `firebase experimental:functions:shell`
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  response.send('Hello from Constellate Cloud Function!')
-})
+// this function is used to generate a realistic objectMetaData for use in
+// ./test/testFunction.js
+// uncomment the folling lines to deploy it
 
-// this is only used to generate a realistic objectMetaData
-exports.generateSampleData = functions.storage.object().onFinalize(object => {
-  console.log('data looks like this')
-  console.log(object)
-})
+// exports.generateSampleData = funsctions.storage
+//   .object()
+//   .onFinalize(function(_, object, context) {
+//     console.log('data looks like this')
+//     console.log('object', object)
+//     return null
+//   })
 
-exports.checkConfig = functions.storage.object().onFinalize(object => {
-  // console.log(functions.config())
-  return CheckConfig()
-})
-
+/**
+ * Storage cloud function invoked on every new stored object that detects
+ * uploaded pictures and generates a thumbnail for them
+ *
+ * For testing refer to https://stackoverflow.com/questions/47096736/how-to-test-firebase-triggers-locally-for-storage
+ */
 exports.generateThumbnail = functions.storage
   .object()
-  .onFinalize(async (object, context) => {
-    console.log('running func - generateThumbnail for ', JSON.stringify(object))
+  .onFinalize(async function(_, object, context) {
+    console.log('running func - generateThumbnail')
     const profThumb = ProfileThumbnailer(admin, object)
 
     const profileId = profThumb.isProfilePic(object)

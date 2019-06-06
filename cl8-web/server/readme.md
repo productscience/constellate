@@ -1,12 +1,19 @@
 # Functions
 
-You can use Google cloud functions here exist to run admin type commands that require a server.
+Some server functionality is implemented in the form of Google Cloud functions.
+You can find these functions in the `index.js` file.
 
 ### Running locally
 
-you can test these locally without deploying them by opening up a shell, with `npm start`.
+You can test some of the functions locally. For this you need to copy the
+service account credentials generated for the frontend part of the application
+in a file `server/service-account.json`.
 
-npm start
+Then you can execute:
+
+'''
+\$ npm run serve
+'''
 
 You'll need to set the relevant settings by putting them into `.runtimeconfig.json`. See more in the config
 
@@ -15,7 +22,7 @@ You'll need to set the relevant settings by putting them into `.runtimeconfig.js
 First, set the google cloud equivalent to env vars:
 
 ```
-firebase functions:config:set fbase.path="RELATIVE/PATH/TO/SERVICE_ACCOUNT.JSON"
+firebase functions:config:set fbase.path="./service-account.json"
 ```
 
 See more about setting [config variables in the Firebase Cloud function documentation](https://firebase.google.com/docs/functions/config-env)

@@ -52,6 +52,16 @@ exports.checkAdmin = async (req, admin) => {
 
   // Whether a user is admin is stored in <profile>/fields/admin
   // either as "yes" or true
-  const adminVal = userRecord.val()[reqUser.user_id].fields.admin
-  return adminVal == true || adminVal === 'yes'
+  console.log(JSON.stringify(userRecord.val(), null, 2))
+  const userProfile = userRecord.val()[reqUser.user_id]
+  if (userProfile == null)
+    throw new Error(
+      'Error checking for admin privilege: requesting user has no cl8 profile'
+    )
+  const isAdmin =
+    userProfile.fields.admin == true || userProfile.fields.admin === 'yes'
+
+  if (isAdmin != true) console.error('Requesting user has no admin privilege')
+
+  return isAdmin === true
 }

@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
-    "test": "vue-cli-service test",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "deploy": "firebase deploy --only hosting",
     "release": "vue-cli-service build && npm run deploy && npm run notify",

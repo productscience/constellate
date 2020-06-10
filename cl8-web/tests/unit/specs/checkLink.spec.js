@@ -26,11 +26,10 @@ describe('Linkify with social media prefixes', () => {
     expect(newUrl).toBe('https://twitter.com/username')
   })
   it('adds domains prefix if it are missing', () => {
-    ('username')
+    ;('username')
     let url = 'username'
     let prefix = 'https://twitter.com'
     let newUrl = linkify(url, prefix)
     expect(newUrl).toBe('https://twitter.com/username')
   })
-  
 })

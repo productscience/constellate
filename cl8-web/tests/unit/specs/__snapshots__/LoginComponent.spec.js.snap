@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`LoginComponent.Vue mounts with expected data login mounts 1`] = `
-"<div class=\\"w-100\\"><div role=\\"status\\" aria-live=\\"polite\\" class=\\"vh\\"><!----></div> <form><div class=\\"w-100 mb3\\"><input type=\\"text\\" name=\\"email\\" placeholder=\\"your email address\\" aria-label=\\"your email address\\" autocomplete=\\"email\\" class=\\"input-reset pa2 ba  mt1 w-50\\"> <!----></div> <div class=\\"w-100\\"><input type=\\"password\\" name=\\"password\\" placeholder=\\"your password\\" aria-label=\\"your password\\" autocomplete=\\"current-password\\" class=\\"input-reset pa2 ba w-50\\"> <!----></div> <div class=\\"mt2\\"><button disabled=\\"disabled\\" type=\\"submit\\" name=\\"button\\" class=\\"f6 link br-pill ph3 pv2 mb2 bg-light-silver white w-50 ml0 mt2\\">
-          Sign in
-        </button></div></form></div>"
-`;

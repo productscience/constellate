@@ -1,4 +1,6 @@
-import Firebase from "firebase";
+import firebase from "firebase/app";
+import 'firebase/auth';
+import 'firebase/database';
 /* global process */
 
 const FIREBASE_CONFIG = {
@@ -11,6 +13,6 @@ const FIREBASE_CONFIG = {
   functionsURL: process.env.VUE_APP_FIREBASE_FUNCTIONSURL
 };
 
-const fbase = Firebase.initializeApp(FIREBASE_CONFIG);
+const fbase = firebase.initializeApp(FIREBASE_CONFIG);
 
 export default fbase;

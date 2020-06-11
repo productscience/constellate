@@ -49,9 +49,6 @@ const debug = debugLib('cl8.ProfileSearchItem')
 Vue.component('v-gravatar', Gravatar)
 
 export default {
-  components: {
-    Gravatar
-  },
   props: {
     item: {
       type: Object,

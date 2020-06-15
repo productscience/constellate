@@ -47,7 +47,7 @@
                   Pitchable
               </div>
 
-              
+
           </div>
 
 
@@ -113,8 +113,9 @@
 /* eslint-disable */
 import Vue from 'vue'
 import Gravatar from 'vue-gravatar'
-import marked from 'marked'
 import debugLib from 'debug'
+import marked from 'marked'
+import sanitizeHTML from 'sanitize-html'
 const debug = debugLib('cl8.ProfileDetail')
 
 Vue.component('v-gravatar', Gravatar)
@@ -164,7 +165,7 @@ export default {
     },
     blurbOutput() {
       return this.profile.fields.blurb
-        ? marked(this.profile.fields.blurb, { sanitize: true })
+        ? marked(sanitizeHTML(this.profile.fields.blurb))
         : null
     }
   },

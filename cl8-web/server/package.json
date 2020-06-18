@@ -16,7 +16,8 @@
     "debug": "^4.1.0",
     "firebase-admin": "^7.3.0",
     "firebase-functions": "^2.1.0",
-    "lodash": "*"
+    "lodash": "*",
+    "prompt": "^1.0.0"
   },
   "private": true,
   "devDependencies": {

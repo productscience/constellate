@@ -2,22 +2,12 @@ const prompt = require('prompt')
 const debug = require('debug')('cl8.clearUsersAndDatabase')
 
 const Cl8Importer = require('../src/importer.js')
-const firebaseAdmin = require('firebase-admin')
 
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
-const databaseURL = process.env.FIREBASE_DATABASEURL
+const setupFbaseAdmin = require('../src/config.js').default
+const admin = setupFbaseAdmin()
 
-// initialised it here instead of in functions
-firebaseAdmin.initializeApp({
-  credential: firebaseAdmin.credential.cert(serviceAccount),
-  databaseURL: databaseURL
-})
-
-const importerCredentials = {
-  fbaseCreds: firebaseAdmin
-}
-
-const importer = Cl8Importer(importerCredentials)
+const importer = Cl8Importer(admin)
+const databaseURL = process.env.FIREBASE_DATABASEURL;
 
 async function clearFirebaseUserList() {
   debug('clearFirebaseUserList: clearing the realtime database')
@@ -49,6 +39,7 @@ async function clearFirebaseAccounts() {
 
 // for this constellation:
 async function main() {
+
   console.log('This will clear the database at', databaseURL)
   console.log('Are you sure you want this?')
   const domainToCheck = databaseURL.split('.')[0].replace('https://', '')
@@ -57,7 +48,7 @@ async function main() {
 
   prompt.start()
 
-  prompt.get('confirmation', async function(err, result) {
+  prompt.get('confirmation', async function (err, result) {
     if (err) {
       throw err
     }
@@ -66,26 +57,26 @@ async function main() {
 
     if (result.confirmation !== domainToCheck) {
       console.log("This response doesn't match. Exiting early")
-      process.exit("exiting early a they don't match")
+      process.exit("exiting early as they don't match")
     }
 
     console.log('clearing accounts and data:')
     // - remove all the user accounts
 
     try {
-      await clearFirebaseAccounts()
-    } catch (e) {
-      console.log
+      await clearFirebaseAccounts();
+    } catch (err) {
+      console.log(err);
     }
 
     // - clear the realtime database
     try {
-      await clearFirebaseUserList()
-    } catch (e) {
-      console.log(e)
+      await clearFirebaseUserList();
+    } catch (err) {
+      console.log(err);
     }
     console.log('The deed is done.')
-    process.exit()
+    process.exitCode = 0;
   })
 }
 

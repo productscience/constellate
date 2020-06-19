@@ -1,4 +1,5 @@
-const admin = require('firebase-admin')
+const admin = require('firebase-admin');
+const debug = require('debug')('cl8.server');
 
 /**
  * Return a firebase admin instance
@@ -12,13 +13,28 @@ const setupFirebaseAdmin = () => {
     admin.initializeApp()
     return admin
   } else {
-    console.log('Loading config', process.env.FIREBASE_CONFIG)
-    const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
+
+    debug('databaseURL', process.env.FIREBASE_DATABASEURL);
+    debug('storageBucket', process.env.FIREBASE_STORAGEBUCKET);
+    debug('projectId', process.env.FIREBASE_PROJECTID);
+
+    if (
+      !process.env.FIREBASE_DATABASEURL ||
+      !process.env.FIREBASE_STORAGEBUCKET ||
+      !process.env.FIREBASE_PROJECTID
+    ) {
+      throw Error("I can't find the FIREBASE environment variables. Did load them with `source path/to/env_file.sh` ?")
+    }
+
+    const adminConfig = {
+      databaseURL: process.env.FIREBASE_DATABASEURL,
+      storageBucket: process.env.FIREBASE_STORAGEBUCKET,
+      projectId: process.env.FIREBASE_PROJECTID
+    }
 
     let serviceAccount = require('../service-account.json')
 
     adminConfig.credential = admin.credential.cert(serviceAccount)
-    // adminConfig.databaseURL = `cl8-testing.firebaseio.com`
     admin.initializeApp(adminConfig)
 
     return admin

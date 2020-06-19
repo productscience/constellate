@@ -6,7 +6,7 @@ import App from './App'
 import router from './routes'
 import store from './store'
 import VeeValidate from 'vee-validate'
-import { firestorePlugin } from 'vuefire'
+import { rtdbPlugin } from 'vuefire'
 import VueFuse from 'vue-fuse'
 import fbase from './fbase'
 import VueAnalytics from 'vue-analytics'
@@ -33,7 +33,7 @@ const dict = {
 
 Vue.use(VeeValidate, vvConfig)
 Vue.use(VueFuse)
-Vue.use(firestorePlugin)
+Vue.use(rtdbPlugin)
 
 Vue.use(VueAnalytics, {
   id: process.env.VUE_APP_GOOGLE_ANALYTICS_UA,

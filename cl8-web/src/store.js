@@ -386,17 +386,17 @@ export default new Vuex.Store({
     updateProfile: function(context, payload) {
       debug('sending update to Firebase', payload)
 
-      // not super happy about this - surely there's a toJSON() method?
+      // doing this round trip returns a JSON object we
+      // can save back to the realtime database more easily,
+      // and strips out properties we wouldn't want to save into it
       let newProfile = JSON.parse(JSON.stringify(payload))
-      // check if this is a profile with no pushkey, and fetch it if so
-      const pushKey = newProfile['.key']
+      const pushKey = payload['.key'];
 
       if (!pushKey) {
         throw new Error(
           'this profile has no push key. this is needed for writing data'
         )
       }
-      delete newProfile['.key']
 
       return fbase
         .database()

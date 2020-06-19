@@ -190,9 +190,7 @@ export default {
   },
   firebase: function() {
     return {
-      fbpeeps: {
-        source: fbase.database().ref('userlist')
-      }
+      items: fbase.database().ref('userlist')
     }
   },
   data() {
@@ -296,7 +294,7 @@ export default {
     }
   },
   created() {
-    this.$bindAsArray('items', this.$firebaseRefs.fbpeeps)
+    this.$rtdbBind('items', fbase.database().ref('userlist'))
   }
 }
 </script>

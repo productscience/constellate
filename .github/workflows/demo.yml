@@ -1,0 +1,42 @@
+name: Deploy to demo site
+
+on:
+  push:
+    branches:
+      - demo
+
+defaults:
+  run:
+    working-directory: ./cl8-web
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - name: Create production build of vue app, setting env vars for Vue
+      run: npm run build
+      env:
+        VUE_APP_FIREBASE_APIKEY: ${{ secrets.DEMO_FIREBASE_APIKEY }}
+        VUE_APP_FIREBASE_PROJECTID: ${{ secrets.DEMO_FIREBASE_PROJECTID }}
+        VUE_APP_FIREBASE_AUTHDOMAIN: ${{ secrets.DEMO_FIREBASE_AUTHDOMAIN }}
+        VUE_APP_FIREBASE_DATABASEURL: ${{ secrets.DEMO_FIREBASE_DATABASEURL }}
+        VUE_APP_FIREBASE_MESSAGINGSENDERID: ${{ secrets.DEMO_FIREBASE_MESSAGINGSENDERID }}
+        VUE_APP_FIREBASE_STORAGEBUCKET: ${{ secrets.DEMO_FIREBASE_STORAGEBUCKET }}
+
+    - name: Run deploy using token
+      run: npx firebase deploy --only hosting --project="$FIREBASE_PROJECTID" --token="$FIREBASE_TOKEN"
+      env:
+        FIREBASE_TOKEN: ${{ secrets.DEMO_FIREBASE_TOKEN }}
+        FIREBASE_PROJECTID: ${{ secrets.DEMO_FIREBASE_PROJECTID }}

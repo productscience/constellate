@@ -25,7 +25,7 @@
     "eslint": "^5.9.0",
     "eslint-plugin-promise": "^4.0.1",
     "firebase-functions-test": "*",
-    "firebase-tools": "^6.10.0"
+    "firebase-tools": "^8.4.3"
   },
   "engines": {
     "node": "10"

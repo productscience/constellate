@@ -2,9 +2,12 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 /* eslint-disable */
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from './App'
+
 import router from './routes'
 import store from './store'
+
 import VeeValidate from 'vee-validate'
 import { rtdbPlugin } from 'vuefire'
 import VueFuse from 'vue-fuse'
@@ -29,8 +32,9 @@ const dict = {
       confirmed: 'Passwords do not match'
     }
   }
-};
+}
 
+Vue.use(Vuex)
 Vue.use(VeeValidate, vvConfig)
 Vue.use(VueFuse)
 Vue.use(rtdbPlugin)
@@ -39,6 +43,7 @@ Vue.use(VueAnalytics, {
   id: process.env.VUE_APP_GOOGLE_ANALYTICS_UA,
   router
 })
+const VueStore = new Vuex.Store(store)
 
 router.beforeEach((to, from, next) => {
   debug(to.name, to.from)
@@ -52,7 +57,7 @@ router.beforeEach((to, from, next) => {
 
   if (currentUser) {
     debug(`store.commit('setFBUser', ${currentUser})`)
-    store.commit('setFBUser', currentUser)
+    VueStore.commit('setFBUser', currentUser)
   }
   if (requiresAuth && !currentUser) {
     // you need to be logged in, so log the user in
@@ -72,13 +77,13 @@ fbase.auth().onAuthStateChanged(firebaseUser => {
     debug('user:', firebaseUser.displayName)
   }
   if (!app) {
-    store.commit('stopLoading')
+    VueStore.commit('stopLoading')
     app = new Vue({
       router,
-      store,
+      store: VueStore,
       render: h => h(App)
     }).$mount('#app')
 
-    app.$validator.localize('en', dict);
+    app.$validator.localize('en', dict)
   }
 })

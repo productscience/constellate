@@ -1,0 +1,49 @@
+{
+  "userlist": [
+    {
+      "fields": {
+        "blurb": "I am __Ryan__",
+        "email": "ryan@greening.digital",
+        "name": "Ryan",
+        "pitchable": true,
+        "tags": [{ "id": "recfmxbxbOC1EeAlf", "name": "writing" }],
+        "visible": true
+      },
+      "id": "q6EnFQLl44UBLlBwEjgxuB5eejS2"
+    },
+    {
+      "fields": {
+        "admin": true,
+        "blurb": "_Header_",
+        "email": "chris@productscience.co.uk",
+        "name": "Chris Adams",
+        "tags": [
+          { "id": "rec37wqDIyUsIXU4k", "name": "climate change" },
+          { "code": "an1468924", "id": "tempvalan1468924", "name": "another" },
+          {
+            "code": "wo7165477",
+            "id": "tempvalwo7165477",
+            "name": "world saving"
+          }
+        ],
+        "visible": true
+      },
+      "id": "recZGvTIKxXxJoRHK"
+    },
+    {
+      "fields": {
+        "blurb": "",
+        "email": "chris+vince@productscience.net",
+        "facebook": "",
+        "linkedin": "",
+        "name": "Chris",
+        "phone": "",
+        "pitchable": false,
+        "twitter": "",
+        "visible": false,
+        "website": ""
+      },
+      "id": "TZvyuFU2t7fDbXfqRBQMJHHlHXE3"
+    }
+  ]
+}

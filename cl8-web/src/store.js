@@ -1,8 +1,15 @@
 /* eslint-disable */
 import router from './routes'
 import fbase from './fbase'
+import axios from 'axios'
 
 const debug = require('debug')('cl8.store')
+
+const instance = axios.create({
+  baseURL: 'http://localhost:3000',
+  timeout: 1000,
+  headers: { 'X-Custom-Header': 'foobar' }
+})
 
 const state = {
   user: null,
@@ -220,53 +227,24 @@ const actions = {
     }
     context.commit('setTags', tags)
   },
-  fetchProfileList: function(context) {
-    fbase
-      .database()
-      .ref('userlist')
-      .then(profileList => {
-        debug('Successfully fetched profileList', profileList)
-        // if we want to search and iterate through this easily
-        // lets make it an array
-        let profileArray = []
-        _.each(profileList.val(), (val, key) => {
-          profileArray.push(val)
-        })
-        context.commit('setProfileList', profileArray)
-      })
-      .catch(error => {
-        debug('Error fetching profileList', error)
-      })
+  fetchProfileList: async function(context) {
+    try {
+      const response = await instance.get('/userlist')
+      const profileArray = response.data
+      context.commit('setProfileList', profileArray)
+    } catch (error) {
+      debug('Error fetching profileList', error)
+    }
   },
-  fetchVisibleProfileList: function(context) {
+  fetchVisibleProfileList: async function(context) {
     debug('fetching visible profiles')
-    return new Promise((resolve, reject) => {
-      fbase
-        .database()
-        .ref('userlist')
-        .orderByChild('fields/visible')
-        .equalTo(true)
-        .once('value')
-        .then(visibleProfileList => {
-          let profileArray = []
-          _.each(visibleProfileList.val(), (val, key) => {
-            profileArray.push(val)
-          })
-
-          debug(
-            'Successfully fetched visibleProfileList',
-            visibleProfileList.val()
-          )
-          // we need to turn this into an array.
-          console.log(JSON.stringify(profileArray))
-          context.commit('setVisibleProfileList', profileArray)
-          resolve()
-        })
-        .catch(error => {
-          debug('Error fetching profileList', error)
-          reject()
-        })
-    })
+    try {
+      const response = await instance.get('/userlist')
+      const profileArray = response.data.filter(profile => profile.fields.visible)
+      context.commit('setVisibleProfileList', profileArray)
+    } catch (error) {
+      debug('Error fetching visibleProfileList', error)
+    }
   },
   /**
    * Create a new Firebase user account and constellate user profile
